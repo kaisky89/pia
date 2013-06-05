@@ -40,6 +40,7 @@ public class SingletonSmack {
     
     
     private Connection connection;
+    private PubSubManager mgr;
 
     public void connect() throws XMPPException {
         connection = new XMPPConnection(
@@ -50,10 +51,10 @@ public class SingletonSmack {
     public void login() throws XMPPException {
         UserData user = SingletonDataStore.getInstance().getUser();
         connection.login(user.getUsername(), user.getPassword());
+        mgr = new PubSubManager(connection);
     }
 
     public List<String> getAvailableNodes() throws XMPPException {
-        PubSubManager mgr = new PubSubManager(connection);
         try {
             LeafNode node = mgr.getNode("availableNodes");
         } catch (XMPPException ex) {
@@ -78,24 +79,20 @@ public class SingletonSmack {
     }
     
     public void setOnNodesActualization(ItemEventListener iel) throws XMPPException{
-      // Create a pubsub manager using an existing Connection
-      PubSubManager mgr = new PubSubManager(connection);
 
       // Get the node
       LeafNode node = mgr.getNode("availableNodes");
       
       node.addItemEventListener(iel);
       cleanSubscriptions(node);
-      node.subscribe(SingletonDataStore.getInstance().getUser().getUsername());
+      node.subscribe(SingletonDataStore.getInstance().getJID());
     }
     
     private void cleanSubscriptions(LeafNode node) throws XMPPException {
-        node.unsubscribe(SingletonDataStore.getInstance().getUser().getUsername());
+        node.unsubscribe(SingletonDataStore.getInstance().getJID());
     }
     
     public void addNode(String name) throws XMPPException{
-        // Create a pubsub manager using an existing Connection
-      PubSubManager mgr = new PubSubManager(connection);
 
       // Create the node
       ConfigureForm form = new ConfigureForm(FormType.submit);
@@ -110,8 +107,6 @@ public class SingletonSmack {
     }
     
     public void addItem(String nodeString, String id) throws XMPPException {
-        // Create a pubsub manager using an existing Connection
-      PubSubManager mgr = new PubSubManager(connection);
 
       // Get the node
       LeafNode leafnode = mgr.getNode(nodeString);
@@ -125,8 +120,6 @@ public class SingletonSmack {
 
     // Tests //////////////////////////////////////////////////////////////////////////////
     public void discoverInfos() throws XMPPException {
-        // Create a pubsub manager using an existing Connection
-        PubSubManager mgr = new PubSubManager(connection);
 
         // Get the pubsub features that are supported
         DiscoverInfo supportedFeatures = mgr.getSupportedFeatures();
