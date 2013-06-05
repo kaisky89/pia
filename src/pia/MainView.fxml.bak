@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.MainViewController">
+  <children>
+    <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <center>
+        <SplitPane dividerPositions="0.3511705685618729" focusTraversable="true" prefHeight="200.0001220703125" prefWidth="200.0001220703125">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <ListView fx:id="listNodes" prefHeight="398.0" prefWidth="207.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />
+                <Label layoutY="4.0" text="Nodes" />
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <ListView fx:id="listItems" prefHeight="302.0" prefWidth="385.0" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />
+                <Label layoutY="4.0" text="Items" />
+                <TextField layoutY="331.0" prefWidth="321.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="64.0" />
+                <Button layoutY="332.0" mnemonicParsing="false" text="Button" AnchorPane.rightAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </items>
+        </SplitPane>
+      </center>
+      <top>
+        <HBox prefHeight="45.0" prefWidth="600.0" />
+      </top>
+    </BorderPane>
+  </children>
+</AnchorPane>
