@@ -5,8 +5,10 @@
 package pia;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -33,6 +35,8 @@ public class MainViewController implements Initializable {
     private ListView listNodes;
     @FXML
     private ListView listItems;
+    
+    private Map<String, List<String>> entries = new HashMap<>();
 
     /**
      * Initializes the controller class.
@@ -83,8 +87,29 @@ public class MainViewController implements Initializable {
     }
 
     private void initNodesListener() {
+        initListenerForList("availableNodes", listNodes);
+    }
+
+    private void resetAllAvailableNodes() throws XMPPException {
+        resetAllItems(listNodes);
+    }
+
+    private void initViewElements() {
+        listNodes.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    }
+
+    private void initSmackElements() {
         try {
-            SingletonSmack.getInstance().setOnNodesActualization(new ItemEventListener() {
+            resetAllAvailableNodes();
+            initNodesListener();
+        } catch (XMPPException ex) {
+            SingletonViewManager.getInstance().showError(ex);
+        }
+    }
+
+    private void initListenerForList(String nodeName, final ListView listView) {
+        try {
+            SingletonSmack.getInstance().setOnActualization(nodeName, new ItemEventListener() {
                 @Override
                 public void handlePublishedItems(ItemPublishEvent ipe) {
                     final List<String> names = new LinkedList<>();
@@ -100,7 +125,7 @@ public class MainViewController implements Initializable {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            listNodes.getItems().addAll(names);
+                            listView.getItems().addAll(names);
                         }
                     });
 
@@ -147,27 +172,14 @@ public class MainViewController implements Initializable {
         }
     }
 
-    private void resetAllAvailableNodes() throws XMPPException {
+    private void resetAllItems(ListView listView) throws XMPPException {
         // delete all entries in the listNodes
-        listNodes.getItems().clear();
+        listView.getItems().clear();
 
         // get the list from Smack API
         List<String> strings = SingletonSmack.getInstance().getAvailableNodes();
 
         // insert list into View
-        listNodes.getItems().addAll(strings);
-    }
-
-    private void initViewElements() {
-        listNodes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    }
-
-    private void initSmackElements() {
-        try {
-            resetAllAvailableNodes();
-            initNodesListener();
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
+        listView.getItems().addAll(strings);
     }
 }

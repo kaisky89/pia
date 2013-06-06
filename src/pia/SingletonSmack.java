@@ -36,8 +36,6 @@ public class SingletonSmack {
     public static SingletonSmack getInstance() {
         return instance;
     }
-    
-    
     private Connection connection;
     private PubSubManager mgr;
 
@@ -54,41 +52,14 @@ public class SingletonSmack {
     }
 
     public List<String> getAvailableNodes() throws XMPPException {
-        try {
-            LeafNode node = mgr.getNode("availableNodes");
-        } catch (XMPPException ex) {
-            // Create the node
-            LeafNode leaf = mgr.createNode("availableNodes");
-            ConfigureForm form = new ConfigureForm(FormType.submit);
-            form.setAccessModel(AccessModel.open);
-            form.setDeliverPayloads(false);
-            form.setNotifyRetract(true);
-            form.setPersistentItems(true);
-            form.setPublishModel(PublishModel.open);
-            leaf.sendConfigurationForm(form);
-        }
-
-        LeafNode node = mgr.getNode("availableNodes");
-        List list = node.getItems();
-        List<String> returnList = new LinkedList<>();
-        for (Object object : list) {
-            returnList.add(((Item) object).getId());
-        }
-        return returnList;
+        return getAvailableItems("availableNodes");
     }
 
     public void setOnNodesActualization(
-            ItemEventListener<Item> onAdd, 
-            ItemDeleteListener onDelete) 
+            ItemEventListener<Item> onAdd,
+            ItemDeleteListener onDelete)
             throws XMPPException {
-
-        // Get the node
-        LeafNode node = mgr.getNode("availableNodes");
-
-        node.addItemEventListener(onAdd);
-        node.addItemDeleteListener(onDelete);
-        cleanSubscriptions(node);
-        node.subscribe(SingletonDataStore.getInstance().getJID());
+        setOnActualization("availableNodes", onAdd, onDelete);
     }
 
     private void cleanSubscriptions(LeafNode node) throws XMPPException {
@@ -128,6 +99,40 @@ public class SingletonSmack {
         LeafNode node = mgr.getNode("availableNodes");
         node.deleteItem(nodeName);
 
+    }
+
+    public void setOnActualization(String nodeName, ItemEventListener<Item> onAdd, ItemDeleteListener onDelete) throws XMPPException {
+        // Get the node
+        LeafNode node = mgr.getNode(nodeName);
+
+        node.addItemEventListener(onAdd);
+        node.addItemDeleteListener(onDelete);
+        cleanSubscriptions(node);
+        node.subscribe(SingletonDataStore.getInstance().getJID());
+    }
+
+    private List<String> getAvailableItems(String nodeName) throws XMPPException {
+        try {
+            LeafNode node = mgr.getNode(nodeName);
+        } catch (XMPPException ex) {
+            // Create the node
+            LeafNode leaf = mgr.createNode(nodeName);
+            ConfigureForm form = new ConfigureForm(FormType.submit);
+            form.setAccessModel(AccessModel.open);
+            form.setDeliverPayloads(false);
+            form.setNotifyRetract(true);
+            form.setPersistentItems(true);
+            form.setPublishModel(PublishModel.open);
+            leaf.sendConfigurationForm(form);
+        }
+
+        LeafNode node = mgr.getNode(nodeName);
+        List list = node.getItems();
+        List<String> returnList = new LinkedList<>();
+        for (Object object : list) {
+            returnList.add(((Item) object).getId());
+        }
+        return returnList;
     }
 
     // Tests //////////////////////////////////////////////////////////////////////////////
