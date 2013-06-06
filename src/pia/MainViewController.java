@@ -14,9 +14,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.Item;
+import org.jivesoftware.smackx.pubsub.ItemDeleteEvent;
 import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
+import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 
 /**
@@ -36,9 +39,14 @@ public class MainViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        initViewElements();
+        initSmackElements();
+    }
+
+    @FXML
+    private void handleButtonRefresh(ActionEvent e) {
         try {
-            initAllAvailableNodes();
-            initNodesListener();
+            resetAllAvailableNodes();
         } catch (XMPPException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }
@@ -59,6 +67,7 @@ public class MainViewController implements Initializable {
     private void handleButtonDeleteNode(ActionEvent e) {
         // find out, which Nodes are selected
         ObservableList selectedIndices = listNodes.getSelectionModel().getSelectedIndices();
+
 
         // delete all Elements with Smack
         try {
@@ -96,13 +105,49 @@ public class MainViewController implements Initializable {
                     });
 
                 }
+            }, new ItemDeleteListener() {
+                @Override
+                public void handleDeletedItems(ItemDeleteEvent ide) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                resetAllAvailableNodes();
+                            } catch (XMPPException ex) {
+                                SingletonViewManager.getInstance().showError(ex);
+                            }
+                        }
+                    });
+
+                    // get the names of the Items, which are still available
+                    //List<String> names = ide.getItemIds();
+
+                    // delete the Items in the listView
+                    //for (Object object : listNodes.getItems()) {
+                    //}
+                    //}
+                }
+
+                @Override
+                public void handlePurge() {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                resetAllAvailableNodes();
+                            } catch (XMPPException ex) {
+                                SingletonViewManager.getInstance().showError(ex);
+                            }
+                        }
+                    });
+                }
             });
         } catch (XMPPException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }
     }
 
-    private void initAllAvailableNodes() throws XMPPException {
+    private void resetAllAvailableNodes() throws XMPPException {
         // delete all entries in the listNodes
         listNodes.getItems().clear();
 
@@ -111,5 +156,18 @@ public class MainViewController implements Initializable {
 
         // insert list into View
         listNodes.getItems().addAll(strings);
+    }
+
+    private void initViewElements() {
+        listNodes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    private void initSmackElements() {
+        try {
+            resetAllAvailableNodes();
+            initNodesListener();
+        } catch (XMPPException ex) {
+            SingletonViewManager.getInstance().showError(ex);
+        }
     }
 }

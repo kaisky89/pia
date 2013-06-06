@@ -18,6 +18,7 @@
                 <Label layoutY="4.0" text="Nodes" />
                 <Button layoutY="332.0" mnemonicParsing="false" onAction="#handleButtonAddNode" text="+" />
                 <Button layoutX="33.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleButtonDeleteNode" text="-" />
+                <Button layoutY="332.0" mnemonicParsing="false" text="refresh" AnchorPane.rightAnchor="0.0" />
               </children>
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

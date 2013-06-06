@@ -16,11 +16,10 @@ import org.jivesoftware.smackx.pubsub.AccessModel;
 import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.Item;
-import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
 import org.jivesoftware.smackx.pubsub.LeafNode;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishModel;
-import org.jivesoftware.smackx.pubsub.Subscription;
+import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 
 /**
@@ -68,55 +67,68 @@ public class SingletonSmack {
             form.setPublishModel(PublishModel.open);
             leaf.sendConfigurationForm(form);
         }
-        
+
         LeafNode node = mgr.getNode("availableNodes");
         List list = node.getItems();
         List<String> returnList = new LinkedList<>();
         for (Object object : list) {
-            returnList.add(((Item)object).getId());
+            returnList.add(((Item) object).getId());
         }
         return returnList;
     }
-    
-    public void setOnNodesActualization(ItemEventListener iel) throws XMPPException{
 
-      // Get the node
-      LeafNode node = mgr.getNode("availableNodes");
-      
-      node.addItemEventListener(iel);
-      cleanSubscriptions(node);
-      node.subscribe(SingletonDataStore.getInstance().getJID());
+    public void setOnNodesActualization(
+            ItemEventListener<Item> onAdd, 
+            ItemDeleteListener onDelete) 
+            throws XMPPException {
+
+        // Get the node
+        LeafNode node = mgr.getNode("availableNodes");
+
+        node.addItemEventListener(onAdd);
+        node.addItemDeleteListener(onDelete);
+        cleanSubscriptions(node);
+        node.subscribe(SingletonDataStore.getInstance().getJID());
     }
-    
+
     private void cleanSubscriptions(LeafNode node) throws XMPPException {
         node.unsubscribe(SingletonDataStore.getInstance().getJID());
     }
-    
-    public void addNode(String name) throws XMPPException{
 
-      // Create the node
-      ConfigureForm form = new ConfigureForm(FormType.submit);
-      form.setAccessModel(AccessModel.open);
-      form.setDeliverPayloads(true);
-      form.setNotifyRetract(true);
-      form.setPersistentItems(true);
-      form.setPublishModel(PublishModel.open);
-      mgr.createNode(name, form);
-      
-      addItem("availableNodes", name);
+    public void addNode(String name) throws XMPPException {
+
+        // Create the node
+        ConfigureForm form = new ConfigureForm(FormType.submit);
+        form.setAccessModel(AccessModel.open);
+        form.setDeliverPayloads(true);
+        form.setNotifyRetract(true);
+        form.setPersistentItems(true);
+        form.setPublishModel(PublishModel.open);
+        mgr.createNode(name, form);
+
+        addItem("availableNodes", name);
     }
-    
+
     public void addItem(String nodeString, String id) throws XMPPException {
 
-      // Get the node
-      LeafNode leafnode = mgr.getNode(nodeString);
+        // Get the node
+        LeafNode leafnode = mgr.getNode(nodeString);
 
-      // Publish an Item with the specified id
-      Item item;
+        // Publish an Item with the specified id
+        Item item;
         item = new Item(id);
-      leafnode.send(item);
+        leafnode.send(item);
     }
-    
+
+    void deleteNode(String nodeName) throws XMPPException {
+        // delete the node
+        mgr.deleteNode(nodeName);
+
+        // delete the entry in "availableNodes"
+        LeafNode node = mgr.getNode("availableNodes");
+        node.deleteItem(nodeName);
+
+    }
 
     // Tests //////////////////////////////////////////////////////////////////////////////
     public void discoverInfos() throws XMPPException {
@@ -127,16 +139,6 @@ public class SingletonSmack {
         for (Feature feature : iterable) {
             System.out.println(feature.toXML());
         }
-    }
-
-    void deleteNode(String nodeName) throws XMPPException {
-        // delete the node
-        mgr.deleteNode(nodeName);
-        
-        // delete the entry in "availableNodes"
-        LeafNode node = mgr.getNode("availableNodes");
-        node.deleteItem(nodeName);
-        
     }
 
     class SmartIterable<T> implements Iterable {
