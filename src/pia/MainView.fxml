@@ -16,8 +16,8 @@
               <children>
                 <ListView fx:id="listNodes" prefHeight="311.0" prefWidth="207.0" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />
                 <Label layoutY="4.0" text="Nodes" />
-                <Button layoutY="332.0" mnemonicParsing="false" text="+" />
-                <Button layoutX="33.0" layoutY="332.0" mnemonicParsing="false" text="-" />
+                <Button layoutY="332.0" mnemonicParsing="false" onAction="#handleButtonAddNode" text="+" />
+                <Button layoutX="33.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleButtonDeleteNode" text="-" />
               </children>
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

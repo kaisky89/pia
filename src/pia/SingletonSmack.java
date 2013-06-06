@@ -73,7 +73,7 @@ public class SingletonSmack {
         List list = node.getItems();
         List<String> returnList = new LinkedList<>();
         for (Object object : list) {
-            returnList.add(((Item)object).toString());
+            returnList.add(((Item)object).getId());
         }
         return returnList;
     }
@@ -127,6 +127,16 @@ public class SingletonSmack {
         for (Feature feature : iterable) {
             System.out.println(feature.toXML());
         }
+    }
+
+    void deleteNode(String nodeName) throws XMPPException {
+        // delete the node
+        mgr.deleteNode(nodeName);
+        
+        // delete the entry in "availableNodes"
+        LeafNode node = mgr.getNode("availableNodes");
+        node.deleteItem(nodeName);
+        
     }
 
     class SmartIterable<T> implements Iterable {
