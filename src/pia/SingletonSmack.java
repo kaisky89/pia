@@ -4,14 +4,11 @@
  */
 package pia;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 import org.jivesoftware.smackx.pubsub.AccessModel;
 import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
@@ -26,26 +23,26 @@ import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
  *
  * @author kaisky89
  */
-public class SingletonSmack {
+public class SingletonSmack implements NotesCommunicator{
 
-    private static SingletonSmack instance = new SingletonSmack();
+    private static NotesCommunicator instance = new SingletonSmack();
 
     private SingletonSmack() {
     }
 
-    public static SingletonSmack getInstance() {
+    public static NotesCommunicator getInstance() {
         return instance;
     }
     private Connection connection;
     private PubSubManager mgr;
 
-    public void connect() throws XMPPException {
+    private void connect() throws XMPPException {
         connection = new XMPPConnection(
                 SingletonDataStore.getInstance().getServerAdress());
         connection.connect();
     }
 
-    public void login() throws XMPPException {
+    private void login() throws XMPPException {
         UserData user = SingletonDataStore.getInstance().getUser();
         connection.login(user.getUsername(), user.getPassword());
         mgr = new PubSubManager(connection);
@@ -134,29 +131,100 @@ public class SingletonSmack {
         }
         return returnList;
     }
+    
+    // NotesCommunicator Interface Implementation //////////////////////////////
 
-    // Tests //////////////////////////////////////////////////////////////////////////////
-    public void discoverInfos() throws XMPPException {
-
-        // Get the pubsub features that are supported
-        DiscoverInfo supportedFeatures = mgr.getSupportedFeatures();
-        Iterable<Feature> iterable = new SmartIterable(supportedFeatures.getFeatures());
-        for (Feature feature : iterable) {
-            System.out.println(feature.toXML());
+    @Override
+    public void init() throws NotesCommunicatorException {
+        try {
+            connect();
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while building up connection.", ex);
+        }
+        try {
+            login();
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while login.", ex);
+        }
+        try {
+            buildUpStructure();
+            throw new XMPPException();
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while building up structure.", ex);
         }
     }
 
-    class SmartIterable<T> implements Iterable {
+    @Override
+    public Integer addSession(SessionInformation session) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        private Iterator iterator;
+    @Override
+    public List<Integer> getSessionIds() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        public SmartIterable(Iterator iterator) {
-            this.iterator = iterator;
-        }
+    @Override
+    public SessionInformation getSessionInformation(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Iterator<T> iterator() {
-            return iterator;
-        }
+    @Override
+    public void setUsingSession(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteSession(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Integer addNote(NoteInformation note) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Integer> getNoteIds() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NoteInformation getNoteInformation(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setNote(Integer id, NoteInformation note) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteNote(Integer id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void unsetAvailableSessionListener() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void unsetNotesListener() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void buildUpStructure() {
+        
     }
 }
