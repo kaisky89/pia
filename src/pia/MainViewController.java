@@ -5,10 +5,8 @@
 package pia;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -35,8 +33,6 @@ public class MainViewController implements Initializable {
     private ListView listNodes;
     @FXML
     private ListView listItems;
-    
-    private Map<String, List<String>> entries = new HashMap<>();
 
     /**
      * Initializes the controller class.
@@ -84,6 +80,16 @@ public class MainViewController implements Initializable {
             SingletonViewManager.getInstance().showError(ex);
         }
 
+    }
+    
+    @FXML
+    private void handleNodeListSelection(ActionEvent e){
+        // clean the old stuff
+        
+        
+        // find out, which Node is selected
+        
+        // initialise 
     }
 
     private void initNodesListener() {
