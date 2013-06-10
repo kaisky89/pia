@@ -43,24 +43,22 @@ public class SingletonSmack implements NotesCommunicator {
     private PubSubManager mgr;
     private String sessionCollection = "general:allSessions";
     private Integer nextSessionId = 0;
+    private Integer usingSession;
 
     // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
     public void init() throws NotesCommunicatorException {
         try {
-            System.out.println("  connecting...");
             connect();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while building up connection.", ex);
         }
         try {
-            System.out.println("  login...");
             login();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while login.", ex);
         }
         try {
-            System.out.println("  check structure...");
             buildUpStructure();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while building up structure.", ex);
@@ -135,7 +133,7 @@ public class SingletonSmack implements NotesCommunicator {
 
     @Override
     public void setUsingSession(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        usingSession = id;
     }
 
     @Override
@@ -215,17 +213,9 @@ public class SingletonSmack implements NotesCommunicator {
         try {
             // get node for the collection of all sessions
             CollectionNode node = mgr.getNode(sessionCollection);
-            Iterable<String> children;
-            children = new SmartIterable<>(node.getNodeConfiguration().getChildren());
-            int i = 0;
-            for (String string : children) {
-                i++;
-            }
-            System.out.println("Anzahl der Nodes in sessionCollection: " + i);
 
             // get the id of the session with the highest id
             for (Integer integer : getSessionIds()) {
-                System.out.println("vergleiche: " + integer);
                 if (integer.compareTo(nextSessionId) > 0) {
                     nextSessionId = integer;
                 }
@@ -245,9 +235,13 @@ public class SingletonSmack implements NotesCommunicator {
         }
     }
 
-    private String createSessionId(SessionInformation session) {
+    private String createSessionId(SessionInformation session) throws NotesCommunicatorException {
+        try {
+            buildUpStructure();
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while generating new id for session.", ex);
+        }
         session.setId(++nextSessionId);
-        System.out.println("creating SessionId: " + session.getId());
         return session.getId().toString();
     }
 
