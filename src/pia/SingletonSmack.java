@@ -4,8 +4,11 @@
  */
 package pia;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -45,20 +48,28 @@ public class SingletonSmack implements NotesCommunicator {
     @Override
     public void init() throws NotesCommunicatorException {
         try {
+            System.out.println("  connecting...");
             connect();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while building up connection.", ex);
         }
         try {
+            System.out.println("  login...");
             login();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while login.", ex);
         }
         try {
+            System.out.println("  check structure...");
             buildUpStructure();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while building up structure.", ex);
         }
+    }
+    
+    @Override
+    public void close() {
+        connection.disconnect();
     }
 
     @Override
@@ -98,10 +109,28 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     @Override
-    public SessionInformation getSessionInformation(Integer id) {
+    public SessionInformation getSessionInformation(Integer id) throws NotesCommunicatorException {
+        //get the Information Item
+        PayloadItem<SimplePayload> infoItem;
+        try {
+            LeafNode leafNode = mgr.getNode("session:" + id);
+            Collection<String> col = new LinkedList<>();
+            col.add("sessionInfo:" + id);
+            List<PayloadItem> items = leafNode.getItems(col);
+            if(items.size() > 1)
+                throw new NotesCommunicatorException("There seems to be more than one sessionInfo.");
+            infoItem = items.get(0);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("cant find node: session:" + id, ex);
+        }
         
+        //get the XML from the Item
+        SimplePayload simplePayload = infoItem.getPayload();
+        String xml = simplePayload.toXML();
         
-        return null;
+        //create session from xml and return it
+        SessionInformation session = new SessionInformation(xml);
+        return session;
     }
 
     @Override

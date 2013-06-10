@@ -17,6 +17,8 @@ public interface NotesCommunicator {
      */
     public void init() throws NotesCommunicatorException;
     
+    public void close();
+    
     
     // Session Management ////////////////////////////////////////////////
     
@@ -39,7 +41,7 @@ public interface NotesCommunicator {
      * @return A <code>SessionInformation</code> Object, which contains further
      * Information.
      */
-    public SessionInformation getSessionInformation(Integer id);
+    public SessionInformation getSessionInformation(Integer id) throws NotesCommunicatorException;
     
     /**
      * Sets the specified Session to be used for Note Management. It is 
