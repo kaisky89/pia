@@ -39,153 +39,153 @@ public class MainViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initViewElements();
-        initSmackElements();
+//        initViewElements();
+//        initSmackElements();
     }
-
-    @FXML
-    private void handleButtonRefresh(ActionEvent e) {
-        try {
-            resetAllAvailableNodes();
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
-    }
-
-    @FXML
-    private void handleButtonAddNode(ActionEvent e) {
-        String askInput = SingletonViewManager.getInstance().askInput(
-                "New Node", "Add new Node", "Please enter new node name");
-        try {
-            SingletonSmack.getInstance().addNode(askInput);
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
-    }
-
-    @FXML
-    private void handleButtonDeleteNode(ActionEvent e) {
-        // find out, which Nodes are selected
-        ObservableList selectedIndices = listNodes.getSelectionModel().getSelectedIndices();
-
-
-        // delete all Elements with Smack
-        try {
-            for (Object object : selectedIndices) {
-                int index = ((Integer) object).intValue();
-                String nodeName = listNodes.getItems().get(index).toString();
-                SingletonSmack.getInstance().deleteNode(nodeName);
-            }
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
-
-    }
-    
-    @FXML
-    private void handleNodeListSelection(ActionEvent e){
-        // clean the old stuff
-        
-        
-        // find out, which Node is selected
-        
-        // initialise 
-    }
-
-    private void initNodesListener() {
-        initListenerForList("availableNodes", listNodes);
-    }
-
-    private void resetAllAvailableNodes() throws XMPPException {
-        resetAllItems(listNodes);
-    }
-
-    private void initViewElements() {
-        listNodes.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-    }
-
-    private void initSmackElements() {
-        try {
-            resetAllAvailableNodes();
-            initNodesListener();
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
-    }
-
-    private void initListenerForList(String nodeName, final ListView listView) {
-        try {
-            SingletonSmack.getInstance().setOnActualization(nodeName, new ItemEventListener() {
-                @Override
-                public void handlePublishedItems(ItemPublishEvent ipe) {
-                    final List<String> names = new LinkedList<>();
-
-                    // get the names from given Item
-                    List<Item> items = ipe.getItems();
-
-                    for (Item item : items) {
-                        names.add(item.getId());
-                    }
-
-                    // add a new node in the listView
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            listView.getItems().addAll(names);
-                        }
-                    });
-
-                }
-            }, new ItemDeleteListener() {
-                @Override
-                public void handleDeletedItems(ItemDeleteEvent ide) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                resetAllAvailableNodes();
-                            } catch (XMPPException ex) {
-                                SingletonViewManager.getInstance().showError(ex);
-                            }
-                        }
-                    });
-
-                    // get the names of the Items, which are still available
-                    //List<String> names = ide.getItemIds();
-
-                    // delete the Items in the listView
-                    //for (Object object : listNodes.getItems()) {
-                    //}
-                    //}
-                }
-
-                @Override
-                public void handlePurge() {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                resetAllAvailableNodes();
-                            } catch (XMPPException ex) {
-                                SingletonViewManager.getInstance().showError(ex);
-                            }
-                        }
-                    });
-                }
-            });
-        } catch (XMPPException ex) {
-            SingletonViewManager.getInstance().showError(ex);
-        }
-    }
-
-    private void resetAllItems(ListView listView) throws XMPPException {
-        // delete all entries in the listNodes
-        listView.getItems().clear();
-
-        // get the list from Smack API
-        List<String> strings = SingletonSmack.getInstance().getAvailableNodes();
-
-        // insert list into View
-        listView.getItems().addAll(strings);
-    }
+//
+//    @FXML
+//    private void handleButtonRefresh(ActionEvent e) {
+//        try {
+//            resetAllAvailableNodes();
+//        } catch (XMPPException ex) {
+//            SingletonViewManager.getInstance().showError(ex);
+//        }
+//    }
+//
+//    @FXML
+//    private void handleButtonAddNode(ActionEvent e) {
+//        String askInput = SingletonViewManager.getInstance().askInput(
+//                "New Node", "Add new Node", "Please enter new node name");
+//        try {
+//            SingletonSmack.getInstance().addNode(askInput);
+//        } catch (XMPPException ex) {
+//            SingletonViewManager.getInstance().showError(ex);
+//        }
+//    }
+//
+//    @FXML
+//    private void handleButtonDeleteNode(ActionEvent e) {
+//        // find out, which Nodes are selected
+//        ObservableList selectedIndices = listNodes.getSelectionModel().getSelectedIndices();
+//
+//
+//        // delete all Elements with Smack
+//        try {
+//            for (Object object : selectedIndices) {
+//                int index = ((Integer) object).intValue();
+//                String nodeName = listNodes.getItems().get(index).toString();
+//                SingletonSmack.getInstance().deleteNode(nodeName);
+//            }
+//        } catch (XMPPException ex) {
+//            SingletonViewManager.getInstance().showError(ex);
+//        }
+//
+//    }
+//    
+//    @FXML
+//    private void handleNodeListSelection(ActionEvent e){
+//        // clean the old stuff
+//        
+//        
+//        // find out, which Node is selected
+//        
+//        // initialise 
+//    }
+//
+//    private void initNodesListener() {
+//        initListenerForList("availableNodes", listNodes);
+//    }
+//
+//    private void resetAllAvailableNodes() throws XMPPException {
+//        resetAllItems(listNodes);
+//    }
+//
+//    private void initViewElements() {
+//        listNodes.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//    }
+//
+//    private void initSmackElements() {
+//        try {
+//            resetAllAvailableNodes();
+//            initNodesListener();
+//        } catch (XMPPException ex) {
+//            SingletonViewManager.getInstance().showError(ex);
+//        }
+//    }
+//
+//    private void initListenerForList(String nodeName, final ListView listView) {
+//        try {
+//            SingletonSmack.getInstance().setOnActualization(nodeName, new ItemEventListener() {
+//                @Override
+//                public void handlePublishedItems(ItemPublishEvent ipe) {
+//                    final List<String> names = new LinkedList<>();
+//
+//                    // get the names from given Item
+//                    List<Item> items = ipe.getItems();
+//
+//                    for (Item item : items) {
+//                        names.add(item.getId());
+//                    }
+//
+//                    // add a new node in the listView
+//                    Platform.runLater(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            listView.getItems().addAll(names);
+//                        }
+//                    });
+//
+//                }
+//            }, new ItemDeleteListener() {
+//                @Override
+//                public void handleDeletedItems(ItemDeleteEvent ide) {
+//                    Platform.runLater(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                resetAllAvailableNodes();
+//                            } catch (XMPPException ex) {
+//                                SingletonViewManager.getInstance().showError(ex);
+//                            }
+//                        }
+//                    });
+//
+//                    // get the names of the Items, which are still available
+//                    //List<String> names = ide.getItemIds();
+//
+//                    // delete the Items in the listView
+//                    //for (Object object : listNodes.getItems()) {
+//                    //}
+//                    //}
+//                }
+//
+//                @Override
+//                public void handlePurge() {
+//                    Platform.runLater(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                resetAllAvailableNodes();
+//                            } catch (XMPPException ex) {
+//                                SingletonViewManager.getInstance().showError(ex);
+//                            }
+//                        }
+//                    });
+//                }
+//            });
+//        } catch (XMPPException ex) {
+//            SingletonViewManager.getInstance().showError(ex);
+//        }
+//    }
+//
+//    private void resetAllItems(ListView listView) throws XMPPException {
+//        // delete all entries in the listNodes
+//        listView.getItems().clear();
+//
+//        // get the list from Smack API
+//        List<String> strings = SingletonSmack.getInstance().getAvailableNodes();
+//
+//        // insert list into View
+//        listView.getItems().addAll(strings);
+//    }
 }

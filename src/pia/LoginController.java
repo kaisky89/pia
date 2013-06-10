@@ -12,7 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import org.jivesoftware.smack.XMPPException;
 
 /**
  * FXML Controller class
@@ -57,10 +56,9 @@ public class LoginController implements Initializable {
         boolean isAnonymous = false;
         SingletonDataStore.getInstance().setUser(new UserData(usernameField.getText(), passwordField.getText(), isAnonymous));
         try {
-            SingletonSmack.getInstance().connect();
-            SingletonSmack.getInstance().login();
+            SingletonSmack.getInstance().init();
             SingletonViewManager.getInstance().setScene("MainView");
-        } catch (XMPPException ex) {
+        } catch (NotesCommunicatorException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }
     }

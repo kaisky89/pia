@@ -25,13 +25,13 @@ public interface NotesCommunicator {
      * @param session The session to be added.
      * @return The Id, which has been generated for the new session.
      */
-    public Integer addSession(SessionInformation session);
+    public Integer addSession(SessionInformation session) throws NotesCommunicatorException;
     
     /**
      * Returns the Ids of all Sessions, which are available.
      * @return List of Integers including all available sessions.
      */
-    public List<Integer> getSessionIds();
+    public List<Integer> getSessionIds() throws NotesCommunicatorException;
     
     /**
      * Gets all Information of the session specified by the id.
@@ -95,6 +95,9 @@ public interface NotesCommunicator {
      */
     public void setNote(Integer id, NoteInformation note);
     public void deleteNote(Integer id);
+    
+    public void lockNote(Integer id);
+    public void unlockNote(Integer id);
     
     
     

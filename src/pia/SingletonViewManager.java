@@ -65,7 +65,7 @@ public class SingletonViewManager {
         return viewLocation.get(name);
     }
 
-    public void showError(XMPPException ex) {
+    public void showError(Exception ex) {
         Dialogs.showErrorDialog(stage, ex.getLocalizedMessage(), "An Error Occured", "Error", ex);
     }
     
