@@ -43,7 +43,7 @@ public class SingletonSmack implements NotesCommunicator {
     private PubSubManager mgr;
     private String sessionCollection = "general:allSessions";
     private Integer nextSessionId = 0;
-    private Integer usingSession;
+    private Integer usingSession = null;
 
     // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
