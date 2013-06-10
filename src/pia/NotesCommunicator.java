@@ -59,7 +59,7 @@ public interface NotesCommunicator {
      * Deletes the Session and all its content (including all Notes).
      * @param id Id of the Session to be deleted.
      */
-    public void deleteSession(Integer id);
+    public void deleteSession(Integer id) throws NotesCommunicatorException;
     
     
     
@@ -73,14 +73,14 @@ public interface NotesCommunicator {
      * @param note The new note to be added to the current Session.
      * @return The id of the new created item.
      */
-    public Integer addNote(NoteInformation note);
+    public Integer addNote(NoteInformation note) throws NotesCommunicatorException;
     
     /**
      * Get a list of the ids of all available Notes in the current session. The
      * current Session must be specified before using <code>setUsingSession</code>.
      * @return A List of all ids.
      */
-    public List<Integer> getNoteIds();
+    public List<Integer> getNoteIds() throws NotesCommunicatorException;
     
     /**
      * Get all detailed Information about a specified note. 
@@ -88,18 +88,18 @@ public interface NotesCommunicator {
      * @return A <code>NoteInformation</code> Object which contains all 
      * Information about the note.
      */
-    public NoteInformation getNoteInformation(Integer id);
+    public NoteInformation getNoteInformation(Integer id) throws NotesCommunicatorException;
     
     /**
      * 
      * @param id
      * @param note 
      */
-    public void setNote(Integer id, NoteInformation note);
-    public void deleteNote(Integer id);
+    public void setNote(Integer id, NoteInformation note) throws NotesCommunicatorException;
+    public void deleteNote(Integer id) throws NotesCommunicatorException;
     
-    public void lockNote(Integer id);
-    public void unlockNote(Integer id);
+    public void lockNote(Integer id) throws NotesCommunicatorException;
+    public void unlockNote(Integer id) throws NotesCommunicatorException;
     
     
     
@@ -107,6 +107,6 @@ public interface NotesCommunicator {
     public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener);
     public void unsetAvailableSessionListener();
     
-    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener);
-    public void unsetNotesListener();
+    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException;
+    public void unsetNotesListener() throws NotesCommunicatorException;
 }

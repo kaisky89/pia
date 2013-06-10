@@ -70,7 +70,8 @@ public class SingletonSmack implements NotesCommunicator {
     public void close() {
         connection.disconnect();
     }
-
+    
+    // Session Management //////////////////////////////////////////////////////
     @Override
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
 
@@ -157,39 +158,55 @@ public class SingletonSmack implements NotesCommunicator {
     //        }
     //        }
     }
+    
+    // Note Management /////////////////////////////////////////////////////////
+    @Override
+    public Integer addNote(NoteInformation note) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        
+        return null;
+    }
 
     @Override
-    public Integer addNote(NoteInformation note) {
+    public List<Integer> getNoteIds() throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Integer> getNoteIds() {
+    public NoteInformation getNoteInformation(Integer id) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public NoteInformation getNoteInformation(Integer id) {
+    public void setNote(Integer id, NoteInformation note) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setNote(Integer id, NoteInformation note) {
+    public void deleteNote(Integer id) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void deleteNote(Integer id) {
+    public void lockNote(Integer id) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void lockNote(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void unlockNote(Integer id) {
+    public void unlockNote(Integer id) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -204,12 +221,16 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     @Override
-    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) {
+    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void unsetNotesListener() {
+    public void unsetNotesListener() throws NotesCommunicatorException {
+        if(usingSession == null)
+            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

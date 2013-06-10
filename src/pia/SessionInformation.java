@@ -64,7 +64,6 @@ public class SessionInformation {
     }
 
     public SessionInformation(String xml) throws NotesCommunicatorException {
-        System.out.println("beginne mit parsen.");
         Document document = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -84,7 +83,6 @@ public class SessionInformation {
         this.description = descriptionNodeList.item(0).getTextContent();
 
         NodeList idNodeList = document.getElementsByTagName("id");
-        System.out.println(idNodeList.item(0).getTextContent());
         this.id = new Integer(idNodeList.item(0).getTextContent().split(":")[1]);
     }
 
