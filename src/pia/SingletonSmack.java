@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.pubsub.AccessModel;
 import org.jivesoftware.smackx.pubsub.CollectionNode;
 import org.jivesoftware.smackx.pubsub.ConfigureForm;
@@ -137,8 +138,24 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     @Override
-    public void deleteSession(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deleteSession(Integer id) throws NotesCommunicatorException {
+        try {
+            mgr.deleteNode("session:" + id);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while trying to delete LeafNode of session:" + id, ex);
+        }
+        
+        // ToDo: alle LN: note:... Nodes entfernen
+    //        try {
+    //            DiscoverItems discoverNodes = mgr.discoverNodes(null);
+    //            SmartIterable<DiscoverItems.Item> si = new SmartIterable<>(discoverNodes.getItems());
+    //            for (DiscoverItems.Item item : si) {
+    //                System.out.println(item.toXML());
+    //            }
+    //            
+    //        } catch (XMPPException ex) {
+    //        }
+    //        }
     }
 
     @Override
