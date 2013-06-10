@@ -10,16 +10,17 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.AccessModel;
+import org.jivesoftware.smackx.pubsub.CollectionNode;
 import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.LeafNode;
+import org.jivesoftware.smackx.pubsub.NodeType;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishModel;
 import org.jivesoftware.smackx.pubsub.SimplePayload;
-import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
-import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
+import pia.tools.SmartIterable;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
  */
 public class SingletonSmack implements NotesCommunicator{
 
-    private static NotesCommunicator instance = new SingletonSmack();
+    private static SingletonSmack instance = new SingletonSmack();
 
     private SingletonSmack() {
     }
@@ -37,93 +38,8 @@ public class SingletonSmack implements NotesCommunicator{
     }
     private Connection connection;
     private PubSubManager mgr;
-    private String sessionCollection;
-    private Integer nextSessionId;
-
-    private void connect() throws XMPPException {
-        connection = new XMPPConnection(
-                SingletonDataStore.getInstance().getServerAdress());
-        connection.connect();
-    }
-
-    private void login() throws XMPPException {
-        UserData user = SingletonDataStore.getInstance().getUser();
-        connection.login(user.getUsername(), user.getPassword());
-        mgr = new PubSubManager(connection);
-    }
-
-    public List<String> getAvailableNodes() throws XMPPException {
-        return getAvailableItems("availableNodes");
-    }
-
-    public void setOnNodesActualization(
-            ItemEventListener<Item> onAdd,
-            ItemDeleteListener onDelete)
-            throws XMPPException {
-        setOnActualization("availableNodes", onAdd, onDelete);
-    }
-
-    private void cleanSubscriptions(LeafNode node) throws XMPPException {
-        node.unsubscribe(SingletonDataStore.getInstance().getJID());
-    }
-
-    public void addNode(String name) throws XMPPException {
-
-        // Create the node
-        ConfigureForm form = new ConfigureForm(FormType.submit);
-        form.setAccessModel(AccessModel.open);
-        form.setDeliverPayloads(true);
-        form.setNotifyRetract(true);
-        form.setPersistentItems(true);
-        form.setPublishModel(PublishModel.open);
-        mgr.createNode(name, form);
-
-        addItem("availableNodes", name);
-    }
-
-    void deleteNode(String nodeName) throws XMPPException {
-        // delete the node
-        mgr.deleteNode(nodeName);
-
-        // delete the entry in "availableNodes"
-        LeafNode node = mgr.getNode("availableNodes");
-        node.deleteItem(nodeName);
-
-    }
-
-    public void setOnActualization(String nodeName, ItemEventListener<Item> onAdd, ItemDeleteListener onDelete) throws XMPPException {
-        // Get the node
-        LeafNode node = mgr.getNode(nodeName);
-
-        node.addItemEventListener(onAdd);
-        node.addItemDeleteListener(onDelete);
-        cleanSubscriptions(node);
-        node.subscribe(SingletonDataStore.getInstance().getJID());
-    }
-
-    private List<String> getAvailableItems(String nodeName) throws XMPPException {
-        try {
-            LeafNode node = mgr.getNode(nodeName);
-        } catch (XMPPException ex) {
-            // Create the node
-            LeafNode leaf = mgr.createNode(nodeName);
-            ConfigureForm form = new ConfigureForm(FormType.submit);
-            form.setAccessModel(AccessModel.open);
-            form.setDeliverPayloads(false);
-            form.setNotifyRetract(true);
-            form.setPersistentItems(true);
-            form.setPublishModel(PublishModel.open);
-            leaf.sendConfigurationForm(form);
-        }
-
-        LeafNode node = mgr.getNode(nodeName);
-        List list = node.getItems();
-        List<String> returnList = new LinkedList<>();
-        for (Object object : list) {
-            returnList.add(((Item) object).getId());
-        }
-        return returnList;
-    }
+    private String sessionCollection = "general:allSessions";
+    private Integer nextSessionId = 0;
     
     // NotesCommunicator Interface Implementation //////////////////////////////
 
@@ -149,7 +65,7 @@ public class SingletonSmack implements NotesCommunicator{
     @Override
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
         
-        // Create the node
+        // Create the node and add an Item in sessionCollection
         ConfigureForm form = new ConfigureForm(FormType.submit);
         form.setAccessModel(AccessModel.open);
         form.setDeliverPayloads(true);
@@ -157,7 +73,8 @@ public class SingletonSmack implements NotesCommunicator{
         form.setPersistentItems(true);
         form.setPublishModel(PublishModel.open);
         try {
-            mgr.createNode(createSessionId(session), form);
+            String id = createSessionId(session);
+            mgr.createNode(id, form);
             addItem(sessionCollection, session);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
@@ -168,8 +85,18 @@ public class SingletonSmack implements NotesCommunicator{
     }
 
     @Override
-    public List<Integer> getSessionIds() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Integer> getSessionIds() throws NotesCommunicatorException{
+        List<Integer> returnList = new LinkedList<>();
+        try {
+            CollectionNode node = mgr.getNode(sessionCollection);
+            Iterable<String> iterable = new SmartIterable<>(node.getNodeConfiguration().getChildren());
+            for (String string : iterable) {
+                returnList.add(new Integer(string.split(":")[1]));
+            }
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("cannot find " + sessionCollection, ex);
+        }
+        return returnList;
     }
 
     @Override
@@ -241,30 +168,49 @@ public class SingletonSmack implements NotesCommunicator{
     public void unsetNotesListener() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    // private help methods ////////////////////////////////////////////////////
+    
+    private void connect() throws XMPPException {
+        connection = new XMPPConnection(
+                SingletonDataStore.getInstance().getServerAdress());
+        connection.connect();
+    }
 
-    private void buildUpStructure() throws XMPPException {
-        sessionCollection = "general:allSessions";
+    private void login() throws XMPPException {
+        UserData user = SingletonDataStore.getInstance().getUser();
+        connection.login(user.getUsername(), user.getPassword());
+        mgr = new PubSubManager(connection);
+    }
+
+    private void buildUpStructure() throws XMPPException, NotesCommunicatorException {
         try {
             // get node for the collection of all sessions
-            LeafNode node = mgr.getNode(sessionCollection);
+            CollectionNode node = mgr.getNode(sessionCollection);
+            Iterable<String> children;
+            children = new SmartIterable<>(node.getNodeConfiguration().getChildren());
+            int i = 0;
+            for (String string : children) {
+                i++;
+            }
+            System.out.println("Anzahl der Nodes in sessionCollection: " + i);
             
             // get the id of the session with the highest id
-            for (Item item : node.getItems()) {
-                Integer integer = new Integer(item.getId().split(":")[1]);
+            for (Integer integer : getSessionIds()) {
                 if(integer.compareTo(nextSessionId) > 0)
                     nextSessionId = integer;
             }
 
         } catch (XMPPException ex) {
             // If Node doesn't exist, create the node
-            LeafNode leaf = mgr.createNode(sessionCollection);
             ConfigureForm form = new ConfigureForm(FormType.submit);
             form.setAccessModel(AccessModel.open);
             form.setDeliverPayloads(true);
             form.setNotifyRetract(true);
             form.setPersistentItems(true);
             form.setPublishModel(PublishModel.open);
-            leaf.sendConfigurationForm(form);
+            form.setNodeType(NodeType.collection);
+            mgr.createNode(sessionCollection, form);
             nextSessionId = 0;
         }
     }
