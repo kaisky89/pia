@@ -26,7 +26,7 @@ import pia.tools.SmartIterable;
  *
  * @author kaisky89
  */
-public class SingletonSmack implements NotesCommunicator{
+public class SingletonSmack implements NotesCommunicator {
 
     private static SingletonSmack instance = new SingletonSmack();
 
@@ -40,9 +40,8 @@ public class SingletonSmack implements NotesCommunicator{
     private PubSubManager mgr;
     private String sessionCollection = "general:allSessions";
     private Integer nextSessionId = 0;
-    
-    // NotesCommunicator Interface Implementation //////////////////////////////
 
+    // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
     public void init() throws NotesCommunicatorException {
         try {
@@ -64,7 +63,7 @@ public class SingletonSmack implements NotesCommunicator{
 
     @Override
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
-        
+
         // Create the node and add an Item in sessionCollection
         ConfigureForm form = new ConfigureForm(FormType.submit);
         form.setAccessModel(AccessModel.open);
@@ -74,18 +73,17 @@ public class SingletonSmack implements NotesCommunicator{
         form.setPublishModel(PublishModel.open);
         try {
             String id = createSessionId(session);
-            mgr.createNode(id, form);
-            addItem(sessionCollection, session);
+            addSessionToCollectionNode(sessionCollection, session);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
                     "cannot create Node for " + session.getName(), ex);
         }
-        
+
         return session.getId();
     }
 
     @Override
-    public List<Integer> getSessionIds() throws NotesCommunicatorException{
+    public List<Integer> getSessionIds() throws NotesCommunicatorException {
         List<Integer> returnList = new LinkedList<>();
         try {
             CollectionNode node = mgr.getNode(sessionCollection);
@@ -101,7 +99,9 @@ public class SingletonSmack implements NotesCommunicator{
 
     @Override
     public SessionInformation getSessionInformation(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        
+        return null;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class SingletonSmack implements NotesCommunicator{
     public void deleteNote(Integer id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public void lockNote(Integer id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -168,9 +168,8 @@ public class SingletonSmack implements NotesCommunicator{
     public void unsetNotesListener() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     // private help methods ////////////////////////////////////////////////////
-    
     private void connect() throws XMPPException {
         connection = new XMPPConnection(
                 SingletonDataStore.getInstance().getServerAdress());
@@ -194,11 +193,13 @@ public class SingletonSmack implements NotesCommunicator{
                 i++;
             }
             System.out.println("Anzahl der Nodes in sessionCollection: " + i);
-            
+
             // get the id of the session with the highest id
             for (Integer integer : getSessionIds()) {
-                if(integer.compareTo(nextSessionId) > 0)
+                System.out.println("vergleiche: " + integer);
+                if (integer.compareTo(nextSessionId) > 0) {
                     nextSessionId = integer;
+                }
             }
 
         } catch (XMPPException ex) {
@@ -217,24 +218,39 @@ public class SingletonSmack implements NotesCommunicator{
 
     private String createSessionId(SessionInformation session) {
         session.setId(++nextSessionId);
+        System.out.println("creating SessionId: " + session.getId());
         return session.getId().toString();
     }
 
-    private void addItem(String nodeString, SessionInformation session) throws XMPPException {
-        // Get the node
-        LeafNode leafnode = mgr.getNode(nodeString);
-        
+    private void addSessionToCollectionNode(
+            String collectionNodeString,
+            SessionInformation session)
+            throws XMPPException {
+        // Get the collection node
+        //CollectionNode collectionNode = mgr.getNode(collectionNodeString);
+
         // Prepare the payload
         SimplePayload payload;
         payload = new SimplePayload("session", "", session.toXML());
-        
+
         // Prepare the item
-        PayloadItem item = new PayloadItem("session:" + session.getId(), payload);
+        PayloadItem item = new PayloadItem("sessionInfo:" + session.getId(), payload);
+
+        // create the Leaf Node in the Collection Node
+        ConfigureForm form = new ConfigureForm(FormType.submit);
+        form.setAccessModel(AccessModel.open);
+        form.setDeliverPayloads(true);
+        form.setNotifyRetract(true);
+        form.setPersistentItems(true);
+        form.setPublishModel(PublishModel.open);
+        form.setCollection(collectionNodeString);
+        LeafNode leaf = mgr.createNode("session:" + session.getId());
+        leaf.sendConfigurationForm(form);
         
-        // send item to the node
-        leafnode.send(item);
+        // set the Properties of the Session
+        leaf.send(item);
     }
-    
+
     private void addItem(String nodeString, String id) throws XMPPException {
 
         // Get the node
