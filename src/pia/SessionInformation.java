@@ -26,7 +26,6 @@ public class SessionInformation {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 41 * hash + Objects.hashCode(this.id);
         hash = 41 * hash + Objects.hashCode(this.name);
         hash = 41 * hash + Objects.hashCode(this.url);
         hash = 41 * hash + Objects.hashCode(this.description);
@@ -42,9 +41,6 @@ public class SessionInformation {
             return false;
         }
         final SessionInformation other = (SessionInformation) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
