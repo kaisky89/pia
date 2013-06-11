@@ -53,7 +53,7 @@ public interface NotesCommunicator {
      * the EventListener on its own, if you change Session without it.
      * @param id The Id of the Session to be set as currently Using.
      */
-    public void setUsingSession(Integer id);
+    public void setUsingSession(Integer id) throws NotesCommunicatorException;
     
     /**
      * Deletes the Session and all its content (including all Notes).

@@ -7,6 +7,9 @@ package pia;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -16,6 +19,7 @@ import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.LeafNode;
+import org.jivesoftware.smackx.pubsub.Node;
 import org.jivesoftware.smackx.pubsub.NodeType;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
@@ -41,7 +45,8 @@ public class SingletonSmack implements NotesCommunicator {
     private PubSubManager mgr;
     private String sessionCollection = "general:allSessions";
     private Integer nextSessionId = 0;
-    private Integer usingSession = null;
+    private Integer usingSessionInteger = null;
+    private LeafNode usingSessionNode;
 
     // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
@@ -62,12 +67,12 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException("Error while building up structure.", ex);
         }
     }
-    
+
     @Override
     public void close() {
         connection.disconnect();
     }
-    
+
     // Session Management //////////////////////////////////////////////////////
     @Override
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
@@ -114,25 +119,31 @@ public class SingletonSmack implements NotesCommunicator {
             Collection<String> col = new LinkedList<>();
             col.add("sessionInfo:" + id);
             List<PayloadItem> items = leafNode.getItems(col);
-            if(items.size() > 1)
+            if (items.size() > 1) {
                 throw new NotesCommunicatorException("There seems to be more than one sessionInfo.");
+            }
             infoItem = items.get(0);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("cant find node: session:" + id, ex);
         }
-        
+
         //get the XML from the Item
         SimplePayload simplePayload = infoItem.getPayload();
         String xml = simplePayload.toXML();
-        
+
         //create session from xml and return it
         SessionInformation session = new SessionInformation(xml);
         return session;
     }
 
     @Override
-    public void setUsingSession(Integer id) {
-        usingSession = id;
+    public void setUsingSession(Integer id) throws NotesCommunicatorException {
+        try {
+            usingSessionNode = mgr.getNode("session:" + id);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("cant find the session: session" + id, ex);
+        }
+        usingSessionInteger = id;
     }
 
     @Override
@@ -142,68 +153,119 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to delete LeafNode of session:" + id, ex);
         }
-        
+
         // ToDo: alle LN: note:... Nodes entfernen
-    //        try {
-    //            DiscoverItems discoverNodes = mgr.discoverNodes(null);
-    //            SmartIterable<DiscoverItems.Item> si = new SmartIterable<>(discoverNodes.getItems());
-    //            for (DiscoverItems.Item item : si) {
-    //                System.out.println(item.toXML());
-    //            }
-    //            
-    //        } catch (XMPPException ex) {
-    //        }
-    //        }
+        //        try {
+        //            DiscoverItems discoverNodes = mgr.discoverNodes(null);
+        //            SmartIterable<DiscoverItems.Item> si = new SmartIterable<>(discoverNodes.getItems());
+        //            for (DiscoverItems.Item item : si) {
+        //                System.out.println(item.toXML());
+        //            }
+        //            
+        //        } catch (XMPPException ex) {
+        //        }
+        //        }
     }
-    
+
     // Note Management /////////////////////////////////////////////////////////
     @Override
     public Integer addNote(NoteInformation note) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
-        
-        return null;
+        }
+
+        // create the id for the note
+        String noteId;
+        try {
+            noteId = "note:" + usingSessionInteger + ":" + createNoteId(note);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Error while trying to create new id for note: " + note, ex);
+        }
+
+        // add item to the Leaf Node of the Session
+        usingSessionNode.publish(new Item(noteId));
+
+        // add a new LeafNode for the new note
+        LeafNode leafNode;
+        try {
+            leafNode = mgr.createNode(noteId);
+            ConfigureForm form = new ConfigureForm(FormType.submit);
+            form.setAccessModel(AccessModel.open);
+            form.setDeliverPayloads(true);
+            form.setPersistentItems(true);
+            form.setNotifyRetract(true);
+            form.setNotifyConfig(true);
+            form.setNotifyDelete(true);
+            form.setPublishModel(PublishModel.open);
+            leafNode.sendConfigurationForm(form);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException("Cant create new LeafNode for " + noteId + ".", ex);
+        }
+
+        // add the informations of the note as items to LeafNode
+        Collection<PayloadItem> items = new LinkedList<>();
+        items.add(new PayloadItem("id", new SimplePayload("id", "", "<id>" + note.getId() + "</id>")));
+        items.add(new PayloadItem("noteType", new SimplePayload("noteType", "", "<noteType>" + note.getNoteType() + "</noteType>")));
+        items.add(new PayloadItem("timePosition", new SimplePayload("timePosition", "", "<timePosition>" + note.getTimePosition() + "</timePosition>")));
+        if (note.getAdditionalAttributes() != null) {
+            for (Map.Entry<String, String> entry : note.getAdditionalAttributes().entrySet()) {
+                items.add(new PayloadItem(entry.getKey(), new SimplePayload(
+                        entry.getKey(), "",
+                        "<" + entry.getKey() + ">" + entry.getValue() + "</" + entry.getKey() + ">")));
+            }
+        }
+
+        leafNode.publish(items);
+
+        // finished, return the id which was generated for the new note
+        return note.getId();
     }
 
     @Override
     public List<Integer> getNoteIds() throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public NoteInformation getNoteInformation(Integer id) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void setNote(Integer id, NoteInformation note) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void deleteNote(Integer id) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void lockNote(Integer id) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void unlockNote(Integer id) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -219,15 +281,17 @@ public class SingletonSmack implements NotesCommunicator {
 
     @Override
     public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void unsetNotesListener() throws NotesCommunicatorException {
-        if(usingSession == null)
+        if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -304,7 +368,7 @@ public class SingletonSmack implements NotesCommunicator {
         form.setCollection(collectionNodeString);
         LeafNode leaf = mgr.createNode("session:" + session.getId());
         leaf.sendConfigurationForm(form);
-        
+
         // set the Properties of the Session
         leaf.send(item);
     }
@@ -318,5 +382,28 @@ public class SingletonSmack implements NotesCommunicator {
         Item item;
         item = new Item(id);
         leafnode.send(item);
+    }
+
+    private Integer createNoteId(NoteInformation note) throws XMPPException {
+        // get all ids currently available
+        List<Item> items = usingSessionNode.getItems();
+
+        // find the highest id
+        Integer returnId = 0;
+        for (Item item : items) {
+            if (item.getId().startsWith("note:")) {
+                Integer itemIdInteger = new Integer(item.getId().split(":")[2]);
+                if (itemIdInteger > returnId) {
+                    returnId = itemIdInteger;
+                }
+            }
+        }
+
+        // +1
+        returnId++;
+
+        // write it into note, return it
+        note.setId(returnId);
+        return returnId;
     }
 }
