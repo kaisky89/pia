@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -20,7 +18,6 @@ import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.LeafNode;
-import org.jivesoftware.smackx.pubsub.Node;
 import org.jivesoftware.smackx.pubsub.NodeType;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
@@ -92,14 +89,8 @@ public class SingletonSmack implements NotesCommunicator {
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
 
         // Create the node and add an Item in sessionCollection
-        ConfigureForm form = new ConfigureForm(FormType.submit);
-        form.setAccessModel(AccessModel.open);
-        form.setDeliverPayloads(true);
-        form.setNotifyRetract(true);
-        form.setPersistentItems(true);
-        form.setPublishModel(PublishModel.open);
         try {
-            String id = createSessionId(session);
+            createSessionId(session);
             addSessionToCollectionNode(sessionCollection, session);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
@@ -195,7 +186,7 @@ public class SingletonSmack implements NotesCommunicator {
         
         // add item to the Leaf Node of the Session
         try {
-            usingSessionNode.send(new Item(noteId));
+            usingSessionNode.send(new PayloadItem(noteId, new SimplePayload("note", "", "<note>123</note>")));
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to publish note " + noteId + " as item from " + usingSessionNode.getId(), ex);
         }
@@ -389,8 +380,6 @@ public class SingletonSmack implements NotesCommunicator {
             String collectionNodeString,
             SessionInformation session)
             throws XMPPException {
-        // Get the collection node
-        //CollectionNode collectionNode = mgr.getNode(collectionNodeString);
 
         // Prepare the payload
         SimplePayload payload;
@@ -399,19 +388,26 @@ public class SingletonSmack implements NotesCommunicator {
         // Prepare the item
         PayloadItem item = new PayloadItem("sessionInfo:" + session.getId(), payload);
 
-        // create the Leaf Node in the Collection Node
+        // create the Collection Node for the session in the Collection Node of 
+        // the session Collection.
         ConfigureForm form = new ConfigureForm(FormType.submit);
         form.setAccessModel(AccessModel.open);
         form.setDeliverPayloads(true);
         form.setNotifyRetract(true);
         form.setPersistentItems(true);
         form.setPublishModel(PublishModel.open);
+        form.setNodeType(NodeType.collection);
         form.setCollection(collectionNodeString);
-        LeafNode leaf = mgr.createNode("session:" + session.getId());
-        leaf.sendConfigurationForm(form);
+        CollectionNode sessionCollectionNode = (CollectionNode) mgr.createNode("session:" + session.getId(), form);
+        
+        // create the LeafNode for the Session Information
+        
+        form.setNodeType(NodeType.leaf);
+        form.setCollection("session:" + session.getId());
+        LeafNode sessionInformationLeafNode = mgr.createNode("sessionInfo:" + session.getId());
 
         // set the Properties of the Session
-        leaf.send(item);
+        sessionInformationLeafNode.send(item);
     }
 
     private void addItem(String nodeString, String id) throws XMPPException {
@@ -429,11 +425,12 @@ public class SingletonSmack implements NotesCommunicator {
         // get all ids currently available
         List<Item> items = usingSessionNode.getItems();
         
-        System.out.println("Anzahl gefundener items ingesamt: " + items.size());
+        System.out.println("  createNoteId: Anzahl gefundener items ingesamt: " + items.size());
 
         // find the highest id
         Integer returnId = 0;
         for (Item item : items) {
+            System.out.println("  createNoteId: item:" + item.getId() + ": " + item.toXML());
             if (item.getId().startsWith("note:")) {
                 Integer itemIdInteger = new Integer(item.getId().split(":")[2]);
                 if (itemIdInteger.intValue() > returnId.intValue()) {
