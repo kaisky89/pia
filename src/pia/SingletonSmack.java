@@ -424,28 +424,25 @@ public class SingletonSmack implements NotesCommunicator {
 
     private Integer createNoteId(NoteInformation note) throws XMPPException {
         // get all ids currently available
-        List<Item> items = usingSessionNode.getItems();
-
-        System.out.println("  createNoteId: Anzahl gefundener items ingesamt: " + items.size());
+        DiscoverItems discoverNodes;
+        discoverNodes = mgr.discoverNodes("session:" + usingSessionInteger);
+        
+        SmartIterable<DiscoverItems.Item> smartIterable;
+        smartIterable = new SmartIterable<>(discoverNodes.getItems());
 
         // find the highest id
         Integer returnId = 0;
-        for (Item item : items) {
-            System.out.println("  createNoteId: item:" + item.getId() + ": " + item.toXML());
-            if (item.getId().startsWith("note:")) {
-                Integer itemIdInteger = new Integer(item.getId().split(":")[2]);
+        for (DiscoverItems.Item item : smartIterable) {
+            if (item.getNode().startsWith("note:")) {
+                Integer itemIdInteger = new Integer(item.getNode().split(":")[2]);
                 if (itemIdInteger.intValue() > returnId.intValue()) {
                     returnId = itemIdInteger;
                 }
             }
         }
 
-        System.out.println("  createNoteId: highestId = " + returnId);
-
         // +1
         returnId++;
-
-        System.out.println("  createNoteId: returnId = " + returnId);
 
         // write it into note, return it
         note.setId(returnId);

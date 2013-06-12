@@ -105,7 +105,7 @@ public class SessionInformation {
         this.state = SessionState.valueOf(stateNodeList.item(0).getTextContent());
 
         NodeList startTimeNodeList = document.getElementsByTagName("startTime");
-        this.startTime = new Date(new Integer(startTimeNodeList.item(0).getTextContent()));
+        this.startTime = new Date(new Long(startTimeNodeList.item(0).getTextContent()));
 
     }
 
