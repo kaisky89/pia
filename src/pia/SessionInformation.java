@@ -65,9 +65,17 @@ public class SessionInformation {
     }
 
     public SessionInformation(String name, String url, String description) {
+        this(null, name, url, description, SessionState.PLANNED, new Date());
+    }
+
+    public SessionInformation(Integer id, String name, String url, 
+            String description, SessionState state, Date startTime){
+        this.id = id;
         this.name = name;
         this.url = url;
         this.description = description;
+        this.state = state;
+        this.startTime = startTime;
     }
 
     public SessionInformation(String xml) throws NotesCommunicatorException {
@@ -80,6 +88,10 @@ public class SessionInformation {
         } catch (Exception ex) {
             throw new NotesCommunicatorException("Error while parsing xml: " + xml, ex);
         }
+
+        NodeList idNodeList = document.getElementsByTagName("id");
+        this.id = new Integer(idNodeList.item(0).getTextContent().split(":")[1]);
+
         NodeList nameNodeList = document.getElementsByTagName("name");
         this.name = nameNodeList.item(0).getTextContent();
 
@@ -89,8 +101,12 @@ public class SessionInformation {
         NodeList descriptionNodeList = document.getElementsByTagName("description");
         this.description = descriptionNodeList.item(0).getTextContent();
 
-        NodeList idNodeList = document.getElementsByTagName("id");
-        this.id = new Integer(idNodeList.item(0).getTextContent().split(":")[1]);
+        NodeList stateNodeList = document.getElementsByTagName("state");
+        this.state = SessionState.valueOf(stateNodeList.item(0).getTextContent());
+
+        NodeList startTimeNodeList = document.getElementsByTagName("startTime");
+        this.startTime = new Date(new Integer(startTimeNodeList.item(0).getTextContent()));
+
     }
 
     public Integer getId() {
@@ -139,12 +155,12 @@ public class SessionInformation {
 
     public String toXML() {
         return "<session>"
-                + "<id>session:"    + getId()           + "</id>"
-                + "<name>"          + getName()         + "</name>"
-                + "<url>"           + getUrl()          + "</url>"
-                + "<description>"   + getDescription()  + "</description>"
-                + "<state>"         + getState()        + "</state>"
-                + "<startTime>"     + getStartTime().getTime()  + "</startTime>"
+                + "<id>session:" + getId() + "</id>"
+                + "<name>" + getName() + "</name>"
+                + "<url>" + getUrl() + "</url>"
+                + "<description>" + getDescription() + "</description>"
+                + "<state>" + getState() + "</state>"
+                + "<startTime>" + getStartTime().getTime() + "</startTime>"
                 + "</session>";
     }
 
