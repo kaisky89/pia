@@ -5,6 +5,7 @@
 package pia;
 
 import java.io.StringReader;
+import java.util.Date;
 import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,13 +23,17 @@ public class SessionInformation {
     private String name;
     private String url;
     private String description;
+    private SessionState state;
+    private Date startTime;
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 41 * hash + Objects.hashCode(this.name);
-        hash = 41 * hash + Objects.hashCode(this.url);
-        hash = 41 * hash + Objects.hashCode(this.description);
+        hash = 79 * hash + Objects.hashCode(this.name);
+        hash = 79 * hash + Objects.hashCode(this.url);
+        hash = 79 * hash + Objects.hashCode(this.description);
+        hash = 79 * hash + (this.state != null ? this.state.hashCode() : 0);
+        hash = 79 * hash + Objects.hashCode(this.startTime);
         return hash;
     }
 
@@ -48,6 +53,12 @@ public class SessionInformation {
             return false;
         }
         if (!Objects.equals(this.description, other.description)) {
+            return false;
+        }
+        if (this.state != other.state) {
+            return false;
+        }
+        if (!Objects.equals(this.startTime, other.startTime)) {
             return false;
         }
         return true;
@@ -96,6 +107,34 @@ public class SessionInformation {
 
     public String getDescription() {
         return description;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public SessionState getState() {
+        return state;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setState(SessionState state) {
+        this.state = state;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String toXML() {
