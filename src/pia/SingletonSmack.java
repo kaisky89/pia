@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -181,13 +183,13 @@ public class SingletonSmack implements NotesCommunicator {
         }
 
         // add item to the Leaf Node of the Session
-        try {
-            usingSessionNode.send(new PayloadItem(noteId, new SimplePayload("note", "", "<note>123</note>")));
-        } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("Error while trying to publish note " + noteId + " as item from " + usingSessionNode.getId(), ex);
-        }
+//        try {
+//            usingSessionNode.send(new PayloadItem(noteId, new SimplePayload("note", "", "<note>123</note>")));
+//        } catch (XMPPException ex) {
+//            throw new NotesCommunicatorException("Error while trying to publish note " + noteId + " as item from " + usingSessionNode.getId(), ex);
+//        }
 
-        // add a new LeafNode for the new note
+        // add a new LeafNode for the new note to the session CollectionNode
         LeafNode leafNode;
         try {
             leafNode = mgr.createNode(noteId);
@@ -199,25 +201,24 @@ public class SingletonSmack implements NotesCommunicator {
             form.setNotifyConfig(true);
             form.setNotifyDelete(true);
             form.setPublishModel(PublishModel.open);
+            form.setCollection("session:" + usingSessionInteger);
             leafNode.sendConfigurationForm(form);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Cant create new LeafNode for " + noteId + ".", ex);
         }
 
-        // add the informations of the note as items to LeafNode
-        Collection<PayloadItem> items = new LinkedList<>();
-        items.add(new PayloadItem("id", new SimplePayload("id", "", "<id>" + note.getId() + "</id>")));
-        items.add(new PayloadItem("noteType", new SimplePayload("noteType", "", "<noteType>" + note.getNoteType() + "</noteType>")));
-        items.add(new PayloadItem("timePosition", new SimplePayload("timePosition", "", "<timePosition>" + note.getTimePosition() + "</timePosition>")));
-        if (note.getAdditionalAttributes() != null) {
-            for (Map.Entry<String, String> entry : note.getAdditionalAttributes().entrySet()) {
-                items.add(new PayloadItem(entry.getKey(), new SimplePayload(
-                        entry.getKey(), "",
-                        "<" + entry.getKey() + ">" + entry.getValue() + "</" + entry.getKey() + ">")));
-            }
+        // add the informations of the note as one item to LeafNode
+        SimplePayload payload;
+        payload = new SimplePayload("note", "", note.toXml());
+        
+        PayloadItem<SimplePayload> item;
+        item = new PayloadItem<>("data", payload);
+        try {
+            leafNode.send(item);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "Error while creating payload item with data of " + noteId, ex);
         }
-
-        leafNode.publish(items);
 
         // finished, return the id which was generated for the new note
         return note.getId();
@@ -231,18 +232,18 @@ public class SingletonSmack implements NotesCommunicator {
         refreshUsingSession(usingSessionInteger);
 
         // get all Notes
-        List<Item> items;
+        DiscoverItems discoverNodes;
         try {
-            items = usingSessionNode.getItems();
+            discoverNodes = mgr.discoverNodes("session:" + usingSessionInteger);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to get items from node: " + usingSessionNode, ex);
         }
 
-        // filter the items, and extract the id from item.getId()
+        // filter the LeafNodes, and extract the id from each LeafNode
         List<Integer> ids = new LinkedList<>();
-        for (Item item : items) {
-            if (item.getId().startsWith("note:")) {
-                ids.add(new Integer(item.getId().split(":")[2]));
+        for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
+            if (item.getNode().startsWith("note:")) {
+                ids.add(new Integer(item.getNode().split(":")[2]));
             }
         }
 
