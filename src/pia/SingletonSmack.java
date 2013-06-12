@@ -44,18 +44,21 @@ public class SingletonSmack implements NotesCommunicator {
     private String sessionCollection = "general:allSessions";
     private Integer nextSessionId = 0;
     private Integer usingSessionInteger = null;
-    private LeafNode usingSessionNode;
-    
-    public void resetAll() throws XMPPException{
-        DiscoverItems discoverNodes = mgr.discoverNodes(null);
-        for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
-            mgr.deleteNode(item.getNode());
-            
+    private CollectionNode usingSessionNode;
+
+    public void resetAll() throws XMPPException {
+        DiscoverItems discoverNodes;
+        for (int i = 0; i < 10; i++) {
+            discoverNodes = mgr.discoverNodes(null);
+            for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
+                mgr.deleteNode(item.getNode());
+
+            }
         }
         discoverNodes = mgr.discoverNodes(null);
         for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
-            System.out.println(item.getNode());
-            
+            System.out.println("leftover Nodes after reset: " + item.getNode());
+
         }
     }
 
@@ -120,16 +123,17 @@ public class SingletonSmack implements NotesCommunicator {
         //get the Information Item
         PayloadItem<SimplePayload> infoItem;
         try {
-            LeafNode leafNode = mgr.getNode("session:" + id);
-            Collection<String> col = new LinkedList<>();
-            col.add("sessionInfo:" + id);
-            List<PayloadItem> items = leafNode.getItems(col);
+            LeafNode leafNode = mgr.getNode("sessionInfo:" + id);
+            List<PayloadItem> items = leafNode.getItems();
             if (items.size() > 1) {
                 throw new NotesCommunicatorException("There seems to be more than one sessionInfo.");
             }
+            if (items.isEmpty()){
+                throw new NotesCommunicatorException("Cannot find node: sessionInfo:" + id);
+            }
             infoItem = items.get(0);
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("cant find node: session:" + id, ex);
+            throw new NotesCommunicatorException("cant find node: sessionInfo:" + id, ex);
         }
 
         //get the XML from the Item
@@ -150,22 +154,14 @@ public class SingletonSmack implements NotesCommunicator {
     @Override
     public void deleteSession(Integer id) throws NotesCommunicatorException {
         try {
+            DiscoverItems discoverNodes = mgr.discoverNodes("session:" + id);
+            for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
+                mgr.deleteNode(item.getNode());
+            }
             mgr.deleteNode("session:" + id);
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("Error while trying to delete LeafNode of session:" + id, ex);
+            throw new NotesCommunicatorException("Error while trying to delete session:" + id, ex);
         }
-
-        // ToDo: alle LN: note:... Nodes entfernen
-        //        try {
-        //            DiscoverItems discoverNodes = mgr.discoverNodes(null);
-        //            SmartIterable<DiscoverItems.Item> si = new SmartIterable<>(discoverNodes.getItems());
-        //            for (DiscoverItems.Item item : si) {
-        //                System.out.println(item.toXML());
-        //            }
-        //            
-        //        } catch (XMPPException ex) {
-        //        }
-        //        }
     }
 
     // Note Management /////////////////////////////////////////////////////////
@@ -183,7 +179,7 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to create new id for note: " + note, ex);
         }
-        
+
         // add item to the Leaf Node of the Session
         try {
             usingSessionNode.send(new PayloadItem(noteId, new SimplePayload("note", "", "<note>123</note>")));
@@ -233,7 +229,7 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         }
         refreshUsingSession(usingSessionInteger);
-        
+
         // get all Notes
         List<Item> items;
         try {
@@ -241,15 +237,15 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to get items from node: " + usingSessionNode, ex);
         }
-        
+
         // filter the items, and extract the id from item.getId()
         List<Integer> ids = new LinkedList<>();
         for (Item item : items) {
-            if(item.getId().startsWith("note:")){
+            if (item.getId().startsWith("note:")) {
                 ids.add(new Integer(item.getId().split(":")[2]));
             }
         }
-        
+
         // return the list
         return ids;
     }
@@ -366,14 +362,14 @@ public class SingletonSmack implements NotesCommunicator {
         }
     }
 
-    private String createSessionId(SessionInformation session) throws NotesCommunicatorException {
+    private Integer createSessionId(SessionInformation session) throws NotesCommunicatorException {
         try {
             buildUpStructure();
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while generating new id for session.", ex);
         }
         session.setId(++nextSessionId);
-        return session.getId().toString();
+        return session.getId();
     }
 
     private void addSessionToCollectionNode(
@@ -381,12 +377,6 @@ public class SingletonSmack implements NotesCommunicator {
             SessionInformation session)
             throws XMPPException {
 
-        // Prepare the payload
-        SimplePayload payload;
-        payload = new SimplePayload("session", "", session.toXML());
-
-        // Prepare the item
-        PayloadItem item = new PayloadItem("sessionInfo:" + session.getId(), payload);
 
         // create the Collection Node for the session in the Collection Node of 
         // the session Collection.
@@ -399,14 +389,24 @@ public class SingletonSmack implements NotesCommunicator {
         form.setNodeType(NodeType.collection);
         form.setCollection(collectionNodeString);
         CollectionNode sessionCollectionNode = (CollectionNode) mgr.createNode("session:" + session.getId(), form);
-        
+
         // create the LeafNode for the Session Information
-        
         form.setNodeType(NodeType.leaf);
         form.setCollection("session:" + session.getId());
-        LeafNode sessionInformationLeafNode = mgr.createNode("sessionInfo:" + session.getId());
+        LeafNode createNode = mgr.createNode("sessionInfo:" + session.getId());
+        createNode.sendConfigurationForm(form);
+        
+        // Prepare the payload
+        SimplePayload payload;
+        payload = new SimplePayload("session", "", session.toXML());
 
+        // Prepare the item
+        PayloadItem item = new PayloadItem("sessionInfo:" + session.getId(), payload);
+
+        
         // set the Properties of the Session
+        LeafNode sessionInformationLeafNode;
+        sessionInformationLeafNode = mgr.getNode("sessionInfo:" + session.getId());
         sessionInformationLeafNode.send(item);
     }
 
@@ -424,7 +424,7 @@ public class SingletonSmack implements NotesCommunicator {
     private Integer createNoteId(NoteInformation note) throws XMPPException {
         // get all ids currently available
         List<Item> items = usingSessionNode.getItems();
-        
+
         System.out.println("  createNoteId: Anzahl gefundener items ingesamt: " + items.size());
 
         // find the highest id
@@ -438,12 +438,12 @@ public class SingletonSmack implements NotesCommunicator {
                 }
             }
         }
-        
+
         System.out.println("  createNoteId: highestId = " + returnId);
 
         // +1
         returnId++;
-        
+
         System.out.println("  createNoteId: returnId = " + returnId);
 
         // write it into note, return it
@@ -455,7 +455,7 @@ public class SingletonSmack implements NotesCommunicator {
         try {
             usingSessionNode = mgr.getNode("session:" + id);
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("cant find the session: session" + id, ex);
+            throw new NotesCommunicatorException("cant find the session: session:" + id, ex);
         }
     }
 }
