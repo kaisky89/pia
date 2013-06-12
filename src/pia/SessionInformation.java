@@ -139,10 +139,12 @@ public class SessionInformation {
 
     public String toXML() {
         return "<session>"
-                + "<id>session:" + getId() + "</id>"
-                + "<name>" + getName() + "</name>"
-                + "<url>" + getUrl() + "</url>"
-                + "<description>" + getDescription() + "</description>"
+                + "<id>session:"    + getId()           + "</id>"
+                + "<name>"          + getName()         + "</name>"
+                + "<url>"           + getUrl()          + "</url>"
+                + "<description>"   + getDescription()  + "</description>"
+                + "<state>"         + getState()        + "</state>"
+                + "<startTime>"     + getStartTime().getTime()  + "</startTime>"
                 + "</session>";
     }
 
