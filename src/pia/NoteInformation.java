@@ -66,6 +66,9 @@ public abstract class NoteInformation {
         NodeList noteTypeNodeList = document.getElementsByTagName("noteType");
         this.noteType = NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
         
+        NodeList lockedTypeNodeList = document.getElementsByTagName("locked");
+        this.locked = Boolean.parseBoolean(lockedTypeNodeList.item(0).getTextContent());
+        
         NodeList attributeNodeList = document.getElementsByTagName("attribute");
         HashMap<String, String> map = new HashMap<>();
         for (int i = 0; i < attributeNodeList.getLength(); i++) {
@@ -122,7 +125,8 @@ public abstract class NoteInformation {
         returnString = "<note>"
                 + "<id>" + getId() + "</id>"
                 + "<timePosition>" + getTimePosition() + "</timePosition>"
-                + "<noteType>" + getNoteType() + "</noteType>";
+                + "<noteType>" + getNoteType() + "</noteType>"
+                + "<locked>" + isLocked() + "</locked>";
         for (Map.Entry<String, String> entry : getAttributes().entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
