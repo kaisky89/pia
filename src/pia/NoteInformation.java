@@ -56,7 +56,7 @@ public abstract class NoteInformation {
             DocumentBuilder builder = factory.newDocumentBuilder();
             StringReader sr = new StringReader(xml);
             document = builder.parse(new InputSource(sr));
-        } catch (Exception ex) {
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new NotesCommunicatorException("Error while parsing xml: " + xml, ex);
         }
 
