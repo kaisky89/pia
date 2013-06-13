@@ -23,7 +23,10 @@ public class TestNoteManagement {
     
     static Integer sessionInteger1;
     static Integer sessionInteger2;
-    private NoteInformation noteInformation1 = new TextNoteInformation(new Long(123), "This is a test.");
+    private NoteInformation noteInformation1 = 
+            new TextNoteInformation(new Long(123), "This is a test.");
+    private NoteInformation noteInformation2 = 
+            new TextNoteInformation(new Long(48764), "This is also a test.");
 
     public TestNoteManagement() {
     }
@@ -54,7 +57,7 @@ public class TestNoteManagement {
     }
 
     @Test
-    public void expectSetUsingSession() {
+    public void expectExceptionSetUsingSession() {
         boolean exceptionIsThrown = false;
         try {
             communicator.getNoteIds();
@@ -185,6 +188,34 @@ public class TestNoteManagement {
         assertEquals(noteInformation1.getTimePosition(), noteInformation.getTimePosition());
         assertEquals(noteInformation1.isLocked(), noteInformation.isLocked());
     }
+    
+    @Test
+    public void addAndSetNote() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        Integer addNote = communicator.addNote(noteInformation1);
+        communicator.setNote(addNote, noteInformation2);
+        NoteInformation noteInformation = communicator.getNoteInformation(addNote);
+        assertEquals(noteInformation.getNoteType(), noteInformation2.getNoteType());
+        assertEquals(noteInformation.getTimePosition(), noteInformation2.getTimePosition());
+        assertEquals(noteInformation.isLocked(), noteInformation2.isLocked());
+        assertEquals(noteInformation.getAttributes(), noteInformation2.getAttributes());
+        assertEquals(noteInformation.getClass(), noteInformation2.getClass());
+    }
+    
+    @Test
+    public void expectExceptionOnSetUnavailableNote() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        Integer addNote = communicator.addNote(noteInformation1);
+        communicator.deleteNote(addNote);
+        boolean exceptionIsThrown = false;
+        try {
+            communicator.setNote(addNote, noteInformation2);
+        } catch (NotesCommunicatorException nce) {
+            exceptionIsThrown = true;
+        }
+        assertTrue(exceptionIsThrown);
+    }
+    
     @Test
     public void asd() throws NotesCommunicatorException{
         

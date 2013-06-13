@@ -104,7 +104,7 @@ public interface NotesCommunicator {
     
     
     // EventListening Methods ////////////////////////////////////////////
-    public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener);
+    public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> sessionListener);
     public void unsetAvailableSessionListener();
     
     public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException;

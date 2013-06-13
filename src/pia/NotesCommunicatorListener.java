@@ -10,6 +10,7 @@ package pia;
  */
 public interface NotesCommunicatorListener<T> {
     public void onAdd(T addedItem);
+    public void onChange(T ChangedItem);
     public void onDelete(T deletedItem);
     public void onPurge();
 }

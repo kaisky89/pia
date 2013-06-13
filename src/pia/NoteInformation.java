@@ -41,12 +41,12 @@ public abstract class NoteInformation {
     private Integer id;
     private Long timePosition;
     private NoteType noteType;
-    private boolean locked;
+    private String lockedBy;
     
     public NoteInformation(Long timePosition, NoteType noteType){
         setTimePosition(timePosition);
         setNoteType(noteType);
-        setLocked(false);
+        unlock();
     }
     
     public NoteInformation(String xml) throws NotesCommunicatorException{
@@ -69,8 +69,8 @@ public abstract class NoteInformation {
         NodeList noteTypeNodeList = document.getElementsByTagName("noteType");
         this.noteType = NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
         
-        NodeList lockedTypeNodeList = document.getElementsByTagName("locked");
-        this.locked = Boolean.parseBoolean(lockedTypeNodeList.item(0).getTextContent());
+        NodeList lockedByTypeNodeList = document.getElementsByTagName("lockedBy");
+        this.lockedBy = lockedByTypeNodeList.item(0).getTextContent();
         
         NodeList attributeNodeList = document.getElementsByTagName("attribute");
         HashMap<String, String> map = new HashMap<>();
@@ -83,8 +83,8 @@ public abstract class NoteInformation {
             String value = item.getTextContent();
             
             // add it to map
-            System.out.println("  NoteInformation: adding <" + key + ", " 
-                    + value + "> to Map");
+            //System.out.println("  NoteInformation: adding <" + key + ", " 
+            //        + value + "> to Map");
             map.put(key, value);
         }
         setAttributes(map);
@@ -103,8 +103,12 @@ public abstract class NoteInformation {
     }
 
     public boolean isLocked() {
-        return locked;
+        return (!"free".equals(lockedBy));
     }
+
+    public String getLockedBy() {
+        return lockedBy;
+    }    
 
     public final void setId(Integer id) {
         this.id = id;
@@ -118,8 +122,8 @@ public abstract class NoteInformation {
         this.timePosition = timePosition;
     }
 
-    public final void setLocked(boolean locked) {
-        this.locked = locked;
+    public final void setLocked(String jid) {
+        this.lockedBy = jid;
     }
     
     public final String toXml(){
@@ -129,7 +133,7 @@ public abstract class NoteInformation {
                 + "<id>" + getId() + "</id>"
                 + "<timePosition>" + getTimePosition() + "</timePosition>"
                 + "<noteType>" + getNoteType() + "</noteType>"
-                + "<locked>" + isLocked() + "</locked>";
+                + "<lockedBy>" + lockedBy + "</lockedBy>";
         for (Map.Entry<String, String> entry : getAttributes().entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -142,4 +146,8 @@ public abstract class NoteInformation {
     
     public abstract Map<String, String> getAttributes();
     public abstract void setAttributes(Map<String, String> attributes);
+
+    public void unlock() {
+        lockedBy = "free";
+    }
 }
