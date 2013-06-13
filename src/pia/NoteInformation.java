@@ -5,7 +5,6 @@
 package pia;
 
 import java.io.StringReader;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
@@ -20,14 +19,31 @@ import org.xml.sax.InputSource;
  * @author kaisky89
  */
 public abstract class NoteInformation {
+
+    static NoteType getType(String xml) throws NotesCommunicatorException {
+        Document document = null;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            StringReader sr = new StringReader(xml);
+            document = builder.parse(new InputSource(sr));
+        } catch (Exception ex) {
+            throw new NotesCommunicatorException("Error while parsing xml: " + xml, ex);
+        }
+
+        NodeList noteTypeNodeList = document.getElementsByTagName("noteType");
+        return NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
+    }
     
     private Integer id;
     private Long timePosition;
     private NoteType noteType;
+    private boolean locked;
     
     public NoteInformation(Long timePosition, NoteType noteType){
         setTimePosition(timePosition);
         setNoteType(noteType);
+        setLocked(false);
     }
     
     public NoteInformation(String xml) throws NotesCommunicatorException{
@@ -58,9 +74,11 @@ public abstract class NoteInformation {
             String key = item.getAttributes().getNamedItem("name").getNodeValue();
             
             // get the value
-            String value = item.getNodeValue();
+            String value = item.getTextContent();
             
             // add it to map
+            System.out.println("  NoteInformation: adding <" + key + ", " 
+                    + value + "> to Map");
             map.put(key, value);
         }
         setAttributes(map);
@@ -78,6 +96,10 @@ public abstract class NoteInformation {
         return timePosition;
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
     public final void setId(Integer id) {
         this.id = id;
     }
@@ -88,6 +110,10 @@ public abstract class NoteInformation {
 
     public final void setTimePosition(Long timePosition) {
         this.timePosition = timePosition;
+    }
+
+    public final void setLocked(boolean locked) {
+        this.locked = locked;
     }
     
     public final String toXml(){

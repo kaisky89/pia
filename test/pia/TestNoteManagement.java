@@ -4,8 +4,7 @@
  */
 package pia;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import org.jivesoftware.smack.XMPPException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -24,6 +23,7 @@ public class TestNoteManagement {
     
     static Integer sessionInteger1;
     static Integer sessionInteger2;
+    private NoteInformation noteInformation1 = new TextNoteInformation(new Long(123), "This is a test.");
 
     public TestNoteManagement() {
     }
@@ -91,11 +91,102 @@ public class TestNoteManagement {
     @Test
     public void addNote() throws NotesCommunicatorException{
         communicator.setUsingSession(sessionInteger1);
-        communicator.addNote(new TextNoteInformation(new Long(123), "This is a test."));
+        communicator.addNote(noteInformation1);
     }
     
     @Test
-    public void asd(){
+    public void addMultipleNotes() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        communicator.addNote(new TextNoteInformation(new Long(123), "This is a test1."));
+        communicator.addNote(new TextNoteInformation(new Long(124), "This is a test2."));
+        communicator.addNote(new TextNoteInformation(new Long(125), "This is a test3."));
+    }
+    
+    
+    
+    @Test
+    public void getEmptyNoteIds() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger2);
+        List<Integer> noteIds = communicator.getNoteIds();
+        assertTrue(noteIds.isEmpty());
+        
+    }
+    
+    @Test
+    public void addNoteRaisesNoteIdsSize() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger2);
+        List<Integer> noteIds = communicator.getNoteIds();
+        int oldSize = noteIds.size();
+        
+        communicator.addNote(noteInformation1);
+        
+        noteIds = communicator.getNoteIds();
+        int newSize = noteIds.size();
+        
+        assertTrue(newSize == (oldSize + 1));
+    }
+    
+    @Test
+    public void addMultipleNoteRaisesNoteIdsSize() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger2);
+        List<Integer> noteIds = communicator.getNoteIds();
+        int oldSize = noteIds.size();
+        
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        
+        noteIds = communicator.getNoteIds();
+        int newSize = noteIds.size();
+        
+        assertTrue(newSize == (oldSize + 5));
+    }
+    
+    @Test
+    public void addToDifferentSessionsCheckIdsSize() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        List<Integer> noteIds = communicator.getNoteIds();
+        int oldSize1 = noteIds.size();
+        
+        communicator.setUsingSession(sessionInteger2);
+        noteIds = communicator.getNoteIds();
+        int oldSize2 = noteIds.size();
+        
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        
+        communicator.setUsingSession(sessionInteger1);
+        noteIds = communicator.getNoteIds();
+        int newSize1 = noteIds.size();
+        
+        assertTrue(newSize1 == oldSize1);
+    }
+    
+    @Test
+    public void NoteIdsContainsNewId() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        Integer addNote = communicator.addNote(noteInformation1);
+        List<Integer> noteIds = communicator.getNoteIds();
+        assertTrue(noteIds.contains(addNote));
+    }
+    
+    @Test
+    public void addAndGetTextNote() throws NotesCommunicatorException{
+        communicator.setUsingSession(sessionInteger1);
+        Integer newNote = communicator.addNote(noteInformation1);
+        NoteInformation noteInformation = communicator.getNoteInformation(newNote);
+        assertEquals(noteInformation1.getAttributes(), noteInformation.getAttributes());
+        assertEquals(noteInformation1.getNoteType(), noteInformation.getNoteType());
+        assertEquals(noteInformation1.getTimePosition(), noteInformation.getTimePosition());
+        assertEquals(noteInformation1.isLocked(), noteInformation.isLocked());
+    }
+    @Test
+    public void asd() throws NotesCommunicatorException{
         
     }
 }

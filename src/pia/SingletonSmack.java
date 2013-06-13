@@ -4,12 +4,8 @@
  */
 package pia;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -182,13 +178,6 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException("Error while trying to create new id for note: " + note, ex);
         }
 
-        // add item to the Leaf Node of the Session
-//        try {
-//            usingSessionNode.send(new PayloadItem(noteId, new SimplePayload("note", "", "<note>123</note>")));
-//        } catch (XMPPException ex) {
-//            throw new NotesCommunicatorException("Error while trying to publish note " + noteId + " as item from " + usingSessionNode.getId(), ex);
-//        }
-
         // add a new LeafNode for the new note to the session CollectionNode
         LeafNode leafNode;
         try {
@@ -254,10 +243,53 @@ public class SingletonSmack implements NotesCommunicator {
     @Override
     public NoteInformation getNoteInformation(Integer id) throws NotesCommunicatorException {
         if (usingSessionInteger == null) {
-            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
+            throw new NotesCommunicatorException(
+                    "Need to specify a session before using note Management.");
         }
         refreshUsingSession(usingSessionInteger);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        // get the leafNode of the note
+        String leafNodeId = "note:" + usingSessionInteger + ":" + id;
+        LeafNode leafNode;
+        try {
+            leafNode = mgr.getNode(leafNodeId);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "cannot find the LeafNode " + leafNodeId, ex);
+        }
+        
+        
+        // get the dataItem
+        List<Item> items;
+        try {
+            items = leafNode.getItems();
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "Error while trying to receive items from " + leafNodeId, ex);
+        }
+        if(items.isEmpty()){
+            throw new NotesCommunicatorException(
+                    "Cannot find the data item in " + leafNodeId);
+        }
+        if(items.size() > 1){
+            throw new NotesCommunicatorException(
+                    "Found more than one data item in " + leafNodeId);
+        }
+        Item dataItem = items.get(0);
+        
+        // get the Type of the Item
+        String xml = dataItem.toXML();
+        System.out.println("  getNote: " + xml);
+        NoteType noteType = NoteInformation.getType(xml);
+        
+        // return the specific NoteInformation, depending on NoteType
+        switch(noteType){
+            case TEXT:
+                return new TextNoteInformation(xml);
+            default:
+                throw new NotesCommunicatorException(
+                        "Cannot handle noteType: " + noteType);
+        }
     }
 
     @Override
