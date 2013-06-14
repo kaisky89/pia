@@ -4,6 +4,7 @@
  */
 package pia;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,13 +18,17 @@ import org.jivesoftware.smackx.pubsub.CollectionNode;
 import org.jivesoftware.smackx.pubsub.ConfigureForm;
 import org.jivesoftware.smackx.pubsub.FormType;
 import org.jivesoftware.smackx.pubsub.Item;
+import org.jivesoftware.smackx.pubsub.ItemDeleteEvent;
+import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
 import org.jivesoftware.smackx.pubsub.LeafNode;
-import org.jivesoftware.smackx.pubsub.Node;
 import org.jivesoftware.smackx.pubsub.NodeType;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishModel;
 import org.jivesoftware.smackx.pubsub.SimplePayload;
+import org.jivesoftware.smackx.pubsub.SubscribeForm;
+import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
+import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 import pia.tools.SmartIterable;
 
 /**
@@ -99,6 +104,25 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
                     "cannot create Node for " + session.getName(), ex);
+        }
+        
+        // Create leafNode for notes
+        LeafNode leafNode;
+        try {
+            leafNode = mgr.createNode(getNotesLeafNodeString(session.getId()));
+            ConfigureForm form = new ConfigureForm(FormType.submit);
+            form.setAccessModel(AccessModel.open);
+            form.setDeliverPayloads(true);
+            form.setPersistentItems(true);
+            form.setNotifyRetract(true);
+            form.setNotifyConfig(true);
+            form.setNotifyDelete(true);
+            form.setPublishModel(PublishModel.open);
+            form.setCollection("session:" + session.getId());
+            leafNode.sendConfigurationForm(form);
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "Cant create new LeafNode for " + getNotesLeafNodeString(session.getId()) + ".", ex);
         }
 
         return session.getId();
@@ -180,26 +204,10 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException("Error while trying to create new id for note: " + note, ex);
         }
-
-        // add a new LeafNode for the new note to the session CollectionNode
-        LeafNode leafNode;
-        try {
-            leafNode = mgr.createNode(noteId);
-            ConfigureForm form = new ConfigureForm(FormType.submit);
-            form.setAccessModel(AccessModel.open);
-            form.setDeliverPayloads(true);
-            form.setPersistentItems(true);
-            form.setNotifyRetract(true);
-            form.setNotifyConfig(true);
-            form.setNotifyDelete(true);
-            form.setPublishModel(PublishModel.open);
-            form.setCollection("session:" + usingSessionInteger);
-            leafNode.sendConfigurationForm(form);
-        } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("Cant create new LeafNode for " + noteId + ".", ex);
-        }
+        // get the LeafNode for notes in the session CollectionNode
+        LeafNode leafNode = getItemsLeafNode();
         
-        // add the informations of the note as one item to LeafNode
+        // add the informations of the note as an item to LeafNode
         addDataItem(note, leafNode);
 
         // finished, return the id which was generated for the new note
@@ -212,23 +220,28 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         }
         refreshUsingSession(usingSessionInteger);
-
-        // get all Notes
-        DiscoverItems discoverNodes;
+        
+        // get all items as discover items
+        List itemsObject;
+        DiscoverItems discoverItems;
         try {
-            discoverNodes = mgr.discoverNodes("session:" + usingSessionInteger);
+            discoverItems = getItemsLeafNode().discoverItems();
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("Error while trying to get items from node: " + usingSessionNode, ex);
+            throw new NotesCommunicatorException(
+                    "Error while trying to receive all items from " + 
+                    getNotesLeafNodeString() + ".", ex);
         }
-
-        // filter the LeafNodes, and extract the id from each LeafNode
+        
+        // some converting stuff for iteration
+        Iterator<DiscoverItems.Item> iterator = discoverItems.getItems();
+        SmartIterable<DiscoverItems.Item> smartIterable = new SmartIterable<>(iterator);
+        
+        // convert into a integer List
         List<Integer> ids = new LinkedList<>();
-        for (DiscoverItems.Item item : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
-            if (item.getNode().startsWith("note:")) {
-                ids.add(new Integer(item.getNode().split(":")[2]));
-            }
+        for (DiscoverItems.Item item : smartIterable) {
+            ids.add(new Integer(item.getName().split(":")[2]));
         }
-
+        
         // return the list
         return ids;
     }
@@ -241,25 +254,24 @@ public class SingletonSmack implements NotesCommunicator {
         }
         refreshUsingSession(usingSessionInteger);
         
-        // get the leafNode of the note
-        String leafNodeId = "note:" + usingSessionInteger + ":" + id;
-        LeafNode leafNode;
-        try {
-            leafNode = mgr.getNode(leafNodeId);
-        } catch (XMPPException ex) {
-            throw new NotesCommunicatorException(
-                    "cannot find the LeafNode " + leafNodeId, ex);
-        }
+        // get the leafNode of the notes
+        LeafNode leafNode = getItemsLeafNode();
         
+        // define the item, we are looking for
+        List<String> itemsToFind = new LinkedList<>();
+        itemsToFind.add(getNoteIdString(id));
         
         // get the dataItem
         List<Item> items;
         try {
-            items = leafNode.getItems();
+            items = leafNode.getItems(itemsToFind);
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
-                    "Error while trying to receive items from " + leafNodeId, ex);
+                    "Error while trying to receive item: " + getNoteIdString(id), ex);
         }
+        
+        // check the list
+        String leafNodeId = getNoteIdString(id);
         if(items.isEmpty()){
             throw new NotesCommunicatorException(
                     "Cannot find the data item in " + leafNodeId);
@@ -268,20 +280,9 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException(
                     "Found more than one data item in " + leafNodeId);
         }
+        
         Item dataItem = items.get(0);
-        
-        // get the Type of the Item
-        String xml = dataItem.toXML();
-        NoteType noteType = NoteInformation.getType(xml);
-        
-        // return the specific NoteInformation, depending on NoteType
-        switch(noteType){
-            case TEXT:
-                return new TextNoteInformation(xml);
-            default:
-                throw new NotesCommunicatorException(
-                        "Cannot handle noteType: " + noteType);
-        }
+        return getNoteInformationFromItem(dataItem);
     }
 
     @Override
@@ -297,8 +298,8 @@ public class SingletonSmack implements NotesCommunicator {
         // set the id of the note
         note.setId(id);
         
-        // get the leafNode of the note
-        LeafNode leafNode = getLeafNodeOfNote(note.getId());
+        // get the leafNode of the notes
+        LeafNode leafNode = getItemsLeafNode();
         
         // publish to the leafNode
         addDataItem(note, leafNode);
@@ -315,12 +316,12 @@ public class SingletonSmack implements NotesCommunicator {
         // check, if the Note is already locked
         checkIfLocked(id);
         
+        // delete the item of the Note
         try {
-            // delete the LeafNode of the Note
-            mgr.deleteNode(getNodeIdString(id));
+            getItemsLeafNode().deleteItem(getNoteIdString(id));
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
-                    "Cannot find LeafNode " + getNodeIdString(id), ex);
+                    "Cannot find delete note " + getNoteIdString(id), ex);
         }
     }
 
@@ -365,8 +366,8 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     @Override
-    public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> sessionListener) {
-        
+    public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -375,12 +376,19 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     @Override
-    public void setNotesListener(NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
+    public void setNotesListener(final NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
         if (usingSessionInteger == null) {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         }
+        
         refreshUsingSession(usingSessionInteger);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        handlePublishedItem(notesListener);
+        
+        refreshUsingSession(usingSessionInteger);
+        handleDeleteItem(notesListener);
+        
+        refreshUsingSession(usingSessionInteger);
+        subscribe();
     }
 
     @Override
@@ -490,23 +498,17 @@ public class SingletonSmack implements NotesCommunicator {
         leafnode.send(item);
     }
 
-    private Integer createNoteId(NoteInformation note) throws XMPPException {
+    private Integer createNoteId(NoteInformation note) throws XMPPException, NotesCommunicatorException {
         // get all ids currently available
-        DiscoverItems discoverNodes;
-        discoverNodes = mgr.discoverNodes("session:" + usingSessionInteger);
-        
-        SmartIterable<DiscoverItems.Item> smartIterable;
-        smartIterable = new SmartIterable<>(discoverNodes.getItems());
+        List<Integer> noteIds = getNoteIds();
 
         // find the highest id
         Integer returnId = 0;
-        for (DiscoverItems.Item item : smartIterable) {
-            if (item.getNode().startsWith("note:")) {
-                Integer itemIdInteger = new Integer(item.getNode().split(":")[2]);
-                if (itemIdInteger.intValue() > returnId.intValue()) {
-                    returnId = itemIdInteger;
-                }
+        for (Integer integer : noteIds) {
+            if (integer.intValue() > returnId.intValue()) {
+                returnId = integer;
             }
+
         }
 
         // +1
@@ -535,7 +537,7 @@ public class SingletonSmack implements NotesCommunicator {
         payload = new SimplePayload("note", "", note.toXml());
         
         PayloadItem<SimplePayload> item;
-        item = new PayloadItem<>("data", payload);
+        item = new PayloadItem<>(noteIdString, payload);
         try {
             leafNode.send(item);
         } catch (XMPPException ex) {
@@ -544,18 +546,7 @@ public class SingletonSmack implements NotesCommunicator {
         }
     }
 
-    private LeafNode getLeafNodeOfNote(Integer noteId) throws NotesCommunicatorException {
-        String nodeIdString = getNodeIdString(noteId);
-        LeafNode leafNode;
-        try {
-            leafNode = mgr.getNode(nodeIdString);
-        } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("Cannot find LeafNode: " + nodeIdString, ex);
-        }
-        return leafNode;
-    }
-
-    private String getNodeIdString(Integer noteId) {
+    private String getNoteIdString(Integer noteId) {
         String nodeIdString = "note:" + usingSessionInteger + ":" + noteId;
         return nodeIdString;
     }
@@ -576,7 +567,103 @@ public class SingletonSmack implements NotesCommunicator {
         
         // otherwise, another person seems to lock it. So, no write access. Thats sad.
         throw new NotesCommunicatorException(
-                "Cannot write into " + getNodeIdString(id) + ". Note is locked by "
+                "Cannot write into " + getNoteIdString(id) + ". Note is locked by "
                 + note.getLockedBy());
+    }
+
+    private NoteInformation getNoteInformationFromItem(Item dataItem) throws NotesCommunicatorException {
+        // get the Type of the Item
+        String xml = dataItem.toXML();
+        NoteType noteType = NoteInformation.getType(xml);
+        
+        // return the specific NoteInformation, depending on NoteType
+        switch(noteType){
+            case TEXT:
+                return new TextNoteInformation(xml);
+            default:
+                throw new NotesCommunicatorException(
+                        "Cannot handle noteType: " + noteType);
+        }
+    }
+
+    private void handleDeleteItem(final NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
+        // handle deleting Items
+        getItemsLeafNode().addItemDeleteListener(new ItemDeleteListener() {
+
+            @Override
+            public void handleDeletedItems(ItemDeleteEvent items) {
+                List<String> itemIds = items.getItemIds();
+                for (String string : itemIds) {
+                    notesListener.onDelete(new Integer(string.split(":")[2]));
+                }
+            }
+
+            @Override
+            public void handlePurge() {
+                notesListener.onPurge();
+            }
+        });
+    }
+
+    private void handlePublishedItem(final NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
+        // handle incoming Items
+        getItemsLeafNode().addItemEventListener(new ItemEventListener() {
+
+            @Override
+            public void handlePublishedItems(ItemPublishEvent items) {
+                
+                System.out.println("handlePublishedItems: got " 
+                        + items.getItems().size() + " items.");
+                
+                // for each element of the list
+                List<PayloadItem<SimplePayload>> itemsList;
+                itemsList = items.getItems();
+                
+                for (PayloadItem<SimplePayload> payloadItem : itemsList) {
+                    
+                    // convert the item to NoteInformation
+                    NoteInformation note = null;
+                    try {
+                        note = getNoteInformationFromItem(payloadItem);
+                    } catch (NotesCommunicatorException ex) {
+                        ex.printStackTrace();
+                    }
+                    
+                    notesListener.onPublish(note);
+                }
+                
+            }
+        });
+    }
+
+    private void subscribe() {
+        try {
+            // subscribe to the Node
+            SubscribeForm subscribeForm = new SubscribeForm(FormType.submit);
+            subscribeForm.setDeliverOn(true);
+            subscribeForm.setIncludeBody(true);
+            usingSessionNode.subscribe(SingletonDataStore.getInstance().getJID(), subscribeForm);
+        } catch (XMPPException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private String getNotesLeafNodeString(Integer id) {
+        return "notes:" + id;
+    }
+    
+    private String getNotesLeafNodeString() {
+        return getNotesLeafNodeString(usingSessionInteger);
+    }
+
+    private LeafNode getItemsLeafNode() throws NotesCommunicatorException {
+        LeafNode leafNode;
+        try {
+            leafNode = mgr.getNode(getNotesLeafNodeString());
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "Error while trying to get leafNode:" + getNotesLeafNodeString(), ex);
+        }
+        return leafNode;
     }
 }

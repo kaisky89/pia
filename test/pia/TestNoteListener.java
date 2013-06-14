@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
  *
  * @author kaisky89
  */
-public class TestNoteManagement {
+public class TestNoteListener {
 
     static NotesCommunicator communicator;
     
@@ -29,7 +29,7 @@ public class TestNoteManagement {
     private NoteInformation noteInformation2 = 
             new TextNoteInformation(new Long(48764), "This is also a test.");
 
-    public TestNoteManagement() {
+    public TestNoteListener() {
     }
 
     @BeforeClass

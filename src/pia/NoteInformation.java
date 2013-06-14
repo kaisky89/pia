@@ -4,10 +4,12 @@
  */
 package pia;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -88,6 +90,36 @@ public abstract class NoteInformation {
             map.put(key, value);
         }
         setAttributes(map);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.timePosition);
+        hash = 67 * hash + (this.noteType != null ? this.noteType.hashCode() : 0);
+        hash = 67 * hash + Objects.hashCode(this.lockedBy);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NoteInformation other = (NoteInformation) obj;
+        if (!Objects.equals(this.timePosition, other.timePosition)) {
+            return false;
+        }
+        if (this.noteType != other.noteType) {
+            return false;
+        }
+        if (!Objects.equals(this.lockedBy, other.lockedBy)) {
+            return false;
+        }
+        return true;
     }
 
     public final Integer getId() {
