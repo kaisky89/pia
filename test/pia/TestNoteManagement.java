@@ -245,6 +245,11 @@ public class TestNoteManagement {
     }
     
     @Test
+    public void lockNote() throws NotesCommunicatorException{
+        // ToDo
+    }
+    
+    @Test
     public void asd() throws NotesCommunicatorException{
         
     }

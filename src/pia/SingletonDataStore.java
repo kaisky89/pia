@@ -27,6 +27,10 @@ public class SingletonDataStore {
         return user.getUsername() + "@" + getServerAdress();
     }
     
+    public String getJIDex(){
+        return user.getUsername() + "@" + getServerAdress() + "/Smack";
+    }
+    
     public UserData getUser() {
         return user;
     }
