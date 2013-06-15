@@ -648,9 +648,6 @@ public class SingletonSmack implements NotesCommunicator {
             @Override
             public void handlePublishedItems(ItemPublishEvent items) {
 
-                System.out.println("handlePublishedItems: got "
-                        + items.getItems().size() + " items.");
-
                 // for each element of the list
                 List<PayloadItem<SimplePayload>> itemsList;
                 itemsList = items.getItems();
