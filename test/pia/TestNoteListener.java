@@ -32,6 +32,7 @@ public class TestNoteListener {
     private static NoteInformation lastPublishedItem;
     private static Integer lastDeletedItemId;
     private static boolean purge = false;
+    private static int publishedItems;
     private NotesCommunicatorListenerImpl itemListener = new NotesCommunicatorListenerImpl();
 
     public TestNoteListener() {
@@ -94,6 +95,24 @@ public class TestNoteListener {
     }
     
     @Test
+    public void sameNumberOfPublishedItemsAsDone() throws NotesCommunicatorException{
+        int oldNumber = publishedItems;
+        
+        communicator.setNotesListener(itemListener);
+        
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation2);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation1);
+        communicator.addNote(noteInformation2);
+        communicator.addNote(noteInformation2);
+        
+        communicator.unsetNotesListener();
+        
+        assertTrue(publishedItems == oldNumber + 6);
+    }
+    
+    @Test
     public void asd() throws NotesCommunicatorException{
         
     }
@@ -106,6 +125,7 @@ public class TestNoteListener {
         @Override
         public void onPublish(NoteInformation publishedItem) {
             lastPublishedItem = publishedItem;
+            publishedItems++;
         }
 
         @Override

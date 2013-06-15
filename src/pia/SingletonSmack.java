@@ -106,6 +106,7 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     // Session Management //////////////////////////////////////////////////////
+    
     @Override
     public Integer addSession(SessionInformation session) throws NotesCommunicatorException {
 
@@ -186,6 +187,7 @@ public class SingletonSmack implements NotesCommunicator {
     public void setUsingSession(Integer id) throws NotesCommunicatorException {
         this.unsetNotesListener();
         usingSessionInteger = id;
+        this.unsetNotesListener();
     }
 
     @Override
@@ -202,6 +204,7 @@ public class SingletonSmack implements NotesCommunicator {
     }
 
     // Note Management /////////////////////////////////////////////////////////
+    
     @Override
     public Integer addNote(NoteInformation note) throws NotesCommunicatorException {
         if (usingSessionInteger == null) {
@@ -372,6 +375,8 @@ public class SingletonSmack implements NotesCommunicator {
         setNote(id, note);
     }
 
+    // Listening Management ////////////////////////////////////////////////////
+    
     @Override
     public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -400,11 +405,9 @@ public class SingletonSmack implements NotesCommunicator {
 
     @Override
     public void unsetNotesListener() throws NotesCommunicatorException {
-        // not using here, this function also will be used before
-        // while setting the usingSessionId
-//        if (usingSessionInteger == null) {
-//            throw new NotesCommunicatorException("Need to specify a session before using note Management.");
-//        }
+        if (usingSessionInteger == null) {
+            return;
+        }
 
         // find all subscriptions from the user to this node
         List<Subscription> subscriptions;
@@ -430,12 +433,18 @@ public class SingletonSmack implements NotesCommunicator {
             }
         }
         
+        if(deleteListener == null || itemListener == null)
+            return;
+        
         getItemsLeafNode().removeItemDeleteListener(deleteListener);
+        deleteListener = null;
         
         getItemsLeafNode().removeItemEventListener(itemListener);
+        itemListener = null;
     }
 
     // private help methods ////////////////////////////////////////////////////
+    
     private void connect() throws XMPPException {
         connection = new XMPPConnection(
                 SingletonDataStore.getInstance().getServerAdress());
@@ -689,7 +698,7 @@ public class SingletonSmack implements NotesCommunicator {
             leafNode = mgr.getNode(getNotesLeafNodeString());
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
-                    "Error while trying to get leafNode:" + getNotesLeafNodeString(), ex);
+                    "Error while trying to get leafNode: " + getNotesLeafNodeString(), ex);
         }
         return leafNode;
     }
