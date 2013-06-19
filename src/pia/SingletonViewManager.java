@@ -62,25 +62,43 @@ public class SingletonViewManager {
 
     /**
      * Changes the View to the new Scene. Old Scene will be unloaded 
-     * automatically. Scenes wanted to be used here, needed to be specified 
-     * before by using the method <code>addViewLocation()</code>.
-     * @param sceneString The Name of the new Scene. Is specified in <code>
+     * automatically. Scenes you want to use here need to be previously specified
+     * using <code>addViewLocation()</code>. If loading fails, the error is printed
+     * and neither scene nor stage are changed.
+     * @param sceneName The Name of the new Scene. Is specified in <code>
      * addViewLocation()</code>.
      */
-    public void setScene(String sceneString) {
-        Parent root = null;
-        String filename = getViewLocation(sceneString);
-        
+    public void setScene(String sceneName){
+        setScene(sceneName, true);
+    }
+
+    /**
+     * Changes the View to the new Scene. Old Scene will be unloaded
+     * automatically. Scenes you want to use here need to be previously specified
+     * using <code>addViewLocation()</code>. If loading fails, the error is printed
+     * and neither scene nor stage are changed.
+     * @param sceneName The Name of the new Scene. Is specified in <code>
+     * addViewLocation()</code>.
+     * @param newStage Create new Stage for this Scene?
+     */
+    public void setScene(String sceneName, boolean newStage) {
+        String filename = getViewLocation(sceneName);
+        Parent root;
         try {
             root = FXMLLoader.load(getClass().getResource(filename));
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
+            return;
         }
-        
         Scene scene = new Scene(root);
-        
-        getStage().setScene(scene);
-        getStage().show();
+        if (newStage) {
+            stage = new Stage();
+            stage.setTitle(sceneName);
+        }
+        stage.setScene(scene);
+        stage.setMinHeight(scene.getHeight());
+        stage.setMinWidth(scene.getWidth());
+        stage.show();
     }
 
     /**
