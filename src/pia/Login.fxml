@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" visible="true" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.LoginController">
+  <children>
+    <GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <GridPane id="GridPane" prefHeight="72.0" prefWidth="117.0" vgap="3.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+          <children>
+            <Label text="Nutzerdaten eingeben" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="usernameField" onAction="#handleActionUsernameTextField" prefWidth="200.0" promptText="Username" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <PasswordField fx:id="passwordField" onAction="#handleActionPasswordField" prefWidth="200.0" promptText="Password" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Separator orientation="VERTICAL" prefHeight="-1.0" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <Button alignment="CENTER" contentDisplay="LEFT" mnemonicParsing="false" onAction="#handleButtonLogin" prefWidth="300.0" text="Einloggen" textAlignment="LEFT" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+        <Separator orientation="VERTICAL" prefHeight="-1.0" prefWidth="2.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+          <GridPane.margin>
+            <Insets left="14.0" right="14.0" />
+          </GridPane.margin>
+        </Separator>
+        <GridPane id="GridPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+          <children>
+            <Button mnemonicParsing="false" prefWidth="300.0" text="Anonym Einloggen" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Separator orientation="VERTICAL" prefHeight="81.0" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label text="Anonym einloggen" GridPane.columnIndex="0" GridPane.rowIndex="0">
+              <GridPane.margin>
+                <Insets fx:id="x1" />
+              </GridPane.margin>
+            </Label>
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+        <Label alignment="CENTER" prefHeight="132.99990000000253" prefWidth="600.0" text="Podcast Information Aggregator" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.margin="$x1" GridPane.rowIndex="1">
+          <font>
+            <Font size="23.0" />
+          </font>
+        </Label>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="116.0" />
+        <ColumnConstraints fillWidth="true" hgrow="NEVER" maxWidth="172.0" minWidth="-Infinity" prefWidth="172.0" />
+        <ColumnConstraints fillWidth="true" hgrow="NEVER" maxWidth="30.0" minWidth="-Infinity" prefWidth="30.0" />
+        <ColumnConstraints fillWidth="true" hgrow="NEVER" maxWidth="172.0" minWidth="-Infinity" prefWidth="172.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="116.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="186.0" minHeight="10.0" prefHeight="113.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="168.0" minHeight="10.0" prefHeight="151.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="92.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+  </children>
+</AnchorPane>
