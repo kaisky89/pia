@@ -16,6 +16,7 @@ public class PIA extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // set the Stage for further referencing into ViewManager
+        stage.setTitle("PIA");
         SingletonViewManager.getInstance().setStage(stage);
         
         // set the locations of the different views

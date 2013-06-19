@@ -4,14 +4,15 @@
  */
 package pia;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
@@ -38,10 +39,10 @@ public class LoginController implements Initializable {
     private void handleActionPasswordField(ActionEvent event){
         login();
     }
-    
+
     @FXML
     private void handleCheckAnonym(ActionEvent event){
-        // TODO
+
     }
 
     /**
@@ -49,7 +50,6 @@ public class LoginController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }
 
     private void login() {
