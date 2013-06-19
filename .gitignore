@@ -1,3 +1,4 @@
 /nbproject/
 *.log
 build.xml
+/dist/
