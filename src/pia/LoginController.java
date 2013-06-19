@@ -7,9 +7,7 @@ package pia;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,38 +21,37 @@ public class LoginController implements Initializable {
     
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
-    @FXML private CheckBox anonymLoginCheckBox;
-    
-    @FXML
-    private void handleButtonLogin(ActionEvent event){
-        login();
-    }
-    
-    @FXML
-    private void handleActionUsernameTextField(ActionEvent event){
-        login();
-    }
-    
-    @FXML
-    private void handleActionPasswordField(ActionEvent event){
-        login();
-    }
+    @FXML private Button loginButton;
+    @FXML private Button anonLoginButton;
 
-    @FXML
-    private void handleCheckAnonym(ActionEvent event){
 
-    }
-
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    private void login() {
-        boolean isAnonymous = false;
-        SingletonDataStore.getInstance().setUser(new UserData(usernameField.getText(), passwordField.getText(), isAnonymous));
+    @FXML
+    private void handleLogin(ActionEvent event){
+        login(false);
+    }
+
+    @FXML
+    private void handleAnonLogin(ActionEvent event){
+        login(true);
+    }
+    
+    @FXML
+    private void handleActionUsernameTextField(ActionEvent event){
+        passwordField.requestFocus();
+    }
+    
+    @FXML
+    private void handleActionPasswordField(ActionEvent event){
+        loginButton.requestFocus();
+    }
+
+    private void login(boolean anon) {
+        SingletonDataStore.getInstance().setUser(new UserData(usernameField.getText(),
+                passwordField.getText(), anon));
         try {
             SingletonSmack.getInstance().init();
             SingletonViewManager.getInstance().setScene("MainView");
