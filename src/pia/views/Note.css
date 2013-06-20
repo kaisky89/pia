@@ -1,0 +1,23 @@
+#noteBody, #noteArrow, #noteTextArea {
+    -fx-background-color: DODGERBLUE;
+    -fx-fill: DODGERBLUE;
+    -fx-text-fill: WHITE;
+    -fx-border-width: 0;
+    -fx-text-alignment: left;
+    -fx-font-size: 11;
+}
+#root:hover #noteBody,
+#root:hover #noteArrow,
+#root:hover #noteTextArea {
+    -fx-background-color: #3af;
+    -fx-fill: #3af;
+}
+#root.editing #noteBody,
+#root.editing #noteArrow,
+#root.editing #noteTextArea {
+    -fx-background-color: #6cf;
+    -fx-fill: #6cf;
+}
+#noteBody, #noteTextArea {
+    -fx-background-radius: 10;
+}
