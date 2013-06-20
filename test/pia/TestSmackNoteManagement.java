@@ -170,7 +170,7 @@ public class TestSmackNoteManagement {
         }
         
         for (Integer integer : tempList) {
-            assertEquals(communicator.getNoteInformation(integer), noteInformation1);
+            assertTrue(communicator.getNoteInformation(integer).equalsIgnoreId(noteInformation1));
         }
     }
     

@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  *
@@ -106,30 +106,36 @@ public abstract class NoteInformation {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.timePosition);
-        hash = 67 * hash + (this.noteType != null ? this.noteType.hashCode() : 0);
-        hash = 67 * hash + Objects.hashCode(this.lockedBy);
-        return hash;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NoteInformation)) return false;
+
+        NoteInformation that = (NoteInformation) o;
+
+        return this.toXml().equals(that.toXml());
+    }
+
+    public boolean equalsIgnoreId(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NoteInformation)) return false;
+
+        NoteInformation that = (NoteInformation) o;
+
+        if (!lockedBy.equals(that.lockedBy)) return false;
+        if (noteType != that.noteType) return false;
+        if (!timePosition.equals(that.timePosition)) return false;
+        if (!this.getAttributes().equals(that.getAttributes())) return false;
+
+        return true;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final NoteInformation other = (NoteInformation) obj;
-        if (!Objects.equals(this.timePosition, other.timePosition)) {
-            return false;
-        }
-        if (this.noteType != other.noteType) {
-            return false;
-        }
-        return Objects.equals(this.lockedBy, other.lockedBy);
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + timePosition.hashCode();
+        result = 31 * result + noteType.hashCode();
+        result = 31 * result + lockedBy.hashCode();
+        return result;
     }
 
     public final Integer getId() {
