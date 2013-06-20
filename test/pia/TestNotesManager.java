@@ -25,6 +25,13 @@ public class TestNotesManager {
 
     private NotesManager notesManager;
 
+    private static int onAddIndex = -1;
+    private static int onChangeIndex = -1;
+    private static int onDeleteIndex = -1;
+    private static int onLockedIndex = -1;
+    private static int onUnlockedIndex = -1;
+
+
     public TestNotesManager() {
     }
 
@@ -49,6 +56,11 @@ public class TestNotesManager {
     public void setUp() throws NotesCommunicatorException {
         communicator.setUsingSession(sessionInteger1);
         notesManager = new NotesManager(new MyNotesManagerListener());
+        onAddIndex = -1;
+        onChangeIndex = -1;
+        onDeleteIndex = -1;
+        onLockedIndex = -1;
+        onUnlockedIndex = -1;
     }
 
     @After
@@ -71,7 +83,9 @@ public class TestNotesManager {
         // check, if the indexes increments by one
         int difference = integers.get(0);
         for (int i = 0; i < integers.size(); i++) {
-            assertTrue(i + difference == integers.get(i));
+            assertTrue("i:" + i + " + difference:" + difference +
+                    " == integers.get(i):" + integers.get(i), i
+                    + difference == integers.get(i));
         }
     }
 
@@ -111,34 +125,58 @@ public class TestNotesManager {
     }
 
     @Test
-    public void testNote() {
+    public void testListenOnAdd() throws NotesCommunicatorException, InterruptedException {
+        // create a textNote
+        TextNoteInformation textNote = new TextNoteInformation((long) 1873, "FooBar");
 
+        // onAdd shouldn't be called when adding through NotesManager
+        int index = notesManager.addNote(NoteType.TEXT);
+        Thread.sleep(200);
+        assertTrue(onAddIndex == -1);
+
+        // onAdd should be called when adding through NotesCommunicator
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        communicator.addNote(textNote);
+        Integer id = communicator.addNote(textNote);
+        Thread.sleep(200);
+        assertTrue(onAddIndex != -1);
+
+        // expect the same Note Values as it was published
+        TextNoteInformation newTextNote = (TextNoteInformation) notesManager.getAllNotes().get(onAddIndex);
+        assertTrue(newTextNote.equalsIgnoreId(textNote));
     }
 
     private static class MyNotesManagerListener implements NotesManagerListener {
         @Override
         public void onAdd(int indexOfAddedNote) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            onAddIndex = indexOfAddedNote;
         }
 
         @Override
         public void onChange(int indexOfChangedNote) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            onChangeIndex = indexOfChangedNote;
         }
 
         @Override
         public void onDelete(int indexOfDeletedNote) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            onDeleteIndex = indexOfDeletedNote;
         }
 
         @Override
         public void onLocked(int indexOfLockedNote) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            onLockedIndex = indexOfLockedNote;
         }
 
         @Override
         public void onUnlocked(int indexOfUnlockedNote) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            onUnlockedIndex = indexOfUnlockedNote;
         }
     }
 }

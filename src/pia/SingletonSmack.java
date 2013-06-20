@@ -384,7 +384,7 @@ public class SingletonSmack implements NotesCommunicator {
             throw new NotesCommunicatorException("Need to specify a session before using note Management.");
         }
 
-        // first, if there is any other subscribtion yet open, unsubscribe
+        // first, if there is any other subscription yet open, unsubscribe
         unsetNotesListener();
         
         handlePublishedItem(notesListener);
