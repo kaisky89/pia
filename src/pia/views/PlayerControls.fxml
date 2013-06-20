@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" fx:id="playerControls" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.PlayerControlsController">
+  <children>
+    <HBox alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <Button id="seekBackButton" fx:id="previousTopicButton" cancelButton="false" defaultButton="false" mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../res/prev.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button id="seekBackButton" fx:id="seekBackwardButton" defaultButton="false" mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../res/rev.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button fx:id="playPauseButton" defaultButton="true" mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../res/play.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button fx:id="seekForwardButton" mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../res/for.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button id="seekBackButton" fx:id="nextTopicButton" defaultButton="false" mnemonicParsing="false" text="">
+          <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../res/next.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>
