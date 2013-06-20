@@ -10,7 +10,8 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -82,6 +83,11 @@ public class TestNotesManager {
 
         // check, if the indexes increments by one
         int difference = integers.get(0);
+
+        for (int i = 0; i < integers.size(); i++) {
+            System.out.println(i + ": " + integers.get(i));
+        }
+
         for (int i = 0; i < integers.size(); i++) {
             assertTrue("i:" + i + " + difference:" + difference +
                     " == integers.get(i):" + integers.get(i), i
@@ -116,12 +122,21 @@ public class TestNotesManager {
         // save it to notesManager
         notesManager.refreshNote(i, noteInformation);
 
-        // test, if the note is changed
-        String text = ((TextNoteInformation) notesManager.getAllNotes().get(i)).getText();
-        assertEquals(string, text);
-
         // unlock the note
         notesManager.unlockNote(i);
+
+        // print out the whole stuff from notesManager
+        for (int j = 0; j < notesManager.getAllNotes().size(); j++) {
+            TextNoteInformation textNoteInformation = (TextNoteInformation) notesManager.getAllNotes().get(j);
+            System.out.println(j + ": " + textNoteInformation.getText());
+        }
+
+        // print out the whole stuff from notesCo
+
+        // test, if the note is changed
+        System.out.println("i = " + i);
+        String text = ((TextNoteInformation) notesManager.getAllNotes().get(i)).getText();
+        assertEquals(string, text);
     }
 
     @Test
@@ -134,19 +149,56 @@ public class TestNotesManager {
         Thread.sleep(200);
         assertTrue(onAddIndex == -1);
 
+        // onAdd shouldn't be called when changing a Note through NotesManager
+        TextNoteInformation noteAdded = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        noteAdded.setText("BarFoo");
+        notesManager.refreshNote(index, noteAdded);
+        Thread.sleep(200);
+        assertTrue(onAddIndex == -1);
+
+        // onAdd shouldn't be called when changing through NotesCommunicator
+        communicator.setNote(noteAdded.getId(), textNote);
+        Thread.sleep(200);
+        assertTrue(onAddIndex == -1);
+
         // onAdd should be called when adding through NotesCommunicator
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
-        communicator.addNote(textNote);
         Integer id = communicator.addNote(textNote);
         Thread.sleep(200);
         assertTrue(onAddIndex != -1);
+
+        // expect the same Note Values as it was published
+        TextNoteInformation newTextNote = (TextNoteInformation) notesManager.getAllNotes().get(onAddIndex);
+        assertTrue(newTextNote.equalsIgnoreId(textNote));
+    }
+
+    @Test
+    public void testOnChange() throws Exception {
+        // create a textNote
+        TextNoteInformation textNote = new TextNoteInformation((long) 1873, "FooBar");
+
+        // onChange shouldn't be called when adding through NotesManager
+        int index = notesManager.addNote(NoteType.TEXT);
+        Thread.sleep(200);
+        assertTrue(onChangeIndex == -1);
+
+        // onChange shouldn't be called when changing a Note through NotesManager
+        TextNoteInformation noteAdded = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        noteAdded.setText("BarFoo");
+        notesManager.refreshNote(index, noteAdded);
+        Thread.sleep(200);
+        assertTrue(onChangeIndex == -1);
+
+        // onChange shouldn't be called when adding through NotesCommunicator
+        Integer id = communicator.addNote(textNote);
+        Thread.sleep(200);
+        assertTrue(onChangeIndex == -1);
+
+        // onAdd shouldn't be called when changing through NotesCommunicator
+        communicator.setNote(noteAdded.getId(), textNote);
+        Thread.sleep(200);
+        assertTrue(onAddIndex == -1);
+
+
 
         // expect the same Note Values as it was published
         TextNoteInformation newTextNote = (TextNoteInformation) notesManager.getAllNotes().get(onAddIndex);

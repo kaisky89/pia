@@ -67,6 +67,8 @@ public class NotesManager {
      * @param note The detailed Information of the new state of the Note.
      */
     public void refreshNote(int index, NoteInformation note){
+        System.out.println("refreshNote: Going to set at " + index + " the new Note: " + note);
+
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
             throw new IllegalStateException("Cannot refresh note with index "
@@ -234,9 +236,27 @@ public class NotesManager {
         }
     }
 
-    private void init(){
-        // initializes the communicator. Not sure, if this happens right here...
-        //communicator.init();
+    private void init() {
+
+        // get all Elements from communicator, write it into the list
+        List<Integer> noteIds = null;
+        try {
+            noteIds = communicator.getNoteIds();
+        } catch (NotesCommunicatorException e) {
+            // TODO: Exception Handling
+            e.printStackTrace();
+        }
+
+        for (Integer integer : noteIds) {
+            try {
+                notes.add(communicator.getNoteInformation(integer));
+            } catch (NotesCommunicatorException e) {
+                // TODO: Exception Handling
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     private class MyNotesCommunicatorListener implements NotesCommunicatorListener<NoteInformation> {
