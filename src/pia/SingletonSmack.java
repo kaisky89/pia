@@ -21,9 +21,9 @@ import java.util.List;
  *
  * @author kaisky89
  */
-public class SingletonSmack implements NotesCommunicator {
+final public class SingletonSmack implements NotesCommunicator {
 
-    private static SingletonSmack instance = new SingletonSmack();
+    final private static SingletonSmack instance = new SingletonSmack();
     private ItemEventListener itemListener;
     private ItemDeleteListener deleteListener;
 

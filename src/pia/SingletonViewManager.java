@@ -23,9 +23,9 @@ import java.util.Map;
  * the JavaFX window, needs to be specified via <code>setStage()</code>.
  * @author kaisky89
  */
-public class SingletonViewManager {
+final public class SingletonViewManager {
 
-    private static SingletonViewManager instance = new SingletonViewManager();
+    final private static SingletonViewManager instance = new SingletonViewManager();
     private Stage stage;
     private Map<String, String> viewLocation = new HashMap<>();
     

@@ -8,8 +8,8 @@ package pia;
  *
  * @author kaisky89
  */
-public class SingletonDataStore {
-    private static SingletonDataStore instance = new SingletonDataStore();
+final public class SingletonDataStore {
+    final private static SingletonDataStore instance = new SingletonDataStore();
     
     private SingletonDataStore(){
     }
