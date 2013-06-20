@@ -15,7 +15,7 @@
           <graphic>
             <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
-                <Image url="@res/prev.png" />
+                <Image url="@../res/prev.png" />
               </image>
             </ImageView>
           </graphic>
@@ -24,7 +24,7 @@
           <graphic>
             <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
-                <Image url="@res/rev.png" />
+                <Image url="@../res/rev.png" />
               </image>
             </ImageView>
           </graphic>
@@ -33,7 +33,7 @@
           <graphic>
             <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
-                <Image url="@res/play.png" />
+                <Image url="@../res/play.png" />
               </image>
             </ImageView>
           </graphic>
@@ -42,7 +42,7 @@
           <graphic>
             <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
-                <Image url="@res/for.png" />
+                <Image url="@../res/for.png" />
               </image>
             </ImageView>
           </graphic>
@@ -51,7 +51,7 @@
           <graphic>
             <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
-                <Image url="@res/next.png" />
+                <Image url="@../res/next.png" />
               </image>
             </ImageView>
           </graphic>

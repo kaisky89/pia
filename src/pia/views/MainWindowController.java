@@ -1,4 +1,4 @@
-package pia;
+package pia.views;
 
 import javafx.fxml.FXML;
 
