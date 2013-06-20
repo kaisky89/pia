@@ -1,62 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="playerControls" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.PlayerControlsController">
+<AnchorPane id="AnchorPane" fx:id="playerControls" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.999991552736901" prefWidth="61.99999672852573" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.PlayerControlsController">
   <children>
-    <HBox alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <HBox id="HBox" alignment="CENTER" prefHeight="90.0" prefWidth="454.499977929685" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-        <Button id="seekBackButton" fx:id="previousTopicButton" cancelButton="false" defaultButton="false" mnemonicParsing="false" text="">
+        <Button id="seekBackButton" fx:id="previousTopicButton" cancelButton="false" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0" text="" HBox.hgrow="ALWAYS">
           <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../res/prev.png" />
-              </image>
-            </ImageView>
+            <Pane id="rev" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con">
+              <padding>
+                <Insets />
+              </padding>
+            </Pane>
           </graphic>
         </Button>
-        <Button id="seekBackButton" fx:id="seekBackwardButton" defaultButton="false" mnemonicParsing="false" text="">
+        <Button id="seekBackButton" fx:id="seekBackwardButton" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
           <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../res/rev.png" />
-              </image>
-            </ImageView>
+            <Pane id="prev" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
-        <Button fx:id="playPauseButton" defaultButton="true" mnemonicParsing="false" text="">
+        <Button fx:id="playPauseButton" defaultButton="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0" text="" HBox.hgrow="ALWAYS">
           <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../res/play.png" />
-              </image>
-            </ImageView>
+            <Pane id="playpause" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
-        <Button fx:id="seekForwardButton" mnemonicParsing="false" text="">
+        <Button fx:id="seekForwardButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
           <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../res/for.png" />
-              </image>
-            </ImageView>
+            <Pane id="next" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
-        <Button id="seekBackButton" fx:id="nextTopicButton" defaultButton="false" mnemonicParsing="false" text="">
+        <Button id="seekBackButton" fx:id="nextTopicButton" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
           <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../res/next.png" />
-              </image>
-            </ImageView>
+            <Pane id="for" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
       </children>
     </HBox>
   </children>
+  <stylesheets>
+    <URL value="@playerControls.css" />
+  </stylesheets>
 </AnchorPane>

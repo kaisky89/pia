@@ -1,0 +1,21 @@
+.button-con {
+    -fx-background-repeat: stretch;
+    -fx-background-size: contain;
+    -fx-background-position: center center;
+    -fx-background-insets: 20;
+}
+#rev {
+    -fx-background-image: url("../res/rev.png");
+}
+#prev {
+    -fx-background-image: url("../res/prev.png");
+}
+#playpause {
+    -fx-background-image: url("../res/play.png");
+}
+#next {
+    -fx-background-image: url("../res/next.png");
+}
+#for {
+    -fx-background-image: url("../res/for.png");
+}
