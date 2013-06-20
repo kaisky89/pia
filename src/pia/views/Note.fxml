@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="73.00042207030492" prefWidth="118.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NoteController">
+  <children>
+    <VBox padding="$x1" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.13">
+      <children>
+        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="15.0" prefWidth="325.0">
+          <children>
+            <Polygon id="noteArrow" fill="DODGERBLUE" scaleX="0.3" scaleY="0.15250000190734864" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" HBox.hgrow="ALWAYS">
+              <points>
+                <Double fx:value="-50.0" />
+                <Double fx:value="40.0" />
+                <Double fx:value="50.0" />
+                <Double fx:value="40.0" />
+                <Double fx:value="0.0" />
+                <Double fx:value="-60.0" />
+              </points>
+            </Polygon>
+          </children>
+          <padding>
+            <Insets fx:id="x1" />
+          </padding>
+        </HBox>
+        <AnchorPane fx:id="noteBody" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+          <children>
+            <TextArea fx:id="noteTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#handleKeyPressed" onMouseClicked="#handleNoteClicked" prefHeight="-1.0" prefWidth="-1.0" promptText="" visible="true" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          </children>
+          <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+          </padding>
+        </AnchorPane>
+      </children>
+    </VBox>
+  </children>
+  <stylesheets>
+    <URL value="@Note.css" />
+  </stylesheets>
+</AnchorPane>

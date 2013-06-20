@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="184.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NotesTestController">
+  <children>
+    <Pane fx:id="notesPad" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <fx:include source="Note.fxml" layoutX="62.0" layoutY="76.0" />
+        <fx:include source="Note.fxml" layoutX="202.0" layoutY="77.0" />
+      </children>
+    </Pane>
+  </children>
+</AnchorPane>
