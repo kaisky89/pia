@@ -62,15 +62,21 @@ public class NotesManager {
     }
 
     /**
-     * Refreshes the Note with the given id to a new Note. Please Note: You must
-     * use the <code>NoteInformation</code> Object which you get from
-     * <code>getAllNotes()</code>, edit it and use it here. If a new generated
+     * Refreshes the Note with the given id to a new Note.<br /><br />Important:
+     * You must lock the note using <code>lockNote()</code>before you can edit anything.
+     * <br /><br />Please Note: You must use the <code>NoteInformation</code> Object which
+     * you get from <code>getAllNotes()</code>, edit it and use it here. If a new generated
      * <code>NoteInformation</code> Object is used here, things may won't work
      * out that well.
      * @param index index of the Note, which is needed to be updated.
      * @param note The detailed Information of the new state of the Note.
      */
     public void refreshNote(int index, NoteInformation note){
+        // check, if the note is locked by someone else
+        if (isLockedByAnother(index))
+            throw new IllegalStateException("Cannot refresh note with index "
+                    + index + ". The note is locked by someone else.");
+
         // get the requested Note from the List
         NoteInformation noteFromList = notes.get(index);
 
@@ -82,7 +88,12 @@ public class NotesManager {
         // check, if locked status of NoteInformation is the same as provided in the list
         if (!noteFromList.getLockedBy().equals(note.getLockedBy()))
             throw new IllegalArgumentException("The Note has changed locking information. " +
-                    "Please use lockNote() and unLockNote() to change locking information.");
+                    "Please use lockNote() and unlockNote() to change locking information.");
+
+        // check, if the note is locked by the user (this should be necessary!)
+        if (!noteFromList.getLockedBy().equals(SingletonDataStore.getInstance().getJID()))
+            throw new IllegalStateException("The note with index " + index + " needs to be " +
+                    "locked via lockNote() before it can be edited.");
 
         // refresh the Note on NotesCommunicator
         try {
@@ -147,6 +158,10 @@ public class NotesManager {
         return true;
     }
 
+    /**
+     *
+     * @param index
+     */
     public void lockNote(int index) {
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
@@ -156,8 +171,48 @@ public class NotesManager {
         // get the note
         NoteInformation note = notes.get(index);
 
-        // edit the note
+        // try to lock it via NotesCommunicator
+        try {
+            communicator.lockNote(note.getId());
+        } catch (NotesCommunicatorException e) {
+            // TODO: need error handling here.
+            e.printStackTrace();
+            return;
+        }
 
+        // lock the note in the list
+        // TODO: not sure if that works well. Needs some tests.
+        note.setLocked(SingletonDataStore.getInstance().getJID());
+        notes.set(index, note);
+    }
+
+    /**
+     * Unlocks the note, so others users are able to edit it. Unlocking is only possible,
+     * if the user has locked the note before.
+     * @param index The index of the note, which shall be unlocked.
+     */
+    public void unlockNote(int index) {
+        // check, if the note is locked by someone else
+        if (isLockedByAnother(index))
+            throw new IllegalStateException("Cannot unlock note with index "
+                    + index + ". The note is locked by someone else.");
+
+        // get the note
+        NoteInformation note = notes.get(index);
+
+        // try to unlock it via NotesCommunicator
+        try {
+            communicator.unlockNote(note.getId());
+        } catch (NotesCommunicatorException e) {
+            // TODO: need error handling here.
+            e.printStackTrace();
+            return;
+        }
+
+        // unlock the note in the list
+        // TODO: not sure if that works well. Needs some tests.
+        note.unlock();
+        notes.set(index, note);
     }
 
     /**
@@ -166,6 +221,7 @@ public class NotesManager {
      * @return List of all Items.
      */
     public List<NoteInformation> getAllNotes(){
+        // TODO: Copying List isn't that good. Can't be refreshed. Observable List?
         List<NoteInformation> returnList = new ArrayList<>();
         returnList.addAll(notes);
         return returnList;
