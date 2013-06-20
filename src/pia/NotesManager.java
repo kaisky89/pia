@@ -29,12 +29,6 @@ public class NotesManager {
         init();
     }
 
-    private void init(){
-        // initializes the communicator. Not sure, if this happens right here...
-        //communicator.init();
-
-    }
-
     /**
      * Adds a new Note. NoteType needs to be specified by <code>noteType</code>. With the returned
      * id, you can access the new Note via <code>getAllNotes()</code>.
@@ -159,8 +153,9 @@ public class NotesManager {
     }
 
     /**
-     *
-     * @param index
+     * Locks the Note. This prevents others editing this note. Locking the
+     * note is necessary to edit a note via <code>refreshNote()</code>.
+     * @param index The index of the note, which shall be locked.
      */
     public void lockNote(int index) {
         // check, if the note is locked by someone else
@@ -217,11 +212,10 @@ public class NotesManager {
 
     /**
      * Returns a List of all Notes. This is just for reading, editing the list won't
-     * affect anything in the structure.
+     * affect anything in the structure, but may loose consistence, so you don't do it.
      * @return List of all Items.
      */
     public List<NoteInformation> getAllNotes(){
-        // TODO: Copying List isn't that good. Can't be refreshed. Observable List?
         List<NoteInformation> returnList = new ArrayList<>();
         returnList.addAll(notes);
         return returnList;
@@ -229,6 +223,77 @@ public class NotesManager {
 
     private void setListener(NotesManagerListener listener) {
         this.listener = listener;
+        try {
+            communicator.setNotesListener(new MyNotesCommunicatorListener());
+        } catch (NotesCommunicatorException e) {
+            // TODO: need error handling here.
+            e.printStackTrace();
+            return;
+        }
     }
 
+    private void init(){
+        // initializes the communicator. Not sure, if this happens right here...
+        //communicator.init();
+    }
+
+    private class MyNotesCommunicatorListener implements NotesCommunicatorListener<NoteInformation> {
+        @Override
+        public void onPublish(NoteInformation publishedItem) {
+
+          //// onAdd(): is the item new? //////
+
+            // get the id of the publishedItem
+            Integer newId = publishedItem.getId();
+
+            // find a note in the list, where the id is the same
+            NoteInformation noteFromList = null;
+            for (NoteInformation note : notes) {
+                if (note.getId().equals(newId)) {
+                    noteFromList = note;
+                    break;
+                }
+            }
+
+            // if no item was found, the publishedItem is new
+            if (noteFromList == null) {
+                // add it to list
+                notes.add(publishedItem);
+
+                // notify the gui
+                listener.onAdd(notes.size()-1);
+
+                // and finish method
+                return;
+            }
+
+          //// onLocked(): is the item got locked? //////
+
+            // get the index of the noteFromList
+            int index = notes.lastIndexOf(noteFromList);
+
+            // find out, if the noteFromList isn't locked, but the publishedItem is
+            if ((!noteFromList.isLocked()) && (publishedItem.isLocked())) {
+                // if so, edit it in list
+                notes.set(index, publishedItem);
+
+                // notify the gui
+                listener.onLocked(index);
+
+                // and finish method
+                return;
+            }
+
+        }
+
+        @Override
+        public void onDelete(Integer deletedItemId) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void onPurge() {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
 }

@@ -10,8 +10,7 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -81,7 +80,6 @@ public class TestNotesManager {
         int i = notesManager.addNote(NoteType.TEXT);
         NoteInformation noteInformation = notesManager.getAllNotes().get(i);
 
-        // TODO: do not print it, test it!
         assertTrue(noteInformation.getId() != null);
     }
 
@@ -107,11 +105,35 @@ public class TestNotesManager {
         // test, if the note is changed
         String text = ((TextNoteInformation) notesManager.getAllNotes().get(i)).getText();
         assertEquals(string, text);
+
+        // unlock the note
+        notesManager.unlockNote(i);
     }
 
     @Test
-    public void asd(){
+    public void testReferenceOfTheNoteInList() {
+        // add a new note, remember the id
+        Integer index = notesManager.addNote(NoteType.TEXT);
 
+        // get two references of the same note
+        TextNoteInformation oldNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        TextNoteInformation newNote=  (TextNoteInformation) notesManager.getAllNotes().get(index);
+
+        // edit one reference
+        newNote.setText("FooBar.");
+
+        // the old one shouldn't be changed
+        assertFalse(newNote.getText().equals(oldNote.getText()));
+
+        // execute the change to NotesManager
+        notesManager.refreshNote(index, newNote);
+
+        // get changed Note
+        TextNoteInformation changedNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
+
+        // the old one now should be changed
+        assertTrue(oldNote.getText().equals(newNote.getText()));
+        assertTrue(oldNote.getText().equals(changedNote.getText()));
     }
 
     private static class MyNotesManagerListener implements NotesManagerListener {

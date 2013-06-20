@@ -48,18 +48,18 @@ public abstract class NoteInformation {
                         "Cannot handle noteType: " + noteType);
         }
     }
-    
+
     private Integer id;
     private Long timePosition;
     private NoteType noteType;
     private String lockedBy;
-    
+
     public NoteInformation(Long timePosition, NoteType noteType){
         setTimePosition(timePosition);
         setNoteType(noteType);
         unlock();
     }
-    
+
     public NoteInformation(String xml) throws NotesCommunicatorException{
         initFromXml(xml);
     }
@@ -150,7 +150,7 @@ public abstract class NoteInformation {
 
     public String getLockedBy() {
         return lockedBy;
-    }    
+    }
 
     public final void setId(Integer id) {
         this.id = id;
@@ -167,10 +167,10 @@ public abstract class NoteInformation {
     public final void setLocked(String jid) {
         this.lockedBy = jid;
     }
-    
+
     public final String toXml(){
         String returnString;
-        
+
         returnString = "<note>"
                 + "<id>" + getId() + "</id>"
                 + "<timePosition>" + getTimePosition() + "</timePosition>"
@@ -182,10 +182,10 @@ public abstract class NoteInformation {
             returnString += "<attribute name=\"" + key + "\">" + value + "</attribute>";
         }
         returnString += "</note>";
-        
+
         return returnString;
     }
-    
+
     public abstract Map<String, String> getAttributes();
     public abstract void setAttributes(Map<String, String> attributes);
 
