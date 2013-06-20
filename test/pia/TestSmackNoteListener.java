@@ -4,21 +4,17 @@
  */
 package pia;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.jivesoftware.smack.XMPPException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  * @author kaisky89
  */
-public class TestNoteListener {
+public class TestSmackNoteListener {
 
     static NotesCommunicator communicator;
     
@@ -35,7 +31,7 @@ public class TestNoteListener {
     private static int publishedItems;
     private NotesCommunicatorListenerImpl itemListener = new NotesCommunicatorListenerImpl();
 
-    public TestNoteListener() {
+    public TestSmackNoteListener() {
     }
 
     @BeforeClass

@@ -4,21 +4,20 @@
  */
 package pia;
 
+import org.jivesoftware.smack.XMPPException;
+import org.junit.*;
+
 import java.util.LinkedList;
 import java.util.List;
-import org.jivesoftware.smack.XMPPException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  * @author kaisky89
  */
-public class TestNoteManagement {
+public class TestSmackNoteManagement {
 
     static NotesCommunicator communicator;
     
@@ -29,12 +28,12 @@ public class TestNoteManagement {
     private NoteInformation noteInformation2 = 
             new TextNoteInformation(new Long(48764), "This is also a test.");
 
-    public TestNoteManagement() {
+    public TestSmackNoteManagement() {
     }
 
     @BeforeClass
     public static void setUpClass() throws NotesCommunicatorException, XMPPException {
-        SingletonDataStore.getInstance().setServerAdress("127.0.0.1");
+        SingletonDataStore.getInstance().setServerAdress("localhost");
         SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
         communicator = SingletonSmack.getInstance();
         communicator.init();

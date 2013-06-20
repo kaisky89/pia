@@ -4,33 +4,18 @@
  */
 package pia;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.packet.DiscoverItems;
-import org.jivesoftware.smackx.pubsub.AccessModel;
-import org.jivesoftware.smackx.pubsub.CollectionNode;
-import org.jivesoftware.smackx.pubsub.ConfigureForm;
-import org.jivesoftware.smackx.pubsub.FormType;
-import org.jivesoftware.smackx.pubsub.Item;
-import org.jivesoftware.smackx.pubsub.ItemDeleteEvent;
-import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
-import org.jivesoftware.smackx.pubsub.LeafNode;
-import org.jivesoftware.smackx.pubsub.NodeType;
-import org.jivesoftware.smackx.pubsub.PayloadItem;
-import org.jivesoftware.smackx.pubsub.PubSubManager;
-import org.jivesoftware.smackx.pubsub.PublishModel;
-import org.jivesoftware.smackx.pubsub.SimplePayload;
-import org.jivesoftware.smackx.pubsub.SubscribeForm;
-import org.jivesoftware.smackx.pubsub.Subscription;
+import org.jivesoftware.smackx.pubsub.*;
 import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 import pia.tools.SmartIterable;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -41,7 +26,6 @@ public class SingletonSmack implements NotesCommunicator {
     private static SingletonSmack instance = new SingletonSmack();
     private ItemEventListener itemListener;
     private ItemDeleteListener deleteListener;
-    private boolean isListeningToNotes = false;
 
     private SingletonSmack() {
     }
@@ -72,6 +56,8 @@ public class SingletonSmack implements NotesCommunicator {
             System.out.println("leftover Nodes after reset: " + item.getNode());
 
         }
+
+        usingSessionInteger = null;
     }
 
     // NotesCommunicator Interface Implementation //////////////////////////////
@@ -185,6 +171,11 @@ public class SingletonSmack implements NotesCommunicator {
 
     @Override
     public void setUsingSession(Integer id) throws NotesCommunicatorException {
+        // before trying to switch, check if the requested Note is available
+        // if it's not available, a NotesCommunicatorException will be thrown.
+        getItemsLeafNode(id);
+
+
         this.unsetNotesListener();
         usingSessionInteger = id;
         this.unsetNotesListener();
@@ -379,12 +370,12 @@ public class SingletonSmack implements NotesCommunicator {
     
     @Override
     public void setAvailableSessionListener(NotesCommunicatorListener<SessionInformation> availableSessionListener) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: implement this feature!
     }
 
     @Override
     public void unsetAvailableSessionListener() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: implement this feature!
     }
 
     @Override
@@ -603,7 +594,7 @@ public class SingletonSmack implements NotesCommunicator {
             return;
         }
 
-        // otherwise, another person seems to lock it. So, no write access. Thats sad.
+        // otherwise, another person seems to lock it. So, no write access. That's sad.
         throw new NotesCommunicatorException(
                 "Cannot write into " + getNoteIdString(id) + ". Note is locked by "
                 + note.getLockedBy());
@@ -614,14 +605,12 @@ public class SingletonSmack implements NotesCommunicator {
         String xml = dataItem.toXML();
         NoteType noteType = NoteInformation.getType(xml);
 
-        // return the specific NoteInformation, depending on NoteType
-        switch (noteType) {
-            case TEXT:
-                return new TextNoteInformation(xml);
-            default:
-                throw new NotesCommunicatorException(
-                        "Cannot handle noteType: " + noteType);
-        }
+        // Produce the specific NoteInformation, instantiate it with the given xml
+        NoteInformation noteInformation = NoteInformation.produceConcreteNoteInformation(noteType);
+        noteInformation.initFromXml(xml);
+
+        // finally, return the finished noteInformation
+        return noteInformation;
     }
 
     private void handleDeleteItem(final NotesCommunicatorListener<NoteInformation> notesListener) throws NotesCommunicatorException {
@@ -696,6 +685,17 @@ public class SingletonSmack implements NotesCommunicator {
         } catch (XMPPException ex) {
             throw new NotesCommunicatorException(
                     "Error while trying to get leafNode: " + getNotesLeafNodeString(), ex);
+        }
+        return leafNode;
+    }
+
+    private LeafNode getItemsLeafNode(Integer sessionInteger) throws NotesCommunicatorException {
+        LeafNode leafNode;
+        try {
+            leafNode = mgr.getNode(getNotesLeafNodeString(sessionInteger));
+        } catch (XMPPException ex) {
+            throw new NotesCommunicatorException(
+                    "Error while trying to get leafNode: " + getNotesLeafNodeString(sessionInteger), ex);
         }
         return leafNode;
     }
