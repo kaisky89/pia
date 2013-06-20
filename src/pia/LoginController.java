@@ -6,18 +6,16 @@ package pia;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-
-import java.net.URL;
-import java.util.ResourceBundle;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 /**
  * FXML Controller class
  *
  * @author kaisky89
  */
-public class LoginController implements Initializable {
+public class LoginController {
     
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -25,9 +23,15 @@ public class LoginController implements Initializable {
     @FXML private Button anonLoginButton;
 
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-    }
+//    public void initialize(URL url, ResourceBundle rb) {
+        // Alternative event handling
+//        loginButton.setOnAction(new EventHandler<ActionEvent>() {
+//
+//            public void handle(ActionEvent event) {
+//                System.out.println("Hello World");
+//            }
+//        });
+//    }
 
     @FXML
     private void handleLogin(ActionEvent event){
