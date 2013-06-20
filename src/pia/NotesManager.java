@@ -90,17 +90,18 @@ public class NotesManager {
             throw new IllegalStateException("The note with index " + index + " needs to be " +
                     "locked via lockNote() before it can be edited.");
 
+        // refresh the Note on List, keep the old one in case communicating won't work
+        NoteInformation oldNote = notes.set(index, note);
+
         // refresh the Note on NotesCommunicator
         try {
             communicator.setNote(note.getId(), note);
         } catch (NotesCommunicatorException e) {
             // TODO: need error handling here.
             e.printStackTrace();
+            notes.set(index, oldNote);
             return;
         }
-
-        // refresh the Note on List
-        notes.set(index, note);
     }
 
     /**
@@ -302,11 +303,13 @@ public class NotesManager {
           //// onChange(): is the item changed? //////
 
             // in every other case, there should be simple Changes in the Note
-            // if so, edit it in list
-            notes.set(index, publishedItem);
+            if (!publishedItem.equals(noteFromList)){
+                // if so, edit it in list
+                notes.set(index, publishedItem);
 
-            // notify the gui
-            listener.onChange(index);
+                // notify the gui
+                listener.onChange(index);
+            }
         }
 
         @Override

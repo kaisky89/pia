@@ -47,8 +47,8 @@ public class TestNotesManager {
 
     @Before
     public void setUp() throws NotesCommunicatorException {
-        notesManager = new NotesManager(new MyNotesManagerListener());
         communicator.setUsingSession(sessionInteger1);
+        notesManager = new NotesManager(new MyNotesManagerListener());
     }
 
     @After
@@ -111,29 +111,8 @@ public class TestNotesManager {
     }
 
     @Test
-    public void testReferenceOfTheNoteInList() {
-        // add a new note, remember the id
-        Integer index = notesManager.addNote(NoteType.TEXT);
+    public void testNote() {
 
-        // get two references of the same note
-        TextNoteInformation oldNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
-        TextNoteInformation newNote=  (TextNoteInformation) notesManager.getAllNotes().get(index);
-
-        // edit one reference
-        newNote.setText("FooBar.");
-
-        // the old one shouldn't be changed
-        assertFalse(newNote.getText().equals(oldNote.getText()));
-
-        // execute the change to NotesManager
-        notesManager.refreshNote(index, newNote);
-
-        // get changed Note
-        TextNoteInformation changedNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
-
-        // the old one now should be changed
-        assertTrue(oldNote.getText().equals(newNote.getText()));
-        assertTrue(oldNote.getText().equals(changedNote.getText()));
     }
 
     private static class MyNotesManagerListener implements NotesManagerListener {
