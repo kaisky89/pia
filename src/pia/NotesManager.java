@@ -67,7 +67,6 @@ public class NotesManager {
      * @param note The detailed Information of the new state of the Note.
      */
     public void refreshNote(int index, NoteInformation note){
-        System.out.println("refreshNote: Going to set at " + index + " the new Note: " + note);
 
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
@@ -104,6 +103,8 @@ public class NotesManager {
             notes.set(index, oldNote);
             return;
         }
+
+        //notes.set(index, note);
     }
 
     /**
@@ -289,6 +290,10 @@ public class NotesManager {
                 return;
             }
 
+            // if the published note isn't newer than ours, don't do anything
+            if (noteFromList.getLastChange().getTime() >= publishedItem.getLastChange().getTime())
+                return;
+
           //// onLocked(): is the item got locked? //////
 
             // get the index of the noteFromList
@@ -323,7 +328,7 @@ public class NotesManager {
           //// onChange(): is the item changed? //////
 
             // in every other case, there should be simple Changes in the Note
-            if (!publishedItem.equals(noteFromList)){
+            if (!publishedItem.equalsIgnoreId(noteFromList)){
                 // if so, edit it in list
                 notes.set(index, publishedItem);
 

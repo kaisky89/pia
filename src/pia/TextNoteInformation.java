@@ -30,6 +30,7 @@ public class TextNoteInformation extends NoteInformation{
 
     public void setText(String text) {
         this.text = text;
+        this.setLastChange();
     }
 
     @Override
