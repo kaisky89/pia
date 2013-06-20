@@ -1,6 +1,7 @@
 package pia;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -284,16 +285,63 @@ public class NotesManager {
                 return;
             }
 
+          //// onUnlocked(): is the item got unlocked? //////
+
+            // find out, if the noteFromList is locked, but the publishedItem isn't
+            if (noteFromList.isLocked() && !publishedItem.isLocked()) {
+                // if so, edit it in list
+                notes.set(index, publishedItem);
+
+                // notify the gui
+                listener.onUnlocked(index);
+
+                // and finish method
+                return;
+            }
+
+          //// onChange(): is the item changed? //////
+
+            // in every other case, there should be simple Changes in the Note
+            // if so, edit it in list
+            notes.set(index, publishedItem);
+
+            // notify the gui
+            listener.onChange(index);
         }
 
         @Override
         public void onDelete(Integer deletedItemId) {
-            //To change body of implemented methods use File | Settings | File Templates.
+
+            // find note which needed to be deleted
+            NoteInformation noteToDelete = null;
+            for (NoteInformation note : notes) {
+                if (note.getId().equals(deletedItemId)) {
+                    noteToDelete = note;
+                }
+            }
+
+            // get the index of the note
+            int index = notes.lastIndexOf(noteToDelete);
+
+            // delete the note from list
+            notes.remove(index);
+
+            // notify the gui
+            listener.onDelete(index);
         }
 
         @Override
         public void onPurge() {
-            //To change body of implemented methods use File | Settings | File Templates.
+            // get all ids, which are still in the list
+            List<Integer> ids = new LinkedList<>();
+            for (NoteInformation note : notes) {
+                ids.add(note.getId());
+            }
+
+            // use onDelete to remove all of them and notify the gui
+            for (Integer integer : ids) {
+                onDelete(integer);
+            }
         }
     }
 }
