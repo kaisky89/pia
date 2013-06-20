@@ -5,16 +5,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="489.0" prefWidth="734.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <GridPane prefHeight="489.0" prefWidth="734.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-        <fx:include source="../PlayerControls.fxml" maxWidth="1.7976931348623157E308" mouseTransparent="false" pickOnBounds="true" prefHeight="126.0" prefWidth="600.0" GridPane.columnIndex="0" GridPane.columnSpan="2147483647" GridPane.rowIndex="0" />
+        <fx:include source="PlayerControls.fxml" maxHeight="-1.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="-Infinity" mouseTransparent="false" pickOnBounds="true" prefHeight="122.0" prefWidth="110.0" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <fx:include source="Chat.fxml" disable="false" pickOnBounds="true" prefHeight="496.0" prefWidth="482.0" visible="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       </children>
       <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="279.0" minWidth="10.0" prefWidth="279.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="147.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
       </columnConstraints>
       <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
