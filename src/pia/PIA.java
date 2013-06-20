@@ -21,9 +21,11 @@ public class PIA extends Application {
         // set the locations of the different views
         SingletonViewManager.getInstance().addViewLocation("PIA Login", "views/Login.fxml");
         SingletonViewManager.getInstance().addViewLocation("PIA", "views/MainView.fxml");
+        SingletonViewManager.getInstance().addViewLocation("Note", "views/Note.fxml");
+        SingletonViewManager.getInstance().addViewLocation("NotesTest", "views/NotesTest.fxml");
         
         // set the starting scene
-        SingletonViewManager.getInstance().setScene("PIA Login");
+        SingletonViewManager.getInstance().setScene("NotesTest");
     }
 
     /**

@@ -9,7 +9,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="playerControls" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.999991552736901" prefWidth="61.99999672852573" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.PlayerControlsController">
+<AnchorPane id="AnchorPane" fx:id="PlayerControls" maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.999991552736901"
+            prefWidth="61.99999672852573" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pia.views.PlayerControlsController">
   <children>
     <HBox id="HBox" alignment="CENTER" prefHeight="90.0" prefWidth="454.499977929685" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -46,6 +49,6 @@
     </HBox>
   </children>
   <stylesheets>
-    <URL value="@playerControls.css" />
+    <URL value="@PlayerControls.css" />
   </stylesheets>
 </AnchorPane>
