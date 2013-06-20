@@ -38,6 +38,16 @@ public abstract class NoteInformation {
         NodeList noteTypeNodeList = document.getElementsByTagName("noteType");
         return NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
     }
+
+    static NoteInformation produceConcreteNoteInformation(NoteType noteType){
+        switch (noteType) {
+            case TEXT:
+                return new TextNoteInformation((long) 0, "");
+            default:
+                throw new IllegalArgumentException(
+                        "Cannot handle noteType: " + noteType);
+        }
+    }
     
     private Integer id;
     private Long timePosition;

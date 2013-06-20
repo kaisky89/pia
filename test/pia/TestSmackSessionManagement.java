@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  *
  * @author kaisky89
  */
-public class TestSessionManagement {
+public class TestSmackSessionManagement {
     
     private static NotesCommunicator communicator;
     private Integer sessionId;
@@ -31,7 +31,7 @@ public class TestSessionManagement {
     private static String description = "Dies ist nur ein Test";
     
     
-    public TestSessionManagement() {
+    public TestSmackSessionManagement() {
     }
     
     @BeforeClass
