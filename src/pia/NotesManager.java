@@ -234,7 +234,7 @@ public class NotesManager {
      * affect anything in the structure.
      * @return List of all Items.
      */
-    public List<NoteInformation> getAllNotes() throws InstantiationException {
+    public List<NoteInformation> getAllNotes() {
         List<NoteInformation> returnList = new ArrayList<>();
         for (NoteInformation note : notes) {
             try {
@@ -243,7 +243,6 @@ public class NotesManager {
                 InstantiationException newException = new InstantiationException("Error while trying " +
                         "to build the list.");
                 newException.initCause(e);
-                throw newException;
             }
         }
         return returnList;

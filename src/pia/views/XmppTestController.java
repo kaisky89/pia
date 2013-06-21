@@ -65,11 +65,11 @@ public class XmppTestController implements Initializable {
 
         // get the note for editing
         TextNoteInformation textNote = null;
-        try {
+        //try {
             textNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
-        } catch (InstantiationException e) {
-            SingletonViewManager.getInstance().showError(e);
-        }
+        //} catch (InstantiationException e) {
+        //    SingletonViewManager.getInstance().showError(e);
+        //}
 
         // edit the note
         textNote.setText(text);
@@ -94,11 +94,11 @@ public class XmppTestController implements Initializable {
             @Override
             public void run() {
                 List<NoteInformation> allNotes = null;
-                try {
+                //try {
                     allNotes = notesManager.getAllNotes();
-                } catch (InstantiationException e) {
-                    SingletonViewManager.getInstance().showError(e);
-                }
+                //} catch (InstantiationException e) {
+                //    SingletonViewManager.getInstance().showError(e);
+                //}
                 // get all items from NotesManager, set it to the gui list
                 for (int i = 0; i < allNotes.size(); i++) {
                     TextNoteInformation textNote = (TextNoteInformation) allNotes.get(i);
