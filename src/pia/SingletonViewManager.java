@@ -126,6 +126,7 @@ public class SingletonViewManager {
      * @param ex The exception which caused the error.
      */
     public void showError(Exception ex) {
+        ex.printStackTrace();
         Dialogs.showErrorDialog(stage, ex.getLocalizedMessage(), "An Error Occured", "Error", ex);
     }
 
