@@ -10,13 +10,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import pia.PIA;
-import pia.StreamPlayer;
+import pia.*;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
@@ -72,7 +72,7 @@ public class NotesPadController {
     }
 
     @FXML
-    public Parent addNewNote(MouseEvent event) throws IOException {
+    public Parent addNewNote(MouseEvent event) {
         Parent newNote = createNote();
         notesPad.getChildren().add(newNote);
         // TODO: find out the width dynamically
@@ -82,16 +82,37 @@ public class NotesPadController {
         return newNote;
     }
 
-    private Parent createNote() throws IOException {
+    public Parent addNewNote(NoteInformation ni) {
+        Parent note = createNote();
+        double time = ni.getTimePosition();
+        note.setLayoutX(time);
+        note.setLayoutY(0);
+        if (ni.getNoteType() == NoteType.TEXT) {
+            TextNoteInformation textnote = (TextNoteInformation) ni;
+            TextArea textarea = (TextArea) note.lookup("noteTextArea");
+            textarea.setText(textnote.getText());
+        }
+
+        notes.add(note);
+        notesPad.getChildren().add(note);
+        return note;
+    }
+
+    private Parent createNote() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
-        return (Parent) fxmlLoader.load();
+        try {
+            return (Parent) fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
      * Preload a note so that new notes are created with a smaller time penalty.
      * @throws IOException
      */
-    private void preloadNote() throws IOException {
+    private void preloadNote() {
         Stage stage = new Stage();
         Parent note = createNote();
         Scene scene = new Scene(note);
@@ -102,7 +123,7 @@ public class NotesPadController {
    }
 
     @FXML
-    void initialize() throws IOException {
+    void initialize() {
         // Preload a note
         preloadNote();
 
@@ -252,7 +273,33 @@ public class NotesPadController {
         autoScroll();
 
 
+        PIA.notesManager.addListener(new NotesManagerListener() {
+            @Override
+            public void onAdd(int indexOfAddedNote) {
+                NoteInformation note = PIA.notesManager.getAllNotes().get(indexOfAddedNote);
+                addNewNote(note);
+            }
 
+            @Override
+            public void onChange(int indexOfChangedNote) {
+
+            }
+
+            @Override
+            public void onDelete(int indexOfDeletedNote) {
+
+            }
+
+            @Override
+            public void onLocked(int indexOfLockedNote) {
+
+            }
+
+            @Override
+            public void onUnlocked(int indexOfUnlockedNote) {
+
+            }
+        });
 
 
     }

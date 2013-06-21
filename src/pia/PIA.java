@@ -21,7 +21,7 @@ public class PIA extends Application {
     public static SimpleObjectProperty<StreamPlayer> playerProperty = new
             SimpleObjectProperty<StreamPlayer>();
     public StreamPlayer streamPlayer;
-    public NotesManager notesManager;
+    public static NotesManager notesManager;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,7 +29,22 @@ public class PIA extends Application {
         //final String url = "http://familie-wittmann.dyndns.org/downloads/kurzerSong.mp3";
         final String url = "http://meta.metaebene.me/media/mm/mm112-in-werbung-bewegen.mp3";
 
-        // init all managers
+
+        NotesCommunicator smack = SingletonSmack.getInstance();
+        SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
+        smack.init();
+        if (smack.getSessionIds().size() > 0) {
+            Integer sessionID = smack.getSessionIds().get(0);
+            smack.setUsingSession(sessionID);
+        } else {
+            Integer sessionID = smack.addSession(new SessionInformation("test session", url,
+                    "description should not be empty"));
+            smack.setUsingSession(sessionID);
+        }
+        notesManager = new NotesManager();
+
+
+
         viewManager = SingletonViewManager.getInstance();
 
         // set the locations of the different views
@@ -54,18 +69,7 @@ public class PIA extends Application {
             }
         });
 
-        NotesCommunicator smack = SingletonSmack.getInstance();
-        SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
-        smack.init();
-        if (smack.getSessionIds().size() > 0) {
-            Integer sessionID = smack.getSessionIds().get(0);
-            smack.setUsingSession(sessionID);
-        } else {
-            Integer sessionID = smack.addSession(new SessionInformation("test session", url,
-                    "description should not be empty"));
-            smack.setUsingSession(sessionID);
-        }
-        notesManager = new NotesManager();
+
 
 
         // Stream player needs to be run in an other thread
