@@ -30,9 +30,6 @@
           <padding>
             <Insets fx:id="x1" />
           </padding>
-          <VBox.margin>
-            <Insets fx:id="x1" />
-          </VBox.margin>
         </HBox>
         <AnchorPane fx:id="noteBody" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
           <children>
