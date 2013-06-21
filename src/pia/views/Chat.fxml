@@ -7,38 +7,30 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.00007792968245" prefWidth="485.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <SplitPane dividerPositions="0.6925287356321839" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="409.0" prefWidth="350.0">
+    <SplitPane dividerPositions="0.8426501035196687" focusTraversable="true" prefHeight="254.0" prefWidth="217.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <SplitPane dividerPositions="0.7753086419753087" focusTraversable="true" orientation="VERTICAL" prefHeight="158.0" prefWidth="56.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                  <children>
-                    <TextArea prefHeight="315.0" prefWidth="255.0" text="Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf." wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                  <children>
-                    <TextArea prefHeight="86.0" prefWidth="255.0" text="Zum Chatten hier tippen." wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-              </items>
-            </SplitPane>
-          </children>
-        </AnchorPane>
-        <VBox prefHeight="200.0" prefWidth="100.0">
-          <children>
-            <Label text="Nick1" />
-            <Label text="Nick2" />
-            <Label text="Nick3" />
-          </children>
-          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-          </padding>
-        </VBox>
+        <SplitPane dividerPositions="0.9151670951156813" focusTraversable="true" orientation="VERTICAL" prefHeight="391.0" prefWidth="386.0">
+          <items>
+            <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefWidth="523.0" text="Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf." wrapText="true" />
+            <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefRowCount="1" prefWidth="-1.0" promptText="Zum Chatten hier tippen." text="" wrapText="true" />
+          </items>
+        </SplitPane>
+        <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-1.0" pannable="false" prefHeight="-1.0" prefViewportHeight="391.0" prefViewportWidth="85.0" prefWidth="-1.0">
+          <content>
+            <VBox fillWidth="true" maxHeight="-1.0" maxWidth="-1.0" minWidth="-1.0" prefHeight="389.0" prefWidth="-1.0">
+              <children>
+                <Label text="Nick1" />
+                <Label text="Nick2" />
+                <Label text="Nick3" />
+              </children>
+              <padding>
+                <Insets bottom="10.0" left="5.0" right="3.0" top="10.0" />
+              </padding>
+            </VBox>
+          </content>
+        </ScrollPane>
       </items>
     </SplitPane>
   </children>

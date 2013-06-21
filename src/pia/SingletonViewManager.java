@@ -23,18 +23,18 @@ import java.util.Map;
  * the JavaFX window, needs to be specified via <code>setStage()</code>.
  * @author kaisky89
  */
-public class SingletonViewManager {
+final public class SingletonViewManager {
 
-    private static SingletonViewManager instance = new SingletonViewManager();
+    final private static SingletonViewManager instance = new SingletonViewManager();
     private Stage stage;
-    private Map<String, String> viewLocation = new HashMap<>();
+    private Map<String, String> viewLocation = new HashMap<String, String>();
+    private Map<String, FXMLLoader> loaders = new HashMap<String, FXMLLoader>();
     
     /**
      * Private Constructor. Access to instance of this Class only via the static
      * method <code>getInstance()</code>
      */
-    private SingletonViewManager(){
-    }
+    private SingletonViewManager(){}
     
     /**
      * Returns the instance of this Singleton.
@@ -85,7 +85,9 @@ public class SingletonViewManager {
         String filename = getViewLocation(sceneName);
         Parent root;
         try {
-            root = FXMLLoader.load(getClass().getResource(filename));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(filename));
+            loaders.put(sceneName, loader);
+            root = (Parent) loader.load();
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
             return;
@@ -119,6 +121,14 @@ public class SingletonViewManager {
      */
     public String getViewLocation(String name){
         return viewLocation.get(name);
+    }
+
+    public FXMLLoader getLoader(String name) {
+        return loaders.get(name);
+    }
+
+    public <T> T getController(String name) {
+        return getLoader(name).<T>getController();
     }
 
     /**

@@ -10,8 +10,11 @@
 #prev {
     -fx-background-image: url("../res/prev.png");
 }
-#playpause {
+#play {
     -fx-background-image: url("../res/play.png");
+}
+#pause {
+    -fx-background-image: url("../res/pause.png");
 }
 #next {
     -fx-background-image: url("../res/next.png");
