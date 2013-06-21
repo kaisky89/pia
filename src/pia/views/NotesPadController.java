@@ -1,61 +1,128 @@
 package pia.views;
 
-import javafx.application.Platform;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import pia.PIA;
 import pia.StreamPlayer;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.binding.internal.libvlc_state_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 
+import java.io.IOException;
+import java.util.Vector;
 
-public class PlayerControlsController {
 
-    @FXML private AnchorPane root;
-    @FXML private Button previousTopicButton;
-    @FXML private Button seekBackButton;
-    @FXML private Button playPauseButton;
-    @FXML private Pane playPauseButtonIcon;
-    @FXML private Button seekForwardButton;
-    @FXML private Button nextTopicButton;
+public class NotesPadController {
 
+    private Vector<Parent> notes = new Vector<Parent>();
+    private Double time = 0.0;
     public StreamPlayer player;
+    Timeline scroller;
 
     @FXML
-    private void toggle() {
-        if (player != null) {
-            libvlc_state_t state = player.player.getMediaState();
-            if (state == libvlc_state_t.libvlc_Playing) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.player.pause();
-                    }
-                });
+    private AnchorPane root;
 
-            } else if (state == libvlc_state_t.libvlc_Paused) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.player.play();
-                    }
-                });
+    @FXML
+    private Pane notesPad;
 
-            }
-        }
+    public NotesPadController() {
     }
 
+    /**
+     * Get the next available position in the pad from the left side.
+     * @return position from left
+     */
+    private double getAvailablePosLeft() {
+        double widths = 0;
+        for (Parent note: notes) {
+            widths += note.getLayoutBounds().getWidth();
+        }
+        return notesPad.getPadding().getLeft() + widths;
+    }
+    /**
+     * Get the next available position in the pad from the right side.
+     * Please keep in mind that this is only a point. You might want to subtract
+     * the new note's width.
+     * @return position from right
+     */
+    private double getAvailablePosRight() {
+        return notesPad.getWidth()-notesPad.getPadding().getRight();
+    }
+
+    private void autoScroll() {
+        final double frametime = 1.0/24;
+    }
+
+    private void adjustNotePositions() {
+        for (Parent note: notes)
+            note.setLayoutX(note.getLayoutX()-time);
+    }
 
     @FXML
-    void initialize() {
-        root.setDisable(true);
-        nextTopicButton.setDisable(true);
+    public Parent addNewNote(MouseEvent event) throws IOException {
+        Parent newNote = createNote();
+        notesPad.getChildren().add(newNote);
+        // TODO: find out the width dynamically
+        newNote.setLayoutX(event.getX()-60);
+        newNote.setLayoutY(0);
+        notes.add(newNote);
+        return newNote;
+    }
+
+    private Parent createNote() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
+        return (Parent) fxmlLoader.load();
+    }
+
+    /**
+     * Preload a note so that new notes are created with a smaller time penalty.
+     * @throws IOException
+     */
+    private void preloadNote() throws IOException {
+        Stage stage = new Stage();
+        Parent note = createNote();
+        Scene scene = new Scene(note);
+        stage.setScene(scene);
+        stage.show();
+        stage.hide();
+        stage.close();
+   }
+
+    @FXML
+    void initialize() throws IOException {
+        // Preload a note
+        preloadNote();
+
+        double frametime = 1.0/30;
+        scroller = new Timeline(new KeyFrame(Duration.seconds(frametime),
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        //time += frametime;
+                        //System.out.println(player.player.getTime());
+                        //System.out.println(player.player.isSeekable());
+                        //System.out.println(player.player.getMediaState());
+
+                    }
+                }));
+        scroller.setCycleCount(Timeline.INDEFINITE);
+        //scroller.play();
+
+
+
         PIA.playerProperty.addListener(new ChangeListener<StreamPlayer>() {
             @Override
             public void changed(ObservableValue<? extends StreamPlayer> value,
@@ -77,14 +144,12 @@ public class PlayerControlsController {
                     }
                     @Override
                     public void playing(MediaPlayer player) {
-                        System.out.println("playing");
-                        playPauseButtonIcon.setId("pause");
+
                     }
 
                     @Override
                     public void paused(MediaPlayer player) {
-                        System.out.println("paused");
-                        playPauseButtonIcon.setId("play");
+
                     }
 
                     @Override
@@ -183,5 +248,12 @@ public class PlayerControlsController {
                 });
             }
         });
+
+        autoScroll();
+
+
+
+
+
     }
 }
