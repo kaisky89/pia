@@ -5,6 +5,9 @@
 package pia;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
 
 /**
@@ -33,11 +36,7 @@ public class PIA extends Application {
         viewManager.addViewLocation("PIA", "views/MainWindow.fxml");
         //viewManager.addViewLocation("Note", "views/Note.fxml");
         //viewManager.addViewLocation("NotesTest", "views/NotesTest.fxml");
-        SingletonViewManager.getInstance().addViewLocation("PIA Login", "views/Login.fxml");
-        SingletonViewManager.getInstance().addViewLocation("PIA", "views/MainView.fxml");
-        SingletonViewManager.getInstance().addViewLocation("Note", "views/Note.fxml");
-        SingletonViewManager.getInstance().addViewLocation("NotesTest", "views/NotesTest.fxml");
-        SingletonViewManager.getInstance().addViewLocation("XMPP Test", "views/XmppTest.fxml");
+        viewManager.addViewLocation("XMPP Test", "views/XmppTest.fxml");
 
         
         // set the starting scene
