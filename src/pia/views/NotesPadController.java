@@ -2,12 +2,11 @@ package pia.views;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
@@ -17,11 +16,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pia.*;
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 
@@ -87,18 +84,19 @@ public class NotesPadController {
         double time = ni.getTimePosition();
         note.setLayoutX(time);
         note.setLayoutY(0);
-        if (ni.getNoteType() == NoteType.TEXT) {
+        if (ni.getNoteType().equals(NoteType.TEXT)) {
             TextNoteInformation textnote = (TextNoteInformation) ni;
-            TextArea textarea = (TextArea) note.lookup("noteTextArea");
+            Node textareanode = note.lookup("#noteTextArea");
+            TextArea textarea = (TextArea) textareanode;
             textarea.setText(textnote.getText());
         }
-
         notes.add(note);
         notesPad.getChildren().add(note);
         return note;
     }
 
     private Parent createNote() {
+        System.out.println("creating new note");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
         try {
             return (Parent) fxmlLoader.load();
@@ -144,133 +142,166 @@ public class NotesPadController {
 
 
 
-        PIA.playerProperty.addListener(new ChangeListener<StreamPlayer>() {
-            @Override
-            public void changed(ObservableValue<? extends StreamPlayer> value,
-                                StreamPlayer oldPlayer, StreamPlayer newPlayer) {
-                player = newPlayer;
-                root.setDisable(false);
-                player.player.addMediaPlayerEventListener(new MediaPlayerEventListener() {
-                    @Override
-                    public void mediaChanged(MediaPlayer player, libvlc_media_t t, String s) {
+        //PIA.playerProperty.addListener(new ChangeListener<StreamPlayer>() {
+        //    @Override
+        //    public void changed(ObservableValue<? extends StreamPlayer> value,
+        //                        StreamPlayer oldPlayer, StreamPlayer newPlayer) {
+        //        player = newPlayer;
+        //        root.setDisable(false);
+        //        player.player.addMediaPlayerEventListener(new MediaPlayerEventListener() {
+        //            @Override
+        //            public void mediaChanged(MediaPlayer player, libvlc_media_t t, String s) {
+        //
+        //            }
+        //            @Override
+        //            public void opening(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void buffering(MediaPlayer player, float v) {
+        //
+        //            }
+        //            @Override
+        //            public void playing(MediaPlayer player) {
+        //
+        //            }
+        //
+        //            @Override
+        //            public void paused(MediaPlayer player) {
+        //
+        //            }
+        //
+        //            @Override
+        //            public void stopped(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void forward(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void backward(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void finished(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void timeChanged(MediaPlayer player, long l) {
+        //
+        //            }
+        //            @Override
+        //            public void positionChanged(MediaPlayer player, float v) {
+        //                System.out.println("pos changed");
+        //            }
+        //            @Override
+        //            public void seekableChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void pausableChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void titleChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void snapshotTaken(MediaPlayer player, String s) {
+        //
+        //            }
+        //            @Override
+        //            public void lengthChanged(MediaPlayer player, long l) {
+        //
+        //            }
+        //            @Override
+        //            public void videoOutput(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void error(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaMetaChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaSubItemAdded(MediaPlayer player, libvlc_media_t t) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaDurationChanged(MediaPlayer player, long l) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaParsedChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaFreed(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void mediaStateChanged(MediaPlayer player, int i) {
+        //
+        //            }
+        //
+        //            @Override
+        //            public void newMedia(MediaPlayer player) {
+        //
+        //            }
+        //            @Override
+        //            public void subItemPlayed(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void subItemFinished(MediaPlayer player, int i) {
+        //
+        //            }
+        //            @Override
+        //            public void endOfSubItems(MediaPlayer player) {
+        //
+        //            }
+        //        });
+        //    }
+        //});
+        //
+        //autoScroll();
+        //
+        //
+        //
+        // add note
+        int i = PIA.notesManager.addNote(NoteType.TEXT);
 
-                    }
-                    @Override
-                    public void opening(MediaPlayer player) {
+        // lock the note
+        PIA.notesManager.lockNote(i);
 
-                    }
-                    @Override
-                    public void buffering(MediaPlayer player, float v) {
+        // get the note
+        List<NoteInformation> allNotes = PIA.notesManager.getAllNotes();
+        NoteInformation noteInformation = allNotes.get(i);
 
-                    }
-                    @Override
-                    public void playing(MediaPlayer player) {
+        // edit the note
+        String string = "Dies ist ein neuer Text";
+        ((TextNoteInformation) noteInformation).setText(string);
+        ((TextNoteInformation) noteInformation).setTimePosition(400l);
 
-                    }
+        // save it to notesManager
+        PIA.notesManager.refreshNote(i, noteInformation);
 
-                    @Override
-                    public void paused(MediaPlayer player) {
+        // unlock the note
+        PIA.notesManager.unlockNote(i);
 
-                    }
 
-                    @Override
-                    public void stopped(MediaPlayer player) {
 
-                    }
-                    @Override
-                    public void forward(MediaPlayer player) {
+        List<NoteInformation> storedNotes = PIA.notesManager.getAllNotes();
+        for (NoteInformation note: storedNotes) {
+            addNewNote(note);
+        }
 
-                    }
-                    @Override
-                    public void backward(MediaPlayer player) {
-
-                    }
-                    @Override
-                    public void finished(MediaPlayer player) {
-
-                    }
-                    @Override
-                    public void timeChanged(MediaPlayer player, long l) {
-
-                    }
-                    @Override
-                    public void positionChanged(MediaPlayer player, float v) {
-                        System.out.println("pos changed");
-                    }
-                    @Override
-                    public void seekableChanged(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void pausableChanged(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void titleChanged(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void snapshotTaken(MediaPlayer player, String s) {
-
-                    }
-                    @Override
-                    public void lengthChanged(MediaPlayer player, long l) {
-
-                    }
-                    @Override
-                    public void videoOutput(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void error(MediaPlayer player) {
-
-                    }
-                    @Override
-                    public void mediaMetaChanged(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void mediaSubItemAdded(MediaPlayer player, libvlc_media_t t) {
-
-                    }
-                    @Override
-                    public void mediaDurationChanged(MediaPlayer player, long l) {
-
-                    }
-                    @Override
-                    public void mediaParsedChanged(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void mediaFreed(MediaPlayer player) {
-
-                    }
-                    @Override
-                    public void mediaStateChanged(MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void newMedia(MediaPlayer player) {
-
-                    }
-                    @Override
-                    public void subItemPlayed(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void subItemFinished(MediaPlayer player, int i) {
-
-                    }
-                    @Override
-                    public void endOfSubItems(MediaPlayer player) {
-
-                    }
-                });
-            }
-        });
-
-        autoScroll();
+        TextNoteInformation testnote = new TextNoteInformation(100l, "dies ist ein text");
+        addNewNote(testnote);
 
 
         PIA.notesManager.addListener(new NotesManagerListener() {

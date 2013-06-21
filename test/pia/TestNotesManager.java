@@ -42,7 +42,7 @@ public class TestNotesManager {
         SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
         communicator = SingletonSmack.getInstance();
         communicator.init();
-        //((SingletonSmack) communicator).resetAll();
+        ((SingletonSmack) communicator).resetAll();
         sessionInteger1 = communicator.addSession(new SessionInformation("TestSession1", "url", "TS"));
         sessionInteger2 = communicator.addSession(new SessionInformation("TestSession2", "url", "TS"));
     }
