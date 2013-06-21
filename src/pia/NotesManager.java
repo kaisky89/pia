@@ -18,7 +18,7 @@ public class NotesManager {
     private NotesManagerListener listener;
     private boolean isClosed;
 
-    // TODO: don't allow anyAction, if this NotesManager is already closed
+    // TODO: don't allow any Action, if this NotesManager is already closed
 
     /**
      * Creates a new instance of NotesManager. Expects a <code>NotesManagerListener</code> as Parameter.
@@ -26,11 +26,11 @@ public class NotesManager {
      *                             by this Manager.
      */
     public NotesManager(NotesManagerListener notesManagerListener){
-        // set the listener, do all the listening stuff
-        setListener(notesManagerListener);
-
         // do some initializing stuff
         init();
+
+        // set the listener, do all the listening stuff
+        setListener(notesManagerListener);
     }
 
     /**
@@ -41,7 +41,7 @@ public class NotesManager {
      */
     public int addNote(NoteType noteType) {
         // generate the new noteInformation
-        NoteInformation noteInformation = NoteInformation.produceConcreteNoteInformation(noteType);
+        NoteInformation noteInformation = NoteInformation.produceEmptyConcreteNoteInformation(noteType);
 
         // add it to NotesCommunicator
         try {
@@ -220,12 +220,21 @@ public class NotesManager {
 
     /**
      * Returns a List of all Notes. This is just for reading, editing the list won't
-     * affect anything in the structure, but may loose consistence, so you don't do it.
+     * affect anything in the structure.
      * @return List of all Items.
      */
-    public List<NoteInformation> getAllNotes(){
+    public List<NoteInformation> getAllNotes() throws InstantiationException {
         List<NoteInformation> returnList = new ArrayList<>();
-        returnList.addAll(notes);
+        for (NoteInformation note : notes) {
+            try {
+                returnList.add(NoteInformation.produceNoteInformation(note.toXml()));
+            } catch (NotesCommunicatorException e) {
+                InstantiationException newException = new InstantiationException("Error while trying " +
+                        "to build the list.");
+                newException.initCause(e);
+                throw newException;
+            }
+        }
         return returnList;
     }
 

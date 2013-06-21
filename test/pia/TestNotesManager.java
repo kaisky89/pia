@@ -49,7 +49,7 @@ public class TestNotesManager {
 
     @AfterClass
     public static void tearDownClass() throws XMPPException {
-        ((SingletonSmack) communicator).resetAll();
+        //((SingletonSmack) communicator).resetAll();
         communicator.close();
     }
 
@@ -92,7 +92,7 @@ public class TestNotesManager {
     }
 
     @Test
-    public void addNoteAndCheckIfIdExists() {
+    public void addNoteAndCheckIfIdExists() throws InstantiationException {
         int i = notesManager.addNote(NoteType.TEXT);
         NoteInformation noteInformation = notesManager.getAllNotes().get(i);
 
@@ -100,7 +100,7 @@ public class TestNotesManager {
     }
 
     @Test
-    public void addAndRefreshNote() {
+    public void addAndRefreshNote() throws InstantiationException {
         // add note
         int i = notesManager.addNote(NoteType.TEXT);
 
@@ -127,7 +127,7 @@ public class TestNotesManager {
     }
 
     @Test
-    public void testListenOnAdd() throws NotesCommunicatorException, InterruptedException {
+    public void testListenOnAdd() throws NotesCommunicatorException, InterruptedException, InstantiationException {
         // create a textNote
         TextNoteInformation textNote = new TextNoteInformation((long) 1873, "FooBar");
 
@@ -137,9 +137,9 @@ public class TestNotesManager {
         assertTrue(onAddIndex == -1);
 
         // onAdd shouldn't be called when changing a Note through NotesManager
+        notesManager.lockNote(index);
         TextNoteInformation noteAdded = (TextNoteInformation) notesManager.getAllNotes().get(index);
         noteAdded.setText("BarFoo");
-        notesManager.lockNote(index);
         notesManager.refreshNote(index, noteAdded);
         notesManager.unlockNote(index);
         Thread.sleep(200);
@@ -207,6 +207,9 @@ public class TestNotesManager {
         Integer noteId = notesManager.getAllNotes().get(index).getId();
         Integer sessionId = ((SingletonSmack)communicator).getUsingSession();
 
+        // remember the size of allNotes
+        int sizeOfAllNotes = notesManager.getAllNotes().size();
+
         // logout
         notesManager.close();
         communicator.close();
@@ -215,10 +218,20 @@ public class TestNotesManager {
         // set another user
         SingletonDataStore.getInstance().setUser(new UserData("user2", "123"));
 
+        // reset fields for listeners
+        onAddIndex = -1;
+        onChangeIndex = -1;
+        onDeleteIndex = -1;
+        onLockedIndex = -1;
+        onUnlockedIndex = -1;
+
         // login, prepare NotesManager
         communicator.init();
         communicator.setUsingSession(sessionId);
         notesManager = new NotesManager(new MyNotesManagerListener());
+
+        // check, if the size is the same
+        assertEquals(sizeOfAllNotes, notesManager.getAllNotes().size());
 
         // get the index of the locked note
         int newIndex = -1;
@@ -233,9 +246,67 @@ public class TestNotesManager {
             throw new IndexOutOfBoundsException("Cannot find item with id " + noteId + ".");
         }
 
+        // check, if the locking is ok.
         Assert.assertTrue(notesManager.isLockedByAnother(newIndex));
-        notesManager.lockNote(newIndex);
 
+        boolean exceptionIsThrown = false;
+        try {
+            notesManager.lockNote(newIndex);
+        } catch (Exception e) {
+            exceptionIsThrown = true;
+        }
+        assertTrue(exceptionIsThrown);
+
+        // add a note as new user
+        int index2 = notesManager.addNote(NoteType.TEXT);
+        notesManager.lockNote(index2);
+        TextNoteInformation note2 = (TextNoteInformation) notesManager.getAllNotes().get(index2);
+        note2.setText("This is a note from user2. It will be unlocked.");
+        notesManager.refreshNote(index2, note2);
+        notesManager.unlockNote(index2);
+        note2 = (TextNoteInformation) notesManager.getAllNotes().get(index2);
+        NoteInformation savedNote2 = NoteInformation.produceNoteInformation(note2.toXml());
+
+        // there should be no event handler called
+        assertEquals(-1, onAddIndex);
+        assertEquals(-1, onChangeIndex);
+        assertEquals(-1, onDeleteIndex);
+        assertEquals(-1, onLockedIndex);
+        assertEquals(-1, onUnlockedIndex);
+
+        // remember the new size
+        sizeOfAllNotes = notesManager.getAllNotes().size();
+
+        // logout
+        notesManager.close();
+        communicator.close();
+        communicator = SingletonSmack.getInstance();
+
+        // set another user
+        SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
+
+        // reset fields for listeners
+        onAddIndex = -1;
+        onChangeIndex = -1;
+        onDeleteIndex = -1;
+        onLockedIndex = -1;
+        onUnlockedIndex = -1;
+
+        // login, prepare NotesManager
+        communicator.init();
+        communicator.setUsingSession(sessionId);
+        notesManager = new NotesManager(new MyNotesManagerListener());
+
+        // check, if size is still the same
+        assertEquals(sizeOfAllNotes, notesManager.getAllNotes().size());
+
+        // get the note from user2 and check it.
+        for (NoteInformation note : notesManager.getAllNotes()) {
+            TextNoteInformation textNoteInformation = (TextNoteInformation) note;
+            if (textNoteInformation.getId().equals(savedNote2.getId())) {
+                assertTrue(textNoteInformation.equalsIgnoreId(savedNote2));
+            }
+        }
     }
 
     private static class MyNotesManagerListener implements NotesManagerListener {

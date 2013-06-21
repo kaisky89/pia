@@ -40,7 +40,7 @@ public abstract class NoteInformation {
         return NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
     }
 
-    static NoteInformation produceConcreteNoteInformation(NoteType noteType){
+    static NoteInformation produceEmptyConcreteNoteInformation(NoteType noteType){
         switch (noteType) {
             case TEXT:
                 return new TextNoteInformation((long) 0, "");
@@ -48,6 +48,21 @@ public abstract class NoteInformation {
                 throw new IllegalArgumentException(
                         "Cannot handle noteType: " + noteType);
         }
+    }
+
+    static NoteInformation produceNoteInformation(String xml) throws NotesCommunicatorException {
+        NoteInformation returnNoteInformation;
+
+        // get the type of the note in xml
+        NoteType noteType1 = getType(xml);
+
+        // produce an empty Concrete NoteInformation, based on the type
+        returnNoteInformation = produceEmptyConcreteNoteInformation(noteType1);
+
+        // fill the empty note with content from xml
+        returnNoteInformation.initFromXml(xml);
+
+        return returnNoteInformation;
     }
 
     private Integer id;
@@ -150,7 +165,7 @@ public abstract class NoteInformation {
 
     @Override
     public String toString() {
-        String returnString = "NoteInformation{\n" +
+        String returnString = this.getClass().getSimpleName()+ "{\n" +
                 "   id = " + id + ",\n" +
                 "   timePosition = " + timePosition + ",\n" +
                 "   noteType = " + noteType + ",\n" +
