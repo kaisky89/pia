@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -41,7 +42,7 @@ public class PIA extends Application {
         
         // set the starting scene
         viewManager.setStage(stage);
-        viewManager.setScene("PIA");
+        viewManager.setScene("PIA Login");
 
         // close cleanly
         viewManager.getStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -64,8 +65,8 @@ public class PIA extends Application {
                     "description should not be empty"));
             smack.setUsingSession(sessionID);
         }
-        NotesManagerListener notesListener = new NotesManagerListener();
-        NotesManager manager = new NotesManager(notesListener);
+        //NotesManagerListener notesListener = new NotesManagerListener();
+        //NotesManager manager = new NotesManager(notesListener);
 
 
         // Stream player needs to be run in an other thread
