@@ -16,10 +16,8 @@ public class NotesManager {
 
     private NotesCommunicator communicator = SingletonSmack.getInstance();
     private List<NoteInformation> notes = new ArrayList<>();
-    private Vector<NotesManagerListener> listener = new Vector<NotesManagerListener>();
-    private boolean isClosed;
-
-    // TODO: don't allow any Action, if this NotesManager is already closed
+    private Vector<NotesManagerListener> listener = new Vector<>();
+    private boolean isClosed = false;
 
 
     public NotesManager() {
@@ -29,7 +27,6 @@ public class NotesManager {
         } catch (NotesCommunicatorException e) {
             // TODO: need error handling here.
             e.printStackTrace();
-            return;
         }
     }
     /**
@@ -51,6 +48,7 @@ public class NotesManager {
      * @return The id of the new Note.
      */
     public int addNote(NoteType noteType) {
+        checkIsClosed();
         // generate the new noteInformation
         NoteInformation noteInformation = NoteInformation.produceEmptyConcreteNoteInformation(noteType);
 
@@ -81,6 +79,7 @@ public class NotesManager {
      * @param note The detailed Information of the new state of the Note.
      */
     public void refreshNote(int index, NoteInformation note){
+        checkIsClosed();
 
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
@@ -115,7 +114,6 @@ public class NotesManager {
             // TODO: need error handling here.
             e.printStackTrace();
             notes.set(index, oldNote);
-            return;
         }
 
         //notes.set(index, note);
@@ -126,6 +124,8 @@ public class NotesManager {
      * @param index Index of the Note, which needs to be deleted.
      */
     public void deleteNote(int index) {
+        checkIsClosed();
+
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
             throw new IllegalStateException("Cannot delete note with index "
@@ -156,6 +156,8 @@ public class NotesManager {
      * the note.
      */
     public boolean isLockedByAnother(int index) {
+        checkIsClosed();
+
         // get the requested note
         NoteInformation note = notes.get(index);
 
@@ -177,6 +179,8 @@ public class NotesManager {
      * @param index The index of the note, which shall be locked.
      */
     public void lockNote(int index) {
+        checkIsClosed();
+
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
             throw new IllegalStateException("Cannot lock note with index "
@@ -206,6 +210,8 @@ public class NotesManager {
      * @param index The index of the note, which shall be unlocked.
      */
     public void unlockNote(int index) {
+        checkIsClosed();
+
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
             throw new IllegalStateException("Cannot unlock note with index "
@@ -234,7 +240,9 @@ public class NotesManager {
      * affect anything in the structure.
      * @return List of all Items.
      */
-    public List<NoteInformation> getAllNotes() {
+    public List<NoteInformation> getAllNotes(){
+        checkIsClosed();
+
         List<NoteInformation> returnList = new ArrayList<>();
         for (NoteInformation note : notes) {
             try {
@@ -252,8 +260,8 @@ public class NotesManager {
      * Closes the NotesManager. NotesCommunicator Connection will still be stable.
      */
     public void close(){
-        if (isClosed) throw new IllegalStateException("This NotesManager is already " +
-                "closed. Please create a new one.");
+        checkIsClosed();
+
         isClosed = true;
 
         try {
@@ -292,6 +300,12 @@ public class NotesManager {
                 // TODO: Exception Handling
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void checkIsClosed() {
+        if (isClosed) {
+            throw new IllegalStateException("This instance is closed. Please create a new one.");
         }
     }
 

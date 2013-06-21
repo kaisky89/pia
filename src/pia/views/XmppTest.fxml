@@ -11,7 +11,8 @@
 <AnchorPane id="AnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.XmppTestController">
   <children>
     <ListView id="list" fx:id="listView" editable="true" prefHeight="371.0" prefWidth="600.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-    <Button layoutX="9.0" layoutY="376.0" mnemonicParsing="false" onAction="#handleButtonAdd" text="+" />
-    <Button layoutX="42.0" layoutY="376.0" mnemonicParsing="false" text="-" />
+    <Button layoutX="530.0" layoutY="376.0" mnemonicParsing="false" onAction="#handleButtonAdd" text="+" />
+    <Button layoutX="563.0" layoutY="376.0" mnemonicParsing="false" text="-" />
+    <TextField layoutX="14.0" layoutY="376.0" prefWidth="509.0" />
   </children>
 </AnchorPane>

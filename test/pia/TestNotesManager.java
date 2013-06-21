@@ -309,6 +309,25 @@ public class TestNotesManager {
         }
     }
 
+    @Test
+    public void testOnDelete() throws Exception {
+        // Add and delete a note
+        notesManager.deleteNote(notesManager.addNote(NoteType.TEXT));
+
+        // assert that the onDeleteIndex didn't change
+        assertEquals(-1, onDeleteIndex);
+
+        // Add a note. Get the id
+        final int i = notesManager.addNote(NoteType.TEXT);
+        final Integer id = notesManager.getAllNotes().get(i).getId();
+
+        // use the communicator to delete it
+        communicator.deleteNote(id);
+
+        // now, the onDeleteIndex should have been changed
+        assertTrue(-1 != onDeleteIndex);
+    }
+
     private static class MyNotesManagerListener implements NotesManagerListener {
         @Override
         public void onAdd(int indexOfAddedNote) {
