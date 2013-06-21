@@ -7,12 +7,15 @@ package pia;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.pubsub.*;
 import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 import pia.tools.SmartIterable;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +63,10 @@ public class SingletonSmack implements NotesCommunicator {
         usingSessionInteger = null;
     }
 
+    public Integer getUsingSession() {
+        return usingSessionInteger;
+    }
+
     // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
     public void init() throws NotesCommunicatorException {
@@ -89,6 +96,7 @@ public class SingletonSmack implements NotesCommunicator {
             ex.printStackTrace();
         }
         connection.disconnect();
+        SingletonSmack.instance = new SingletonSmack();
     }
 
     // Session Management //////////////////////////////////////////////////////
@@ -132,12 +140,17 @@ public class SingletonSmack implements NotesCommunicator {
         List<Integer> returnList = new LinkedList<>();
         try {
             CollectionNode node = mgr.getNode(sessionCollection);
-            Iterable<String> iterable = new SmartIterable<>(node.getNodeConfiguration().getChildren());
+            DiscoverInfo discoverInfo = node.discoverInfo();
+            PacketExtension packetExtension = discoverInfo.getExtension("x", "jabber:x:data");
+            //getChildren
+
+            ConfigureForm nodeConfiguration = node.getNodeConfiguration();
+            Iterable<String> iterable = new SmartIterable<>(nodeConfiguration.getChildren());
             for (String string : iterable) {
                 returnList.add(new Integer(string.split(":")[1]));
             }
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("cannot find " + sessionCollection, ex);
+            throw new NotesCommunicatorException(new Date() + ": cannot get info from " + sessionCollection, ex);
         }
         return returnList;
     }
@@ -464,11 +477,16 @@ public class SingletonSmack implements NotesCommunicator {
             // If Node doesn't exist, create the node
             ConfigureForm form = new ConfigureForm(FormType.submit);
             form.setAccessModel(AccessModel.open);
-            form.setDeliverPayloads(true);
             form.setNotifyRetract(true);
             form.setPersistentItems(true);
             form.setPublishModel(PublishModel.open);
             form.setNodeType(NodeType.collection);
+            form.setChildrenAssociationPolicy(ChildrenAssociationPolicy.all);
+            form.setNotifyConfig(true);
+            form.setNotifyDelete(true);
+            form.setNotifyRetract(true);
+            form.setPresenceBasedDelivery(false);
+            form.setSubscribe(true);
             mgr.createNode(sessionCollection, form);
             nextSessionId = 0;
         }

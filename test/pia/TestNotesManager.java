@@ -194,6 +194,50 @@ public class TestNotesManager {
         assertTrue(newTextNote.equalsIgnoreId(textNote));
     }
 
+    @Test
+    public void testDifferentUsers() throws Exception {
+        // add a new item, leave it locked
+        int index = notesManager.addNote(NoteType.TEXT);
+        notesManager.lockNote(index);
+        TextNoteInformation textNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        textNote.setText("This note is going to be locked.");
+        notesManager.refreshNote(index, textNote);
+
+        // remember the id of the note, remember the sessionId
+        Integer noteId = notesManager.getAllNotes().get(index).getId();
+        Integer sessionId = ((SingletonSmack)communicator).getUsingSession();
+
+        // logout
+        notesManager.close();
+        communicator.close();
+        communicator = SingletonSmack.getInstance();
+
+        // set another user
+        SingletonDataStore.getInstance().setUser(new UserData("user2", "123"));
+
+        // login, prepare NotesManager
+        communicator.init();
+        communicator.setUsingSession(sessionId);
+        notesManager = new NotesManager(new MyNotesManagerListener());
+
+        // get the index of the locked note
+        int newIndex = -1;
+        for (int i = 0; i < notesManager.getAllNotes().size(); i++) {
+            if (notesManager.getAllNotes().get(i).getId().equals(noteId)){
+                newIndex = i;
+                break;
+            }
+        }
+
+        if (newIndex == -1) {
+            throw new IndexOutOfBoundsException("Cannot find item with id " + noteId + ".");
+        }
+
+        Assert.assertTrue(notesManager.isLockedByAnother(newIndex));
+        notesManager.lockNote(newIndex);
+
+    }
+
     private static class MyNotesManagerListener implements NotesManagerListener {
         @Override
         public void onAdd(int indexOfAddedNote) {

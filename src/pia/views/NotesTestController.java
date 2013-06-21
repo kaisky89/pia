@@ -100,7 +100,7 @@ public class NotesTestController {
         preloadNote();
 
         StreamPlayer player = new StreamPlayer();
-        player.play();
+        //player.play();
 
         autoScroll();
 

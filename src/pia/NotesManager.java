@@ -16,6 +16,9 @@ public class NotesManager {
     private NotesCommunicator communicator = SingletonSmack.getInstance();
     private List<NoteInformation> notes = new ArrayList<>();
     private NotesManagerListener listener;
+    private boolean isClosed;
+
+    // TODO: don't allow anyAction, if this NotesManager is already closed
 
     /**
      * Creates a new instance of NotesManager. Expects a <code>NotesManagerListener</code> as Parameter.
@@ -224,6 +227,22 @@ public class NotesManager {
         List<NoteInformation> returnList = new ArrayList<>();
         returnList.addAll(notes);
         return returnList;
+    }
+
+    /**
+     * Closes the NotesManager. NotesCommunicator Connection will still be stable.
+     */
+    public void close(){
+        if (isClosed) throw new IllegalStateException("This NotesManager is already " +
+                "closed. Please create a new one.");
+        isClosed = true;
+
+        try {
+            communicator.unsetNotesListener();
+        } catch (NotesCommunicatorException e) {
+            // TODO: handle Exception
+            e.printStackTrace();
+        }
     }
 
     private void setListener(NotesManagerListener listener) {
