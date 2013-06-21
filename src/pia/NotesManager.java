@@ -3,6 +3,7 @@ package pia;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This Class acts as a persistent module to handle requests and events between
@@ -15,22 +16,32 @@ public class NotesManager {
 
     private NotesCommunicator communicator = SingletonSmack.getInstance();
     private List<NoteInformation> notes = new ArrayList<>();
-    private NotesManagerListener listener;
+    private Vector<NotesManagerListener> listener = new Vector<NotesManagerListener>();
     private boolean isClosed;
 
     // TODO: don't allow any Action, if this NotesManager is already closed
 
+
+    public NotesManager() {
+        init();
+        try {
+            communicator.setNotesListener(new MyNotesCommunicatorListener());
+        } catch (NotesCommunicatorException e) {
+            // TODO: need error handling here.
+            e.printStackTrace();
+            return;
+        }
+    }
     /**
      * Creates a new instance of NotesManager. Expects a <code>NotesManagerListener</code> as Parameter.
      * @param notesManagerListener A <code>NotesManagerListener</code> which handles all events called
      *                             by this Manager.
      */
     public NotesManager(NotesManagerListener notesManagerListener){
-        // do some initializing stuff
-        init();
+        this();
 
         // set the listener, do all the listening stuff
-        setListener(notesManagerListener);
+        addListener(notesManagerListener);
     }
 
     /**
@@ -254,15 +265,14 @@ public class NotesManager {
         }
     }
 
+    @Deprecated
     private void setListener(NotesManagerListener listener) {
-        this.listener = listener;
-        try {
-            communicator.setNotesListener(new MyNotesCommunicatorListener());
-        } catch (NotesCommunicatorException e) {
-            // TODO: need error handling here.
-            e.printStackTrace();
-            return;
-        }
+        this.listener.add(listener);
+
+    }
+
+    public void addListener(NotesManagerListener listener) {
+        this.listener.add(listener);
     }
 
     private void init() {
@@ -284,8 +294,6 @@ public class NotesManager {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     private class MyNotesCommunicatorListener implements NotesCommunicatorListener<NoteInformation> {
@@ -312,7 +320,8 @@ public class NotesManager {
                 notes.add(publishedItem);
 
                 // notify the gui
-                listener.onAdd(notes.size()-1);
+                for (NotesManagerListener l: listener)
+                    l.onAdd(notes.size()-1);
 
                 // and finish method
                 return;
@@ -333,7 +342,8 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                listener.onLocked(index);
+                for (NotesManagerListener l: listener)
+                    l.onLocked(index);
 
                 // and finish method
                 return;
@@ -347,7 +357,8 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                listener.onUnlocked(index);
+                for (NotesManagerListener l: listener)
+                    l.onUnlocked(index);
 
                 // and finish method
                 return;
@@ -361,7 +372,8 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                listener.onChange(index);
+                for (NotesManagerListener l: listener)
+                    l.onChange(index);
             }
         }
 
@@ -383,7 +395,8 @@ public class NotesManager {
             notes.remove(index);
 
             // notify the gui
-            listener.onDelete(index);
+            for (NotesManagerListener l: listener)
+                l.onDelete(index);
         }
 
         @Override

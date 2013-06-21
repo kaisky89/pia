@@ -35,7 +35,7 @@ import java.util.List;
  */
 final public class SingletonSmack implements NotesCommunicator {
 
-    final private static SingletonSmack instance = new SingletonSmack();
+    private static SingletonSmack instance = new SingletonSmack();
     private ItemEventListener itemListener;
     private ItemDeleteListener deleteListener;
 
