@@ -16,6 +16,9 @@ public class NotesManager {
     private NotesCommunicator communicator = SingletonSmack.getInstance();
     private List<NoteInformation> notes = new ArrayList<>();
     private NotesManagerListener listener;
+    private boolean isClosed;
+
+    // TODO: don't allow any Action, if this NotesManager is already closed
 
     /**
      * Creates a new instance of NotesManager. Expects a <code>NotesManagerListener</code> as Parameter.
@@ -23,11 +26,11 @@ public class NotesManager {
      *                             by this Manager.
      */
     public NotesManager(NotesManagerListener notesManagerListener){
-        // set the listener, do all the listening stuff
-        setListener(notesManagerListener);
-
         // do some initializing stuff
         init();
+
+        // set the listener, do all the listening stuff
+        setListener(notesManagerListener);
     }
 
     /**
@@ -38,7 +41,7 @@ public class NotesManager {
      */
     public int addNote(NoteType noteType) {
         // generate the new noteInformation
-        NoteInformation noteInformation = NoteInformation.produceConcreteNoteInformation(noteType);
+        NoteInformation noteInformation = NoteInformation.produceEmptyConcreteNoteInformation(noteType);
 
         // add it to NotesCommunicator
         try {
@@ -67,6 +70,7 @@ public class NotesManager {
      * @param note The detailed Information of the new state of the Note.
      */
     public void refreshNote(int index, NoteInformation note){
+
         // check, if the note is locked by someone else
         if (isLockedByAnother(index))
             throw new IllegalStateException("Cannot refresh note with index "
@@ -102,6 +106,8 @@ public class NotesManager {
             notes.set(index, oldNote);
             return;
         }
+
+        //notes.set(index, note);
     }
 
     /**
@@ -214,13 +220,38 @@ public class NotesManager {
 
     /**
      * Returns a List of all Notes. This is just for reading, editing the list won't
-     * affect anything in the structure, but may loose consistence, so you don't do it.
+     * affect anything in the structure.
      * @return List of all Items.
      */
-    public List<NoteInformation> getAllNotes(){
+    public List<NoteInformation> getAllNotes() throws InstantiationException {
         List<NoteInformation> returnList = new ArrayList<>();
-        returnList.addAll(notes);
+        for (NoteInformation note : notes) {
+            try {
+                returnList.add(NoteInformation.produceNoteInformation(note.toXml()));
+            } catch (NotesCommunicatorException e) {
+                InstantiationException newException = new InstantiationException("Error while trying " +
+                        "to build the list.");
+                newException.initCause(e);
+                throw newException;
+            }
+        }
         return returnList;
+    }
+
+    /**
+     * Closes the NotesManager. NotesCommunicator Connection will still be stable.
+     */
+    public void close(){
+        if (isClosed) throw new IllegalStateException("This NotesManager is already " +
+                "closed. Please create a new one.");
+        isClosed = true;
+
+        try {
+            communicator.unsetNotesListener();
+        } catch (NotesCommunicatorException e) {
+            // TODO: handle Exception
+            e.printStackTrace();
+        }
     }
 
     private void setListener(NotesManagerListener listener) {
@@ -234,9 +265,27 @@ public class NotesManager {
         }
     }
 
-    private void init(){
-        // initializes the communicator. Not sure, if this happens right here...
-        //communicator.init();
+    private void init() {
+
+        // get all Elements from communicator, write it into the list
+        List<Integer> noteIds = null;
+        try {
+            noteIds = communicator.getNoteIds();
+        } catch (NotesCommunicatorException e) {
+            // TODO: Exception Handling
+            e.printStackTrace();
+        }
+
+        for (Integer integer : noteIds) {
+            try {
+                notes.add(communicator.getNoteInformation(integer));
+            } catch (NotesCommunicatorException e) {
+                // TODO: Exception Handling
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     private class MyNotesCommunicatorListener implements NotesCommunicatorListener<NoteInformation> {
@@ -268,6 +317,10 @@ public class NotesManager {
                 // and finish method
                 return;
             }
+
+            // if the published note isn't newer than ours, don't do anything
+            if (noteFromList.getLastChange().getTime() >= publishedItem.getLastChange().getTime())
+                return;
 
           //// onLocked(): is the item got locked? //////
 
@@ -303,7 +356,7 @@ public class NotesManager {
           //// onChange(): is the item changed? //////
 
             // in every other case, there should be simple Changes in the Note
-            if (!publishedItem.equals(noteFromList)){
+            if (!publishedItem.equalsIgnoreId(noteFromList)){
                 // if so, edit it in list
                 notes.set(index, publishedItem);
 

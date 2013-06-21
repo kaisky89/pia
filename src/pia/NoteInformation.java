@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public abstract class NoteInformation {
         return NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
     }
 
-    static NoteInformation produceConcreteNoteInformation(NoteType noteType){
+    static NoteInformation produceEmptyConcreteNoteInformation(NoteType noteType){
         switch (noteType) {
             case TEXT:
                 return new TextNoteInformation((long) 0, "");
@@ -49,15 +50,36 @@ public abstract class NoteInformation {
         }
     }
 
+    static NoteInformation produceNoteInformation(String xml) throws NotesCommunicatorException {
+        NoteInformation returnNoteInformation;
+
+        // get the type of the note in xml
+        NoteType noteType1 = getType(xml);
+
+        // produce an empty Concrete NoteInformation, based on the type
+        returnNoteInformation = produceEmptyConcreteNoteInformation(noteType1);
+
+        // fill the empty note with content from xml
+        returnNoteInformation.initFromXml(xml);
+
+        return returnNoteInformation;
+    }
+
     private Integer id;
     private Long timePosition;
     private NoteType noteType;
     private String lockedBy;
+    private Date lastChange;
 
     public NoteInformation(Long timePosition, NoteType noteType){
         setTimePosition(timePosition);
         setNoteType(noteType);
         unlock();
+        setLastChange();
+    }
+
+    public void setLastChange() {
+        this.lastChange = new Date();
     }
 
     public NoteInformation(String xml) throws NotesCommunicatorException{
@@ -84,8 +106,11 @@ public abstract class NoteInformation {
         NodeList noteTypeNodeList = document.getElementsByTagName("noteType");
         this.noteType = NoteType.valueOf(noteTypeNodeList.item(0).getTextContent());
 
-        NodeList lockedByTypeNodeList = document.getElementsByTagName("lockedBy");
-        this.lockedBy = lockedByTypeNodeList.item(0).getTextContent();
+        NodeList lockedByNodeList = document.getElementsByTagName("lockedBy");
+        this.lockedBy = lockedByNodeList.item(0).getTextContent();
+
+        NodeList lastChangeNodeList = document.getElementsByTagName("lastChange");
+        this.lastChange = new Date(new Long(lastChangeNodeList.item(0).getTextContent()));
 
         NodeList attributeNodeList = document.getElementsByTagName("attribute");
         HashMap<String, String> map = new HashMap<>();
@@ -138,6 +163,25 @@ public abstract class NoteInformation {
         return result;
     }
 
+    @Override
+    public String toString() {
+        String returnString = this.getClass().getSimpleName()+ "{\n" +
+                "   id = " + id + ",\n" +
+                "   timePosition = " + timePosition + ",\n" +
+                "   noteType = " + noteType + ",\n" +
+                "   lockedBy = " + lockedBy + ",\n" +
+                "   lastChange = " + lastChange + ",\n" +
+                "   Attributes{\n";
+        for (String key : getAttributes().keySet())
+            returnString +=
+                    "      " + key + " = " + getAttributes().get(key) + ",\n";
+
+        returnString += "   }\n" + "}";
+
+        return returnString;
+    }
+
+
     public final Integer getId() {
         return id;
     }
@@ -160,18 +204,22 @@ public abstract class NoteInformation {
 
     public final void setId(Integer id) {
         this.id = id;
+        setLastChange();
     }
 
     public final void setNoteType(NoteType noteType) {
         this.noteType = noteType;
+        setLastChange();
     }
 
     public final void setTimePosition(Long timePosition) {
         this.timePosition = timePosition;
+        setLastChange();
     }
 
     public final void setLocked(String jid) {
         this.lockedBy = jid;
+        setLastChange();
     }
 
     public final String toXml(){
@@ -181,7 +229,8 @@ public abstract class NoteInformation {
                 + "<id>" + getId() + "</id>"
                 + "<timePosition>" + getTimePosition() + "</timePosition>"
                 + "<noteType>" + getNoteType() + "</noteType>"
-                + "<lockedBy>" + lockedBy + "</lockedBy>";
+                + "<lockedBy>" + lockedBy + "</lockedBy>"
+                + "<lastChange>" + lastChange.getTime() + "</lastChange>";
         for (Map.Entry<String, String> entry : getAttributes().entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -197,5 +246,9 @@ public abstract class NoteInformation {
 
     public void unlock() {
         lockedBy = "free";
+    }
+
+    public Date getLastChange() {
+        return lastChange;
     }
 }

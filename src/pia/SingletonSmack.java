@@ -7,12 +7,24 @@ package pia;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.pubsub.*;
 import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
+import org.w3c.dom.*;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import pia.tools.SmartIterable;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +72,10 @@ final public class SingletonSmack implements NotesCommunicator {
         usingSessionInteger = null;
     }
 
+    public Integer getUsingSession() {
+        return usingSessionInteger;
+    }
+
     // NotesCommunicator Interface Implementation //////////////////////////////
     @Override
     public void init() throws NotesCommunicatorException {
@@ -89,6 +105,7 @@ final public class SingletonSmack implements NotesCommunicator {
             ex.printStackTrace();
         }
         connection.disconnect();
+        SingletonSmack.instance = new SingletonSmack();
     }
 
     // Session Management //////////////////////////////////////////////////////
@@ -132,12 +149,15 @@ final public class SingletonSmack implements NotesCommunicator {
         List<Integer> returnList = new LinkedList<>();
         try {
             CollectionNode node = mgr.getNode(sessionCollection);
-            Iterable<String> iterable = new SmartIterable<>(node.getNodeConfiguration().getChildren());
-            for (String string : iterable) {
+            DiscoverInfo discoverInfo = node.discoverInfo();
+            PacketExtension packetExtension = discoverInfo.getExtension("x", "jabber:x:data");
+            List<String> childrenIds = getChildrenFromPacketExtension(packetExtension);
+
+            for (String string : childrenIds) {
                 returnList.add(new Integer(string.split(":")[1]));
             }
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException("cannot find " + sessionCollection, ex);
+            throw new NotesCommunicatorException(new Date() + ": cannot get info from " + sessionCollection, ex);
         }
         return returnList;
     }
@@ -464,11 +484,16 @@ final public class SingletonSmack implements NotesCommunicator {
             // If Node doesn't exist, create the node
             ConfigureForm form = new ConfigureForm(FormType.submit);
             form.setAccessModel(AccessModel.open);
-            form.setDeliverPayloads(true);
             form.setNotifyRetract(true);
             form.setPersistentItems(true);
             form.setPublishModel(PublishModel.open);
             form.setNodeType(NodeType.collection);
+            form.setChildrenAssociationPolicy(ChildrenAssociationPolicy.all);
+            form.setNotifyConfig(true);
+            form.setNotifyDelete(true);
+            form.setNotifyRetract(true);
+            form.setPresenceBasedDelivery(false);
+            form.setSubscribe(true);
             mgr.createNode(sessionCollection, form);
             nextSessionId = 0;
         }
@@ -606,7 +631,7 @@ final public class SingletonSmack implements NotesCommunicator {
         NoteType noteType = NoteInformation.getType(xml);
 
         // Produce the specific NoteInformation, instantiate it with the given xml
-        NoteInformation noteInformation = NoteInformation.produceConcreteNoteInformation(noteType);
+        NoteInformation noteInformation = NoteInformation.produceEmptyConcreteNoteInformation(noteType);
         noteInformation.initFromXml(xml);
 
         // finally, return the finished noteInformation
@@ -698,5 +723,44 @@ final public class SingletonSmack implements NotesCommunicator {
                     "Error while trying to get leafNode: " + getNotesLeafNodeString(sessionInteger), ex);
         }
         return leafNode;
+    }
+
+    private List<String> getChildrenFromPacketExtension(PacketExtension packetExtension) throws NotesCommunicatorException {
+        // prepare variables
+        List<String> returnList = new LinkedList<>();
+        String xml = packetExtension.toXML();
+
+        // parse xml
+        Document document;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            StringReader sr = new StringReader(xml);
+            document = builder.parse(new InputSource(sr));
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            throw new NotesCommunicatorException("Error while parsing xml: " + xml, ex);
+        }
+
+        // find the field, where the children are listed
+        NodeList fieldNodeList = document.getElementsByTagName("field");
+        Node fieldNodeSessions = null;
+        for (int i = 0; i < fieldNodeList.getLength(); i++) {
+            Node fieldNode = fieldNodeList.item(i);
+            Node var = fieldNode.getAttributes().getNamedItem("var");
+            if (var != null) {
+                if (var.getNodeValue().equals("pubsub#children")) {
+                    fieldNodeSessions = fieldNode;
+                }
+            }
+        }
+
+        // get all values as children
+        for (int i = 0; i < fieldNodeSessions.getChildNodes().getLength(); i++) {
+            Node child = fieldNodeSessions.getChildNodes().item(i);
+            // System.out.println("getChildrenFromPacketExtension: (" + i + ") " + child.getTextContent());
+            returnList.add(child.getTextContent());
+        }
+
+        return returnList;
     }
 }
