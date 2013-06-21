@@ -59,7 +59,7 @@ public class LoginController {
                 passwordField.getText(), anon));
         try {
             SingletonSmack.getInstance().init();
-            SingletonViewManager.getInstance().setScene("PIA");
+            SingletonViewManager.getInstance().setScene("XMPP Test", false);
         } catch (NotesCommunicatorException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }
