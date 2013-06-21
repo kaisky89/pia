@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
 import javafx.application.Application;
@@ -11,10 +7,6 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-/**
- *
- * @author kaisky89
- */
 public class PIA extends Application {
 
     public SingletonViewManager viewManager;
@@ -70,14 +62,12 @@ public class PIA extends Application {
         });
 
 
-
-
         // Stream player needs to be run in an other thread
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 streamPlayer = new StreamPlayer(url);
-                //streamPlayer.playStream();
+                streamPlayer.playStream();
                 //((MainWindowController) viewManager.getController("PIA")).setPlayer
                 // (streamPlayer);
                 playerProperty.setValue(streamPlayer);

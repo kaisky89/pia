@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia.views;
 
 import javafx.event.ActionEvent;
@@ -11,11 +7,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import pia.*;
 
-/**
- * FXML Controller class
- *
- * @author kaisky89
- */
 public class LoginController {
     
     @FXML private TextField usernameField;
@@ -59,7 +50,7 @@ public class LoginController {
                 passwordField.getText(), anon));
         try {
             SingletonSmack.getInstance().init();
-            SingletonViewManager.getInstance().setScene("XMPP Test", false);
+            SingletonViewManager.getInstance().setScene("PIA", false);
         } catch (NotesCommunicatorException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }

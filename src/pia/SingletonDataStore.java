@@ -1,13 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
-/**
- *
- * @author kaisky89
- */
 final public class SingletonDataStore {
     final private static SingletonDataStore instance = new SingletonDataStore();
     

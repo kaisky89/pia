@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
 import javafx.fxml.FXMLLoader;
@@ -21,7 +17,6 @@ import java.util.Map;
  * Before <code>setScene()</code> can be used, scenes must be defined via
  * <code>addViewLocation()</code>. Also, the <Code>Stage</code>, which controls
  * the JavaFX window, needs to be specified via <code>setStage()</code>.
- * @author kaisky89
  */
 final public class SingletonViewManager {
 

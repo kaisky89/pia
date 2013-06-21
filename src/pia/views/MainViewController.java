@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia.views;
 
 import java.net.URL;
@@ -22,11 +18,6 @@ import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
 import org.jivesoftware.smackx.pubsub.listener.ItemDeleteListener;
 import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
 
-/**
- * FXML Controller class
- *
- * @author kaisky89
- */
 public class MainViewController implements Initializable {
 
     @FXML

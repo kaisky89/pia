@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
 import org.w3c.dom.Document;
@@ -19,10 +15,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author kaisky89
- */
 public abstract class NoteInformation {
 
     static NoteType getType(String xml) throws NotesCommunicatorException {

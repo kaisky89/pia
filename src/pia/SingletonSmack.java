@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
 import org.jivesoftware.smack.Connection;
@@ -29,10 +25,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author kaisky89
- */
 final public class SingletonSmack implements NotesCommunicator {
 
     private static SingletonSmack instance = new SingletonSmack();

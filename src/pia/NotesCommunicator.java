@@ -6,8 +6,7 @@ import java.util.List;
  * necessary for a Communcation Tool (i.e. XMPP) to work with ShowNotes. This Interface needs
  * to abstract from the using technology to only the Notes themselves, including
  * session management and EventListeners.
- *
- * @author kaisky89
+
  */
 public interface NotesCommunicator {
     

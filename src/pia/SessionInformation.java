@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pia;
 
 import java.io.StringReader;
@@ -13,10 +9,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-/**
- *
- * @author kaisky89
- */
 public class SessionInformation {
 
     private Integer id;
