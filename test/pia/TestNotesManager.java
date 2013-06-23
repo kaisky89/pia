@@ -315,6 +315,7 @@ public class TestNotesManager {
         notesManager.deleteNote(notesManager.addNote(NoteType.TEXT));
 
         // assert that the onDeleteIndex didn't change
+        Thread.sleep(200);
         assertEquals(-1, onDeleteIndex);
 
         // Add a note. Get the id
@@ -325,7 +326,57 @@ public class TestNotesManager {
         communicator.deleteNote(id);
 
         // now, the onDeleteIndex should have been changed
+        Thread.sleep(200);
         assertTrue(-1 != onDeleteIndex);
+    }
+
+    @Test
+    public void testOnLock() throws Exception {
+
+        // Add a note. Get the id
+        final int index = notesManager.addNote(NoteType.TEXT);
+        final Integer id = notesManager.getAllNotes().get(index).getId();
+
+        // lock it, unlock it through NotesManager
+        notesManager.lockNote(index);
+        notesManager.unlockNote(index);
+
+        // assert that onLock isn't been called
+        Thread.sleep(200);
+        assertEquals(-1, onLockedIndex);
+
+        // use the communicator to lock
+        communicator.lockNote(id);
+
+        // now, the onLock should have been changed
+        Thread.sleep(200);
+        assertTrue(-1 != onLockedIndex);
+
+        // unlock the note
+        notesManager.unlockNote(index);
+    }
+
+    @Test
+    public void testOnUnlock() throws Exception {
+        // Add a note. Get the id
+        final int index = notesManager.addNote(NoteType.TEXT);
+        final Integer id = notesManager.getAllNotes().get(index).getId();
+
+        // lock it, unlock it through NotesManager
+        notesManager.lockNote(index);
+        notesManager.unlockNote(index);
+
+        // assert that onUnLock isn't been called
+        Thread.sleep(200);
+        assertEquals(-1, onUnlockedIndex);
+
+        // use the communicator to lock and to unlock
+        communicator.lockNote(id);
+        communicator.unlockNote(id);
+
+        // now, the onUnLock should have been changed
+        Thread.sleep(200);
+        assertTrue(-1 != onUnlockedIndex);
     }
 
     private static class MyNotesManagerListener implements NotesManagerListener {

@@ -91,7 +91,7 @@ public class TestSmackNoteListener {
     }
     
     @Test
-    public void sameNumberOfPublishedItemsAsDone() throws NotesCommunicatorException{
+    public void sameNumberOfPublishedItemsAsDone() throws NotesCommunicatorException, InterruptedException {
         int oldNumber = publishedItems;
         
         communicator.setNotesListener(itemListener);
@@ -104,7 +104,8 @@ public class TestSmackNoteListener {
         communicator.addNote(noteInformation2);
         
         communicator.unsetNotesListener();
-        
+
+        Thread.sleep(200);
         assertTrue(publishedItems == oldNumber + 6);
     }
     

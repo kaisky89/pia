@@ -347,7 +347,7 @@ public class NotesManager {
             int index = notes.lastIndexOf(noteFromList);
 
             // find out, if the noteFromList isn't locked, but the publishedItem is
-            if ((!noteFromList.isLocked()) && (publishedItem.isLocked())) {
+            if (!noteFromList.isLocked() && publishedItem.isLocked()) {
                 // if so, edit it in list
                 notes.set(index, publishedItem);
 
