@@ -9,7 +9,7 @@ import javafx.stage.WindowEvent;
 
 public class PIA extends Application {
 
-    public SingletonViewManager viewManager;
+    public static SingletonViewManager viewManager;
     public static SimpleObjectProperty<StreamPlayer> playerProperty = new
             SimpleObjectProperty<StreamPlayer>();
     public StreamPlayer streamPlayer;
@@ -21,8 +21,12 @@ public class PIA extends Application {
         //final String url = "http://familie-wittmann.dyndns.org/downloads/kurzerSong.mp3";
         final String url = "http://meta.metaebene.me/media/mm/mm112-in-werbung-bewegen.mp3";
 
+        // start all managers
 
+        // 1. Notes Communicator
         NotesCommunicator smack = SingletonSmack.getInstance();
+
+        // TODO: get login and session data from login view
         SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
         smack.init();
         if (smack.getSessionIds().size() > 0) {
@@ -33,10 +37,11 @@ public class PIA extends Application {
                     "description should not be empty"));
             smack.setUsingSession(sessionID);
         }
+
+        // 2. Notes Manager
         notesManager = new NotesManager();
 
-
-
+        // 3. View Manager
         viewManager = SingletonViewManager.getInstance();
 
         // set the locations of the different views
@@ -62,7 +67,7 @@ public class PIA extends Application {
         });
 
 
-        // Stream player needs to be run in an other thread
+        // stream player needs to be run in an other thread
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

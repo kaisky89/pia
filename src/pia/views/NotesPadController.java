@@ -22,7 +22,6 @@ import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Vector;
 
 
@@ -301,35 +300,35 @@ public class NotesPadController {
         //
         //
         // add note
-        int i = PIA.notesManager.addNote(NoteType.TEXT);
+        //int i = PIA.notesManager.addNote(NoteType.TEXT);
+        //
+        //// lock the note
+        //PIA.notesManager.lockNote(i);
+        //
+        //// get the note
+        //List<NoteInformation> allNotes = PIA.notesManager.getAllNotes();
+        //NoteInformation noteInformation = allNotes.get(i);
+        //
+        //// edit the note
+        //String string = "Dies ist ein neuer Text";
+        //((TextNoteInformation) noteInformation).setText(string);
+        //((TextNoteInformation) noteInformation).setTimePosition(400l);
+        //
+        //// save it to notesManager
+        //PIA.notesManager.refreshNote(i, noteInformation);
+        //
+        //// unlock the note
+        //PIA.notesManager.unlockNote(i);
 
-        // lock the note
-        PIA.notesManager.lockNote(i);
-
-        // get the note
-        List<NoteInformation> allNotes = PIA.notesManager.getAllNotes();
-        NoteInformation noteInformation = allNotes.get(i);
-
-        // edit the note
-        String string = "Dies ist ein neuer Text";
-        ((TextNoteInformation) noteInformation).setText(string);
-        ((TextNoteInformation) noteInformation).setTimePosition(400l);
-
-        // save it to notesManager
-        PIA.notesManager.refreshNote(i, noteInformation);
-
-        // unlock the note
-        PIA.notesManager.unlockNote(i);
 
 
+        //List<NoteInformation> storedNotes = PIA.notesManager.getAllNotes();
+        //for (NoteInformation note: storedNotes) {
+        //    addNewNote(note);
+        //}
 
-        List<NoteInformation> storedNotes = PIA.notesManager.getAllNotes();
-        for (NoteInformation note: storedNotes) {
-            addNewNote(note);
-        }
-
-        TextNoteInformation testnote = new TextNoteInformation(100l, "dies ist ein text");
-        addNewNote(testnote);
+        //TextNoteInformation testnote = new TextNoteInformation(100l, "dies ist ein text");
+        //addNewNote(testnote);
 
 
         PIA.notesManager.addListener(new NotesManagerListener() {

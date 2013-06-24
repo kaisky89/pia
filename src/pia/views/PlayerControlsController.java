@@ -109,7 +109,7 @@ public class PlayerControlsController {
                     }
                     @Override
                     public void positionChanged(MediaPlayer player, float v) {
-                        System.out.println("pos changed");
+                        //System.out.println("pos changed");
                     }
                     @Override
                     public void seekableChanged(MediaPlayer player, int i) {
