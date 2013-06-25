@@ -1,8 +1,6 @@
 package pia;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -10,9 +8,7 @@ import javafx.stage.WindowEvent;
 public class PIA extends Application {
 
     public static SingletonViewManager viewManager;
-    public static SimpleObjectProperty<StreamPlayer> playerProperty = new
-            SimpleObjectProperty<StreamPlayer>();
-    public StreamPlayer streamPlayer;
+    public static StreamPlayer streamPlayer;
     public static NotesManager notesManager;
 
     @Override
@@ -41,15 +37,14 @@ public class PIA extends Application {
         // 2. Notes Manager
         notesManager = new NotesManager();
 
+        streamPlayer = new StreamPlayer(url);
+
         // 3. View Manager
         viewManager = SingletonViewManager.getInstance();
 
         // set the locations of the different views
         viewManager.addViewLocation("PIA Login", "views/Login.fxml");
         viewManager.addViewLocation("PIA", "views/MainWindow.fxml");
-        //viewManager.addViewLocation("Note", "views/Note.fxml");
-        //viewManager.addViewLocation("NotesTest", "views/NotesTest.fxml");
-        viewManager.addViewLocation("XMPP Test", "views/XmppTest.fxml");
 
         
         // set the starting scene
@@ -61,21 +56,8 @@ public class PIA extends Application {
             @Override
             public void handle(WindowEvent event) {
                 if (streamPlayer != null) {
-                    streamPlayer.destroy();
+                    streamPlayer.release();
                 }
-            }
-        });
-
-
-        // stream player needs to be run in an other thread
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamPlayer = new StreamPlayer(url);
-                streamPlayer.playStream();
-                //((MainWindowController) viewManager.getController("PIA")).setPlayer
-                // (streamPlayer);
-                playerProperty.setValue(streamPlayer);
             }
         });
     }

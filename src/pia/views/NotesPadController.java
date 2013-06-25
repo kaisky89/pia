@@ -2,8 +2,6 @@ package pia.views;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,8 +16,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pia.*;
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -99,7 +95,7 @@ public class NotesPadController {
     }
 
     private Parent createNote() {
-        System.out.println("creating new note");
+        //System.out.println("creating new note");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
         try {
             return (Parent) fxmlLoader.load();
@@ -143,157 +139,6 @@ public class NotesPadController {
         scroller.setCycleCount(Timeline.INDEFINITE);
         //scroller.play();
 
-
-
-        PIA.playerProperty.addListener(new ChangeListener<StreamPlayer>() {
-            @Override
-            public void changed(ObservableValue<? extends StreamPlayer> value,
-                                StreamPlayer oldPlayer, StreamPlayer newPlayer) {
-                player = newPlayer;
-                root.setDisable(false);
-                player.player.addMediaPlayerEventListener(new MediaPlayerEventListener() {
-                    @Override
-                    public void mediaChanged(uk.co.caprica.vlcj.player.MediaPlayer player, libvlc_media_t t, String s) {
-
-                    }
-
-                    @Override
-                    public void opening(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void buffering(uk.co.caprica.vlcj.player.MediaPlayer player, float v) {
-
-                    }
-
-                    @Override
-                    public void playing(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void paused(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void stopped(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void forward(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void backward(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void finished(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void timeChanged(uk.co.caprica.vlcj.player.MediaPlayer player, long l) {
-
-                    }
-
-                    @Override
-                    public void positionChanged(uk.co.caprica.vlcj.player.MediaPlayer player, float v) {
-
-                    }
-
-                    @Override
-                    public void seekableChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void pausableChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void titleChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void snapshotTaken(uk.co.caprica.vlcj.player.MediaPlayer player, String s) {
-
-                    }
-
-                    @Override
-                    public void lengthChanged(uk.co.caprica.vlcj.player.MediaPlayer player, long l) {
-
-                    }
-
-                    @Override
-                    public void videoOutput(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void error(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void mediaMetaChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void mediaSubItemAdded(uk.co.caprica.vlcj.player.MediaPlayer player, libvlc_media_t t) {
-
-                    }
-
-                    @Override
-                    public void mediaDurationChanged(uk.co.caprica.vlcj.player.MediaPlayer player, long l) {
-
-                    }
-
-                    @Override
-                    public void mediaParsedChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void mediaFreed(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void mediaStateChanged(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void newMedia(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-
-                    @Override
-                    public void subItemPlayed(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void subItemFinished(uk.co.caprica.vlcj.player.MediaPlayer player, int i) {
-
-                    }
-
-                    @Override
-                    public void endOfSubItems(uk.co.caprica.vlcj.player.MediaPlayer player) {
-
-                    }
-                });
-            }
-        });
         //
         //autoScroll();
         //

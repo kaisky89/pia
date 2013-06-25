@@ -1,68 +1,80 @@
 package pia;
 
-import uk.co.caprica.vlcj.player.*;
-import uk.co.caprica.vlcj.player.headless.*;
+import uk.co.caprica.vlcj.binding.internal.libvlc_state_t;
+import uk.co.caprica.vlcj.component.AudioMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
- * Audio player for an audio stream or file.
- * The <code>play()</code> method creates a new thread, so make sure you stop playback or call
- * <code>Thread.currentThread().join()</code> to wait for it to exit by itself (which it doesn't
- * yet).
+ * StreamPlayer is an audio player for an audio stream or file.
+ * It's a proxy of VLCJ's headless player with many convenience methods.
+ * This class is meant to be instantiated once for every URI. IF you need to play another file,
+ * create a new instance.
+ *
  */
-public class StreamPlayer {
+public class StreamPlayer extends MediaPlayerEventHandler {
 
     private final String url;
-    private final MediaPlayerFactory factory;
-    private static StreamPlayer globalInstance;
+    private final AudioMediaPlayerComponent mediaPlayerComponent;
+    private final MediaPlayer player;
 
-    public final HeadlessMediaPlayer player;
-
-    public StreamPlayer createInstance(String url) {
-        if (globalInstance == null)
-            return globalInstance = new StreamPlayer(url);
-        else
-            throw new IllegalStateException("Global instance already created");
-    }
-
-    public static StreamPlayer getInstance() {
-        if (globalInstance != null)
-            return globalInstance;
-        else
-            throw new IllegalStateException("Please create an instance first!");
-
-    }
+    // alternative:
+    //private final MediaPlayerFactory factory = new MediaPlayerFactory();
+    //private final MediaPlayer player = factory.newHeadlessMediaPlayer();
 
     public StreamPlayer(String url) {
+        mediaPlayerComponent = new AudioMediaPlayerComponent();
+        player = mediaPlayerComponent.getMediaPlayer();
+        setupEventListeners();
         this.url = url;
-        factory = new MediaPlayerFactory();
-        player = factory.newHeadlessMediaPlayer();
+        // Many methods of MediaPlayer will return null (e.g. getMediaState()) if this method
+        // wasn't called at least once!
+        player.playMedia(url);
+        player.stop();
     }
 
-    // This class is executable for test purposes
-    public static void main(String[] args) {
-        String url = "http://mp1.somafm.com:8808";
-        new StreamPlayer(url).playStream();
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void play() {
+        System.out.println("play");
+        libvlc_state_t state = player.getMediaState();
+        if (state.equals(libvlc_state_t.libvlc_Paused))
+            player.play();
+        else if (state.equals(libvlc_state_t.libvlc_Stopped))
+            player.playMedia(url);
+    }
+    public void pause() {
+        System.out.println("pause");
+        player.pause();
+    }
+    public void seekRelative(long seconds) {
+        long newTime = player.getTime() + seconds;
+        if (player.getTime()+seconds < 0) {
+            player.setTime(0);
+        } else {
+            player.setTime(newTime);
         }
     }
-
-    public void playStream() {
-        player.playMedia(url);
+    public void seek(long seconds) {
+        player.setTime(seconds);
+    }
+    public boolean isPlaying() {
+        libvlc_state_t state = player.getMediaState();
+        if (state != null && state.equals(libvlc_state_t.libvlc_Playing))
+            return true;
+        return false;
+    }
+    public boolean isPaused() {
+        return player.getMediaState().equals(libvlc_state_t.libvlc_Paused);
+    }
+    public boolean isStopped() {
+        return player.getMediaState().equals(libvlc_state_t.libvlc_Stopped);
     }
 
-    public void destroy() {
+    public void release() {
         player.stop();
-        player.release();
-        factory.release();
-        //try {
-        //    System.out.println("join");
-        //    Thread.currentThread().join();
-        //} catch (InterruptedException e) {
-        //    e.printStackTrace();
-        //}
-        //System.out.println("joined");
+        mediaPlayerComponent.release(true);
+    }
+
+    @Override
+    MediaPlayer getMediaPlayer() {
+        return player;
     }
 }
