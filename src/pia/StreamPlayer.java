@@ -26,10 +26,12 @@ public class StreamPlayer extends MediaPlayerEventHandler {
         player = mediaPlayerComponent.getMediaPlayer();
         setupEventListeners();
         this.url = url;
-        // Many methods of MediaPlayer will return null (e.g. getMediaState()) if this method
-        // wasn't called at least once!
-        player.playMedia(url);
-        player.stop();
+        // Many methods of MediaPlayer will return null (e.g. getMediaState()) if prepareMedia()
+        // or playMedia() wasn't called at least once!
+        player.prepareMedia(url);
+
+        //player.playMedia(url);
+        //player.stop();
     }
 
     public void play() {
@@ -55,17 +57,25 @@ public class StreamPlayer extends MediaPlayerEventHandler {
     public void seek(long seconds) {
         player.setTime(seconds);
     }
+
     public boolean isPlaying() {
-        libvlc_state_t state = player.getMediaState();
-        if (state != null && state.equals(libvlc_state_t.libvlc_Playing))
-            return true;
-        return false;
+        return player.getMediaState().equals(libvlc_state_t.libvlc_Playing);
     }
     public boolean isPaused() {
         return player.getMediaState().equals(libvlc_state_t.libvlc_Paused);
     }
+
+    /**
+     * returns true if playback state is stopped or 'nothing special', otherwise false
+     * @return
+     */
     public boolean isStopped() {
-        return player.getMediaState().equals(libvlc_state_t.libvlc_Stopped);
+        libvlc_state_t state = player.getMediaState();
+        return (state.equals(libvlc_state_t.libvlc_Stopped) ||
+                state.equals(libvlc_state_t.libvlc_NothingSpecial));
+    }
+    public float getBufferingProgress() {
+        return 0;
     }
 
     public void release() {

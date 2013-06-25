@@ -13,7 +13,10 @@
   <children>
     <HBox id="HBox" alignment="CENTER" prefHeight="90.0" prefWidth="454.499977929685" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-        <Button id="seekBackButton" fx:id="previousTopicButton" cancelButton="false" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0" text="" HBox.hgrow="ALWAYS">
+        <Button fx:id="previousTopicButton" cancelButton="false" defaultButton="false"
+                maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                minWidth="-1.0" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0"
+                text="" HBox.hgrow="ALWAYS" onAction="#previousTopic">
           <graphic>
             <Pane id="rev" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con">
               <padding>
@@ -22,7 +25,9 @@
             </Pane>
           </graphic>
         </Button>
-        <Button id="seekBackButton" fx:id="seekBackwardButton" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
+        <Button fx:id="seekBackwardButton" defaultButton="false"
+                maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                mnemonicParsing="false" text="" HBox.hgrow="ALWAYS" onAction="#seekBackward">
           <graphic>
             <Pane id="prev" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
@@ -32,12 +37,16 @@
             <Pane id="pause" fx:id="playPauseButtonIcon" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
-        <Button fx:id="seekForwardButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
+        <Button fx:id="seekForwardButton" maxHeight="1.7976931348623157E308"
+                maxWidth="1.7976931348623157E308" mnemonicParsing="false" text=""
+                HBox.hgrow="ALWAYS" onAction="#seekForward">
           <graphic>
             <Pane id="next" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
         </Button>
-        <Button id="seekBackButton" fx:id="nextTopicButton" defaultButton="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="" HBox.hgrow="ALWAYS">
+        <Button fx:id="nextTopicButton" defaultButton="false" maxHeight="1.7976931348623157E308"
+                maxWidth="1.7976931348623157E308" mnemonicParsing="false" text=""
+                HBox.hgrow="ALWAYS" onAction="#nextTopic">
           <graphic>
             <Pane id="for" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="50.0" prefWidth="50.0" styleClass="button-con" />
           </graphic>
