@@ -49,7 +49,7 @@ public class NoteController {
 
     @FXML
     void initialize() {
-        System.out.println("init note");
+        //System.out.println("init note");
         noteTextArea.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue,

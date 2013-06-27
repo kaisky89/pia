@@ -12,9 +12,6 @@ import java.util.Vector;
  * Be sure to call this class' constructor from subclass (<code>super()</code>).
  */
 abstract public class MediaPlayerEventHandler {
-    abstract public class PlayerEventListener {
-        abstract public void actionPerformed(MediaPlayer player);
-    }
 
     private Vector<PlayerEventListener> playingListeners    = new Vector<>(3, 1);
     private Vector<PlayerEventListener> pausedListeners     = new Vector<>(3, 1);
@@ -23,6 +20,7 @@ abstract public class MediaPlayerEventHandler {
     private Vector<PlayerEventListener> timeListeners       = new Vector<>(3, 1);
     private Vector<PlayerEventListener> errorListeners      = new Vector<>(3, 1);
     private Vector<PlayerEventListener> stateListeners      = new Vector<>(3, 1);
+    private Vector<PlayerEventListener> bufferingListeners  = new Vector<>(3, 1);
 
     private boolean isSetUp = false;
 
@@ -48,24 +46,25 @@ abstract public class MediaPlayerEventHandler {
 
                 @Override
                 public void buffering(MediaPlayer player, float v) {
-
+                    for (PlayerEventListener listener : bufferingListeners)
+                        listener.actionPerformed(player);
                 }
 
                 @Override
                 public void playing(MediaPlayer player) {
-                    for (StreamPlayer.PlayerEventListener listener : playingListeners)
+                    for (PlayerEventListener listener : playingListeners)
                         listener.actionPerformed(player);
                 }
 
                 @Override
                 public void paused(MediaPlayer player) {
-                    for (StreamPlayer.PlayerEventListener listener : pausedListeners)
+                    for (PlayerEventListener listener : pausedListeners)
                         listener.actionPerformed(player);
                 }
 
                 @Override
                 public void stopped(MediaPlayer player) {
-                    for (StreamPlayer.PlayerEventListener listener : stoppedListeners)
+                    for (PlayerEventListener listener : stoppedListeners)
                         listener.actionPerformed(player);
                 }
 
@@ -81,13 +80,13 @@ abstract public class MediaPlayerEventHandler {
 
                 @Override
                 public void finished(MediaPlayer player) {
-                    for (StreamPlayer.PlayerEventListener listener : finishedListeners)
+                    for (PlayerEventListener listener : finishedListeners)
                         listener.actionPerformed(player);
                 }
 
                 @Override
                 public void timeChanged(MediaPlayer player, long time) {
-                    for (StreamPlayer.PlayerEventListener listener : timeListeners)
+                    for (PlayerEventListener listener : timeListeners)
                         listener.actionPerformed(player);
 
                 }
@@ -129,7 +128,7 @@ abstract public class MediaPlayerEventHandler {
 
                 @Override
                 public void error(MediaPlayer player) {
-                    for (StreamPlayer.PlayerEventListener listener : errorListeners)
+                    for (PlayerEventListener listener : errorListeners)
                         listener.actionPerformed(player);
                 }
 
@@ -160,7 +159,7 @@ abstract public class MediaPlayerEventHandler {
 
                 @Override
                 public void mediaStateChanged(MediaPlayer player, int newState) {
-                    for (StreamPlayer.PlayerEventListener listener : stateListeners)
+                    for (PlayerEventListener listener : stateListeners)
                         listener.actionPerformed(player);
                 }
 
@@ -184,6 +183,7 @@ abstract public class MediaPlayerEventHandler {
 
                 }
             });
+        isSetUp = true;
     }
 
     public void addPlayingListener(PlayerEventListener listener) {
