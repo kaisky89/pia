@@ -24,7 +24,7 @@ public class TestNotesManager {
     static Integer sessionInteger1;
     static Integer sessionInteger2;
 
-    private NotesManager notesManager;
+    private NotesPersistenceManager notesPersistenceManager;
 
     private static int onAddIndex = -1;
     private static int onChangeIndex = -1;
@@ -56,7 +56,7 @@ public class TestNotesManager {
     @Before
     public void setUp() throws NotesCommunicatorException {
         communicator.setUsingSession(sessionInteger1);
-        notesManager = new NotesManager(new MyNotesManagerListener());
+        notesPersistenceManager = new NotesPersistenceManager(new MyNotesPersistenceManagerListener());
         onAddIndex = -1;
         onChangeIndex = -1;
         onDeleteIndex = -1;
@@ -70,7 +70,7 @@ public class TestNotesManager {
     
     @Test
     public void testAddNote(){
-        notesManager.addNote(NoteType.TEXT);
+        notesPersistenceManager.addNote(NoteType.TEXT);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestNotesManager {
         // add some notes, save the indexes in a list
         List<Integer> integers = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            integers.add(notesManager.addNote(NoteType.TEXT));
+            integers.add(notesPersistenceManager.addNote(NoteType.TEXT));
         }
 
         // check, if the indexes increments by one
@@ -93,8 +93,8 @@ public class TestNotesManager {
 
     @Test
     public void addNoteAndCheckIfIdExists() throws InstantiationException {
-        int i = notesManager.addNote(NoteType.TEXT);
-        NoteInformation noteInformation = notesManager.getAllNotes().get(i);
+        int i = notesPersistenceManager.addNote(NoteType.TEXT);
+        NoteInformation noteInformation = notesPersistenceManager.getAllNotes().get(i);
 
         assertTrue(noteInformation.getId() != null);
     }
@@ -102,27 +102,27 @@ public class TestNotesManager {
     @Test
     public void addAndRefreshNote() throws InstantiationException {
         // add note
-        int i = notesManager.addNote(NoteType.TEXT);
+        int i = notesPersistenceManager.addNote(NoteType.TEXT);
 
         // lock the note
-        notesManager.lockNote(i);
+        notesPersistenceManager.lockNote(i);
 
         // get the note
-        List<NoteInformation> allNotes = notesManager.getAllNotes();
+        List<NoteInformation> allNotes = notesPersistenceManager.getAllNotes();
         NoteInformation noteInformation = allNotes.get(i);
 
         // edit the note
         String string = "Dies ist ein neuer Text";
         ((TextNoteInformation) noteInformation).setText(string);
 
-        // save it to notesManager
-        notesManager.refreshNote(i, noteInformation);
+        // save it to notesPersistenceManager
+        notesPersistenceManager.refreshNote(i, noteInformation);
 
         // unlock the note
-        notesManager.unlockNote(i);
+        notesPersistenceManager.unlockNote(i);
 
         // test, if the note is changed
-        String text = ((TextNoteInformation) notesManager.getAllNotes().get(i)).getText();
+        String text = ((TextNoteInformation) notesPersistenceManager.getAllNotes().get(i)).getText();
         assertEquals(string, text);
     }
 
@@ -131,17 +131,17 @@ public class TestNotesManager {
         // create a textNote
         TextNoteInformation textNote = new TextNoteInformation((long) 1873, "FooBar");
 
-        // onAdd shouldn't be called when adding through NotesManager
-        int index = notesManager.addNote(NoteType.TEXT);
+        // onAdd shouldn't be called when adding through NotesPersistenceManager
+        int index = notesPersistenceManager.addNote(NoteType.TEXT);
         Thread.sleep(200);
         assertTrue(onAddIndex == -1);
 
-        // onAdd shouldn't be called when changing a Note through NotesManager
-        notesManager.lockNote(index);
-        TextNoteInformation noteAdded = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        // onAdd shouldn't be called when changing a Note through NotesPersistenceManager
+        notesPersistenceManager.lockNote(index);
+        TextNoteInformation noteAdded = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
         noteAdded.setText("BarFoo");
-        notesManager.refreshNote(index, noteAdded);
-        notesManager.unlockNote(index);
+        notesPersistenceManager.refreshNote(index, noteAdded);
+        notesPersistenceManager.unlockNote(index);
         Thread.sleep(200);
         assertTrue(onAddIndex == -1);
 
@@ -156,7 +156,7 @@ public class TestNotesManager {
         assertTrue(onAddIndex != -1);
 
         // expect the same Note Values as it was published
-        TextNoteInformation newTextNote = (TextNoteInformation) notesManager.getAllNotes().get(onAddIndex);
+        TextNoteInformation newTextNote = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(onAddIndex);
         assertTrue(newTextNote.equalsIgnoreId(textNote));
     }
 
@@ -165,17 +165,17 @@ public class TestNotesManager {
         // create a textNote
         TextNoteInformation textNote = new TextNoteInformation((long) 1873, "FooBar");
 
-        // onChange shouldn't be called when adding through NotesManager
-        int index = notesManager.addNote(NoteType.TEXT);
+        // onChange shouldn't be called when adding through NotesPersistenceManager
+        int index = notesPersistenceManager.addNote(NoteType.TEXT);
         Thread.sleep(200);
         assertTrue(onChangeIndex == -1);
 
-        // onChange shouldn't be called when changing a Note through NotesManager
-        notesManager.lockNote(index);
-        TextNoteInformation noteAdded = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        // onChange shouldn't be called when changing a Note through NotesPersistenceManager
+        notesPersistenceManager.lockNote(index);
+        TextNoteInformation noteAdded = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
         noteAdded.setText("BarFoo");
-        notesManager.refreshNote(index, noteAdded);
-        notesManager.unlockNote(index);
+        notesPersistenceManager.refreshNote(index, noteAdded);
+        notesPersistenceManager.unlockNote(index);
         Thread.sleep(200);
         assertTrue(onChangeIndex == -1);
 
@@ -190,28 +190,28 @@ public class TestNotesManager {
         assertTrue(onAddIndex != -1);
 
         // expect the same Note Values as it was published
-        TextNoteInformation newTextNote = (TextNoteInformation) notesManager.getAllNotes().get(onAddIndex);
+        TextNoteInformation newTextNote = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(onAddIndex);
         assertTrue(newTextNote.equalsIgnoreId(textNote));
     }
 
     @Test
     public void testDifferentUsers() throws Exception {
         // add a new item, leave it locked
-        int index = notesManager.addNote(NoteType.TEXT);
-        notesManager.lockNote(index);
-        TextNoteInformation textNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
+        int index = notesPersistenceManager.addNote(NoteType.TEXT);
+        notesPersistenceManager.lockNote(index);
+        TextNoteInformation textNote = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
         textNote.setText("This note is going to be locked.");
-        notesManager.refreshNote(index, textNote);
+        notesPersistenceManager.refreshNote(index, textNote);
 
         // remember the id of the note, remember the sessionId
-        Integer noteId = notesManager.getAllNotes().get(index).getId();
+        Integer noteId = notesPersistenceManager.getAllNotes().get(index).getId();
         Integer sessionId = ((SingletonSmack)communicator).getUsingSession();
 
         // remember the size of allNotes
-        int sizeOfAllNotes = notesManager.getAllNotes().size();
+        int sizeOfAllNotes = notesPersistenceManager.getAllNotes().size();
 
         // logout
-        notesManager.close();
+        notesPersistenceManager.close();
         communicator.close();
         communicator = SingletonSmack.getInstance();
 
@@ -225,18 +225,18 @@ public class TestNotesManager {
         onLockedIndex = -1;
         onUnlockedIndex = -1;
 
-        // login, prepare NotesManager
+        // login, prepare NotesPersistenceManager
         communicator.init();
         communicator.setUsingSession(sessionId);
-        notesManager = new NotesManager(new MyNotesManagerListener());
+        notesPersistenceManager = new NotesPersistenceManager(new MyNotesPersistenceManagerListener());
 
         // check, if the size is the same
-        assertEquals(sizeOfAllNotes, notesManager.getAllNotes().size());
+        assertEquals(sizeOfAllNotes, notesPersistenceManager.getAllNotes().size());
 
         // get the index of the locked note
         int newIndex = -1;
-        for (int i = 0; i < notesManager.getAllNotes().size(); i++) {
-            if (notesManager.getAllNotes().get(i).getId().equals(noteId)){
+        for (int i = 0; i < notesPersistenceManager.getAllNotes().size(); i++) {
+            if (notesPersistenceManager.getAllNotes().get(i).getId().equals(noteId)){
                 newIndex = i;
                 break;
             }
@@ -247,24 +247,24 @@ public class TestNotesManager {
         }
 
         // check, if the locking is ok.
-        Assert.assertTrue(notesManager.isLockedByAnother(newIndex));
+        Assert.assertTrue(notesPersistenceManager.isLockedByAnother(newIndex));
 
         boolean exceptionIsThrown = false;
         try {
-            notesManager.lockNote(newIndex);
+            notesPersistenceManager.lockNote(newIndex);
         } catch (Exception e) {
             exceptionIsThrown = true;
         }
         assertTrue(exceptionIsThrown);
 
         // add a note as new user
-        int index2 = notesManager.addNote(NoteType.TEXT);
-        notesManager.lockNote(index2);
-        TextNoteInformation note2 = (TextNoteInformation) notesManager.getAllNotes().get(index2);
+        int index2 = notesPersistenceManager.addNote(NoteType.TEXT);
+        notesPersistenceManager.lockNote(index2);
+        TextNoteInformation note2 = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index2);
         note2.setText("This is a note from user2. It will be unlocked.");
-        notesManager.refreshNote(index2, note2);
-        notesManager.unlockNote(index2);
-        note2 = (TextNoteInformation) notesManager.getAllNotes().get(index2);
+        notesPersistenceManager.refreshNote(index2, note2);
+        notesPersistenceManager.unlockNote(index2);
+        note2 = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index2);
         NoteInformation savedNote2 = NoteInformation.produceNoteInformation(note2.toXml());
 
         // there should be no event handler called
@@ -275,10 +275,10 @@ public class TestNotesManager {
         assertEquals(-1, onUnlockedIndex);
 
         // remember the new size
-        sizeOfAllNotes = notesManager.getAllNotes().size();
+        sizeOfAllNotes = notesPersistenceManager.getAllNotes().size();
 
         // logout
-        notesManager.close();
+        notesPersistenceManager.close();
         communicator.close();
         communicator = SingletonSmack.getInstance();
 
@@ -292,16 +292,16 @@ public class TestNotesManager {
         onLockedIndex = -1;
         onUnlockedIndex = -1;
 
-        // login, prepare NotesManager
+        // login, prepare NotesPersistenceManager
         communicator.init();
         communicator.setUsingSession(sessionId);
-        notesManager = new NotesManager(new MyNotesManagerListener());
+        notesPersistenceManager = new NotesPersistenceManager(new MyNotesPersistenceManagerListener());
 
         // check, if size is still the same
-        assertEquals(sizeOfAllNotes, notesManager.getAllNotes().size());
+        assertEquals(sizeOfAllNotes, notesPersistenceManager.getAllNotes().size());
 
         // get the note from user2 and check it.
-        for (NoteInformation note : notesManager.getAllNotes()) {
+        for (NoteInformation note : notesPersistenceManager.getAllNotes()) {
             TextNoteInformation textNoteInformation = (TextNoteInformation) note;
             if (textNoteInformation.getId().equals(savedNote2.getId())) {
                 assertTrue(textNoteInformation.equalsIgnoreId(savedNote2));
@@ -312,15 +312,15 @@ public class TestNotesManager {
     @Test
     public void testOnDelete() throws Exception {
         // Add and delete a note
-        notesManager.deleteNote(notesManager.addNote(NoteType.TEXT));
+        notesPersistenceManager.deleteNote(notesPersistenceManager.addNote(NoteType.TEXT));
 
         // assert that the onDeleteIndex didn't change
         Thread.sleep(200);
         assertEquals(-1, onDeleteIndex);
 
         // Add a note. Get the id
-        final int i = notesManager.addNote(NoteType.TEXT);
-        final Integer id = notesManager.getAllNotes().get(i).getId();
+        final int i = notesPersistenceManager.addNote(NoteType.TEXT);
+        final Integer id = notesPersistenceManager.getAllNotes().get(i).getId();
 
         // use the communicator to delete it
         communicator.deleteNote(id);
@@ -334,12 +334,12 @@ public class TestNotesManager {
     public void testOnLock() throws Exception {
 
         // Add a note. Get the id
-        final int index = notesManager.addNote(NoteType.TEXT);
-        final Integer id = notesManager.getAllNotes().get(index).getId();
+        final int index = notesPersistenceManager.addNote(NoteType.TEXT);
+        final Integer id = notesPersistenceManager.getAllNotes().get(index).getId();
 
-        // lock it, unlock it through NotesManager
-        notesManager.lockNote(index);
-        notesManager.unlockNote(index);
+        // lock it, unlock it through NotesPersistenceManager
+        notesPersistenceManager.lockNote(index);
+        notesPersistenceManager.unlockNote(index);
 
         // assert that onLock isn't been called
         Thread.sleep(200);
@@ -353,18 +353,18 @@ public class TestNotesManager {
         assertTrue(-1 != onLockedIndex);
 
         // unlock the note
-        notesManager.unlockNote(index);
+        notesPersistenceManager.unlockNote(index);
     }
 
     @Test
     public void testOnUnlock() throws Exception {
         // Add a note. Get the id
-        final int index = notesManager.addNote(NoteType.TEXT);
-        final Integer id = notesManager.getAllNotes().get(index).getId();
+        final int index = notesPersistenceManager.addNote(NoteType.TEXT);
+        final Integer id = notesPersistenceManager.getAllNotes().get(index).getId();
 
-        // lock it, unlock it through NotesManager
-        notesManager.lockNote(index);
-        notesManager.unlockNote(index);
+        // lock it, unlock it through NotesPersistenceManager
+        notesPersistenceManager.lockNote(index);
+        notesPersistenceManager.unlockNote(index);
 
         // assert that onUnLock isn't been called
         Thread.sleep(200);
@@ -379,7 +379,7 @@ public class TestNotesManager {
         assertTrue(-1 != onUnlockedIndex);
     }
 
-    private static class MyNotesManagerListener implements NotesManagerListener {
+    private static class MyNotesPersistenceManagerListener implements NotesPersistenceManagerListener {
         @Override
         public void onAdd(int indexOfAddedNote) {
             onAddIndex = indexOfAddedNote;

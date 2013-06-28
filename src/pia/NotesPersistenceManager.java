@@ -9,15 +9,15 @@ import java.util.Vector;
  * This Class acts as a persistent module to handle requests and events between
  * the View and the NotesCommunicator.
  */
-public class NotesManager {
+public class NotesPersistenceManager {
 
     private NotesCommunicator communicator = SingletonSmack.getInstance();
     private List<NoteInformation> notes = new ArrayList<>();
-    private Vector<NotesManagerListener> listener = new Vector<>();
+    private Vector<NotesPersistenceManagerListener> listener = new Vector<>();
     private boolean isClosed = false;
 
 
-    public NotesManager() {
+    public NotesPersistenceManager() {
         init();
         try {
             communicator.setNotesListener(new MyNotesCommunicatorListener());
@@ -27,15 +27,15 @@ public class NotesManager {
         }
     }
     /**
-     * Creates a new instance of NotesManager. Expects a <code>NotesManagerListener</code> as Parameter.
-     * @param notesManagerListener A <code>NotesManagerListener</code> which handles all events called
+     * Creates a new instance of NotesPersistenceManager. Expects a <code>NotesPersistenceManagerListener</code> as Parameter.
+     * @param notesPersistenceManagerListener A <code>NotesPersistenceManagerListener</code> which handles all events called
      *                             by this Manager.
      */
-    public NotesManager(NotesManagerListener notesManagerListener){
+    public NotesPersistenceManager(NotesPersistenceManagerListener notesPersistenceManagerListener){
         this();
 
         // set the listener, do all the listening stuff
-        addListener(notesManagerListener);
+        addListener(notesPersistenceManagerListener);
     }
 
     /**
@@ -254,7 +254,7 @@ public class NotesManager {
     }
 
     /**
-     * Closes the NotesManager. NotesCommunicator Connection will still be stable.
+     * Closes the NotesPersistenceManager. NotesCommunicator Connection will still be stable.
      */
     public void close(){
         checkIsClosed();
@@ -270,12 +270,12 @@ public class NotesManager {
     }
 
     @Deprecated
-    private void setListener(NotesManagerListener listener) {
+    private void setListener(NotesPersistenceManagerListener listener) {
         this.listener.add(listener);
 
     }
 
-    public void addListener(NotesManagerListener listener) {
+    public void addListener(NotesPersistenceManagerListener listener) {
         this.listener.add(listener);
     }
 
@@ -330,7 +330,7 @@ public class NotesManager {
                 notes.add(publishedItem);
 
                 // notify the gui
-                for (NotesManagerListener l: listener)
+                for (NotesPersistenceManagerListener l: listener)
                     l.onAdd(notes.size()-1);
 
                 // and finish method
@@ -352,7 +352,7 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                for (NotesManagerListener l: listener)
+                for (NotesPersistenceManagerListener l: listener)
                     l.onLocked(index);
 
                 // and finish method
@@ -367,7 +367,7 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                for (NotesManagerListener l: listener)
+                for (NotesPersistenceManagerListener l: listener)
                     l.onUnlocked(index);
 
                 // and finish method
@@ -382,7 +382,7 @@ public class NotesManager {
                 notes.set(index, publishedItem);
 
                 // notify the gui
-                for (NotesManagerListener l: listener)
+                for (NotesPersistenceManagerListener l: listener)
                     l.onChange(index);
             }
         }
@@ -405,7 +405,7 @@ public class NotesManager {
             notes.remove(index);
 
             // notify the gui
-            for (NotesManagerListener l: listener)
+            for (NotesPersistenceManagerListener l: listener)
                 l.onDelete(index);
         }
 

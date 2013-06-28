@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import pia.PIA;
-import pia.PlayerEventListener;
 import pia.StreamPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayer;
 
 
 public class PlayerControlsController {
@@ -67,25 +64,25 @@ public class PlayerControlsController {
     void initialize() {
         nextTopicButton.setDisable(true);
 
-        player = PIA.streamPlayer;
-
-        if (player.isPlaying())
-            playPauseButtonIcon.setId("pause");
-        else
-            playPauseButtonIcon.setId("play");
-
-        player.addPlayingListener(new PlayerEventListener() {
-            @Override
-            public void actionPerformed(MediaPlayer player) {
-                playPauseButtonIcon.setId("pause");
-            }
-        });
-        player.addPausedListener(new PlayerEventListener() {
-            @Override
-            public void actionPerformed(MediaPlayer player) {
-                playPauseButtonIcon.setId("play");
-            }
-        });
+//        player = PIA.streamPlayer;
+//
+//        if (player.isPlaying())
+//            playPauseButtonIcon.setId("pause");
+//        else
+//            playPauseButtonIcon.setId("play");
+//
+//        player.addPlayingListener(new PlayerEventListener() {
+//            @Override
+//            public void actionPerformed(MediaPlayer player) {
+//                playPauseButtonIcon.setId("pause");
+//            }
+//        });
+//        player.addPausedListener(new PlayerEventListener() {
+//            @Override
+//            public void actionPerformed(MediaPlayer player) {
+//                playPauseButtonIcon.setId("play");
+//            }
+//        });
 
         //PIA.streamPlayer.isPlaying();
         //PIA.streamPlayer.play();

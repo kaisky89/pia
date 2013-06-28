@@ -6,10 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -18,13 +17,19 @@ import javafx.util.Duration;
 import pia.*;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 
-public class NotesPadController {
+public class NotesPadController implements Initializable{
 
-    private Vector<Parent> notes = new Vector<Parent>();
+    private Vector<Parent> notes = new Vector<>();
+    private List<VisibleTextNote> visibleTextNotes = new LinkedList<>();
     private Double time = 0.0;
+    private NotesPersistenceManager notesPersistenceManager = PIA.notesPersistenceManager;
     public StreamPlayer player;
     Timeline scroller;
 
@@ -39,62 +44,116 @@ public class NotesPadController {
 
     /**
      * Get the next available position in the pad from the left side.
+     *
      * @return position from left
      */
     private double getAvailablePosLeft() {
         double widths = 0;
-        for (Parent note: notes) {
+        for (Parent note : notes) {
             widths += note.getLayoutBounds().getWidth();
         }
         return notesPad.getPadding().getLeft() + widths;
     }
+
     /**
      * Get the next available position in the pad from the right side.
      * Please keep in mind that this is only a point. You might want to subtract
      * the new note's width.
+     *
      * @return position from right
      */
     private double getAvailablePosRight() {
-        return notesPad.getWidth()-notesPad.getPadding().getRight();
+        return notesPad.getWidth() - notesPad.getPadding().getRight();
     }
 
     private void autoScroll() {
-        final double frametime = 1.0/24;
+        final double frametime = 1.0 / 24;
     }
 
     private void adjustNotePositions() {
-        for (Parent note: notes)
-            note.setLayoutX(note.getLayoutX()-time);
+        for (Parent note : notes)
+            note.setLayoutX(note.getLayoutX() - time);
     }
 
     @FXML
-    public Parent addNewNote(MouseEvent event) {
-        Parent newNote = createNote();
-        notesPad.getChildren().add(newNote);
-        // TODO: find out the width dynamically
-        newNote.setLayoutX(event.getX()-60);
-        newNote.setLayoutY(0);
-        notes.add(newNote);
-        return newNote;
+    /**
+     * This method shall be called when the user adds a note.
+     */
+    public void addNewNoteFromUser(MouseEvent event) {
+
+        // create the the visibleNote, add it to pane
+        VisibleTextNote newNote = createNoteFromUser();
+        notesPad.getChildren().add(newNote.getNoteNode());
+
+        // set the time
+        newNote.setTime((long) event.getX() - 60);
+
+        notes.add(newNote.getNoteNode());
     }
 
-    public Parent addNewNote(NoteInformation ni) {
-        Parent note = createNote();
-        double time = ni.getTimePosition();
-        note.setLayoutX(time);
-        note.setLayoutY(0);
-        if (ni.getNoteType().equals(NoteType.TEXT)) {
-            TextNoteInformation textnote = (TextNoteInformation) ni;
-            Node textareanode = note.lookup("#noteTextArea");
-            TextArea textarea = (TextArea) textareanode;
-            textarea.setText(textnote.getText());
-        }
-        notes.add(note);
-        notesPad.getChildren().add(note);
-        return note;
+
+    public Parent addNewNoteFromOutside(NoteInformation ni, int index) {
+
+        System.out.println(2);
+        // create a new visibleTextNote
+        VisibleTextNote visibleTextNote = createNoteFromOutside(index);
+        visibleTextNote.setIndex(index);
+
+        System.out.println(3);
+        // add the visibleTextNote to the List
+        visibleTextNotes.add(visibleTextNote);
+
+        System.out.println(4);
+        final Parent noteNode = visibleTextNote.getNoteNode();
+        System.out.println(5);
+        notesPad.getChildren().add(noteNode);
+
+        System.out.println(6);
+        notes.add(visibleTextNote.getNoteNode());
+        return visibleTextNote.getNoteNode();
     }
 
-    private Parent createNote() {
+    /**
+     * creates a new Note and adds this to the notesPersistenceManager. This method should be called, when
+     * the user adds a note.
+     * @return a VisibleTextNote with a reference to the FXML Text.
+     */
+    private VisibleTextNote createNoteFromUser(){
+
+        // add a new note in notesPersistenceManager
+        final int index = notesPersistenceManager.addNote(NoteType.TEXT);
+
+        // gets the note from notesPersistenceManager
+        final NoteInformation noteInformation = notesPersistenceManager.getAllNotes().get(index);
+
+        // create a visibleNote
+        VisibleTextNote visibleTextNote = new VisibleTextNote(noteInformation);
+        visibleTextNote.setIndex(index);
+
+        // add the visibleNote to the List
+        visibleTextNotes.add(visibleTextNote);
+
+        // and return the expected reference
+        return visibleTextNote;
+    }
+
+    private VisibleTextNote createNoteFromOutside(int index){
+
+        // gets the note from notesPersistenceManager
+        final NoteInformation noteInformation = notesPersistenceManager.getAllNotes().get(index);
+
+        // create a visibleNote
+        VisibleTextNote visibleTextNote = new VisibleTextNote(noteInformation);
+        visibleTextNote.setIndex(index);
+
+        // add the visibleNote to the List
+        visibleTextNotes.add(visibleTextNote);
+
+        // and return the expected reference
+        return visibleTextNote;
+    }
+
+    private Parent preCreateNote() {
         //System.out.println("creating new note");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
         try {
@@ -107,24 +166,27 @@ public class NotesPadController {
 
     /**
      * Preload a note so that new notes are created with a smaller time penalty.
+     *
      * @throws IOException
      */
     private void preloadNote() {
         Stage stage = new Stage();
-        Parent note = createNote();
+        Parent note = preCreateNote();
         Scene scene = new Scene(note);
         stage.setScene(scene);
         stage.show();
         stage.hide();
         stage.close();
-   }
+    }
 
     @FXML
-    void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
         // Preload a note
         preloadNote();
 
-        double frametime = 1.0/30;
+        double frametime = 1.0 / 30;
         scroller = new Timeline(new KeyFrame(Duration.seconds(frametime),
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -145,13 +207,13 @@ public class NotesPadController {
         //
         //
         // add note
-        //int i = PIA.notesManager.addNote(NoteType.TEXT);
+        //int i = PIA.notesPersistenceManager.addNote(NoteType.TEXT);
         //
         //// lock the note
-        //PIA.notesManager.lockNote(i);
+        //PIA.notesPersistenceManager.lockNote(i);
         //
         //// get the note
-        //List<NoteInformation> allNotes = PIA.notesManager.getAllNotes();
+        //List<NoteInformation> allNotes = PIA.notesPersistenceManager.getAllNotes();
         //NoteInformation noteInformation = allNotes.get(i);
         //
         //// edit the note
@@ -159,33 +221,55 @@ public class NotesPadController {
         //((TextNoteInformation) noteInformation).setText(string);
         //((TextNoteInformation) noteInformation).setTimePosition(400l);
         //
-        //// save it to notesManager
-        //PIA.notesManager.refreshNote(i, noteInformation);
+        //// save it to notesPersistenceManager
+        //PIA.notesPersistenceManager.refreshNote(i, noteInformation);
         //
         //// unlock the note
-        //PIA.notesManager.unlockNote(i);
+        //PIA.notesPersistenceManager.unlockNote(i);
 
 
-
-        //List<NoteInformation> storedNotes = PIA.notesManager.getAllNotes();
+        //List<NoteInformation> storedNotes = PIA.notesPersistenceManager.getAllNotes();
         //for (NoteInformation note: storedNotes) {
-        //    addNewNote(note);
+        //    addNewNoteFromUser(note);
         //}
 
         //TextNoteInformation testnote = new TextNoteInformation(100l, "dies ist ein text");
-        //addNewNote(testnote);
+        //addNewNoteFromUser(testnote);
+
+        int index = 0;
+        for (NoteInformation noteInformation : notesPersistenceManager.getAllNotes()) {
+            addNewNoteFromOutside(noteInformation, index);
+            index++;
+        }
 
 
-        PIA.notesManager.addListener(new NotesManagerListener() {
+        PIA.notesPersistenceManager.addListener(new NotesPersistenceManagerListener() {
             @Override
             public void onAdd(int indexOfAddedNote) {
-                NoteInformation note = PIA.notesManager.getAllNotes().get(indexOfAddedNote);
-                addNewNote(note);
+                System.out.println("onAdd is Called!!!!!!!!!!!!!!!!!");
+                System.out.println("     size before: " + visibleTextNotes.size());
+                NoteInformation note = PIA.notesPersistenceManager.getAllNotes().get(indexOfAddedNote);
+                System.out.println(1);
+                addNewNoteFromOutside(note, indexOfAddedNote);
+                System.out.println("     size after: " + visibleTextNotes.size());
             }
 
             @Override
             public void onChange(int indexOfChangedNote) {
+                System.out.println("onChange is Called!!!!!!!!!!!!!!!!!");
+                System.out.println("     size before: " + visibleTextNotes.size());
+                VisibleTextNote visibleTextNote = null;
 
+                // find the visibleTextNote which was changed
+                for (VisibleTextNote textNote : visibleTextNotes) {
+                    if (textNote.getIndex() == indexOfChangedNote) {
+                        visibleTextNote = textNote;
+                    }
+                }
+
+                // set the visibleTextNote
+                visibleTextNote.onChange(notesPersistenceManager.getAllNotes().get(indexOfChangedNote));
+                System.out.println("     size after: " + visibleTextNotes.size());
             }
 
             @Override

@@ -1,6 +1,6 @@
 package pia;
 
-public interface NotesManagerListener {
+public interface NotesPersistenceManagerListener {
     public void onAdd(int indexOfAddedNote);
     public void onChange(int indexOfChangedNote);
     public void onDelete(int indexOfDeletedNote);

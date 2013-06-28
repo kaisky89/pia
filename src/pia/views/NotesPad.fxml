@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#addNewNote" prefHeight="184.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NotesPadController">
+<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#addNewNoteFromUser" prefHeight="184.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NotesPadController">
   <children>
-    <Pane fx:id="notesPad" onMouseClicked="#addNewNote" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <Pane fx:id="notesPad" onMouseClicked="#addNewNoteFromUser" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <padding>
         <Insets left="10.0" right="10.0" />
       </padding>

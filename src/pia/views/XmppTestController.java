@@ -24,7 +24,7 @@ public class XmppTestController implements Initializable {
     @FXML private ListView<String> listView;
 
 
-    private NotesManager notesManager;
+    private NotesPersistenceManager notesPersistenceManager;
 
 
     @Override
@@ -41,8 +41,8 @@ public class XmppTestController implements Initializable {
             SingletonViewManager.getInstance().showError(e);
         }
 
-        // init the notesManager
-        notesManager = new NotesManager(new MyNotesManagerListener());
+        // init the notesPersistenceManager
+        notesPersistenceManager = new NotesPersistenceManager(new MyNotesPersistenceManagerListener());
 
         // refresh the view
         try {
@@ -60,13 +60,13 @@ public class XmppTestController implements Initializable {
                 "New Note", "Add a new Note", "Please enter the content of the new note.");
 
         // create the note, lock it
-        final int index = notesManager.addNote(NoteType.TEXT);
-        notesManager.lockNote(index);
+        final int index = notesPersistenceManager.addNote(NoteType.TEXT);
+        notesPersistenceManager.lockNote(index);
 
         // get the note for editing
         TextNoteInformation textNote = null;
         //try {
-            textNote = (TextNoteInformation) notesManager.getAllNotes().get(index);
+            textNote = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
         //} catch (InstantiationException e) {
         //    SingletonViewManager.getInstance().showError(e);
         //}
@@ -75,10 +75,10 @@ public class XmppTestController implements Initializable {
         textNote.setText(text);
 
         // publish the note
-        notesManager.refreshNote(index, textNote);
+        notesPersistenceManager.refreshNote(index, textNote);
 
         // unlock the note
-        notesManager.unlockNote(index);
+        notesPersistenceManager.unlockNote(index);
 
         // refresh the view
         try {
@@ -95,11 +95,11 @@ public class XmppTestController implements Initializable {
             public void run() {
                 List<NoteInformation> allNotes = null;
                 //try {
-                    allNotes = notesManager.getAllNotes();
+                    allNotes = notesPersistenceManager.getAllNotes();
                 //} catch (InstantiationException e) {
                 //    SingletonViewManager.getInstance().showError(e);
                 //}
-                // get all items from NotesManager, set it to the gui list
+                // get all items from NotesPersistenceManager, set it to the gui list
                 for (int i = 0; i < allNotes.size(); i++) {
                     TextNoteInformation textNote = (TextNoteInformation) allNotes.get(i);
 
@@ -115,7 +115,7 @@ public class XmppTestController implements Initializable {
     }
 
 
-    private class MyNotesManagerListener implements NotesManagerListener {
+    private class MyNotesPersistenceManagerListener implements NotesPersistenceManagerListener {
         @Override
         public void onAdd(int indexOfAddedNote) {
             try {

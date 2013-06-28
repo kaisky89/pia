@@ -9,37 +9,15 @@ public class PIA extends Application {
 
     public static SingletonViewManager viewManager;
     public static StreamPlayer streamPlayer;
-    public static NotesManager notesManager;
+    public static NotesPersistenceManager notesPersistenceManager;
+    // stream URL
+    //final String url = "http://familie-wittmann.dyndns.org/downloads/kurzerSong.mp3";
+    public static final String url = "http://meta.metaebene.me/media/mm/mm112-in-werbung-bewegen.mp3";
 
     @Override
     public void start(Stage stage) throws Exception {
-        // stream URL
-        //final String url = "http://familie-wittmann.dyndns.org/downloads/kurzerSong.mp3";
-        final String url = "http://meta.metaebene.me/media/mm/mm112-in-werbung-bewegen.mp3";
 
-        // start all managers
-
-        // 1. Notes Communicator
-        NotesCommunicator smack = SingletonSmack.getInstance();
-
-        // TODO: get login and session data from login view
-        SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
-        smack.init();
-        if (smack.getSessionIds().size() > 0) {
-            Integer sessionID = smack.getSessionIds().get(0);
-            smack.setUsingSession(sessionID);
-        } else {
-            Integer sessionID = smack.addSession(new SessionInformation("test session", url,
-                    "description should not be empty"));
-            smack.setUsingSession(sessionID);
-        }
-
-        // 2. Notes Manager
-        notesManager = new NotesManager();
-
-        streamPlayer = new StreamPlayer(url);
-
-        // 3. View Manager
+        // start View Manager
         viewManager = SingletonViewManager.getInstance();
 
         // set the locations of the different views
@@ -49,7 +27,7 @@ public class PIA extends Application {
         
         // set the starting scene
         viewManager.setStage(stage);
-        viewManager.setScene("PIA");
+        viewManager.setScene("PIA Login");
 
         // close cleanly
         viewManager.getStage().setOnCloseRequest(new EventHandler<WindowEvent>() {

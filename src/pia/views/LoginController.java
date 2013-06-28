@@ -32,7 +32,7 @@ public class LoginController {
 
     @FXML
     private void handleAnonLogin(ActionEvent event){
-        login(true);
+        //login(false);
     }
     
     @FXML
@@ -41,8 +41,8 @@ public class LoginController {
     }
     
     @FXML
-    private void handleActionPasswordField(ActionEvent event){
-        loginButton.requestFocus();
+    private void handleActionPasswordField(ActionEvent event) {
+        login(false);
     }
 
     private void login(boolean anon) {
@@ -50,9 +50,36 @@ public class LoginController {
                 passwordField.getText(), anon));
         try {
             SingletonSmack.getInstance().init();
+
+
+            // start all managers
+
+            // 1. Notes Communicator
+            NotesCommunicator smack = SingletonSmack.getInstance();
+
+            // TODO: get login and session data from login view
+            smack.init();
+            if (smack.getSessionIds().size() > 0) {
+                Integer sessionID = smack.getSessionIds().get(0);
+                smack.setUsingSession(sessionID);
+            } else {
+                Integer sessionID = smack.addSession(new SessionInformation("test session", PIA.url,
+                        "description should not be empty"));
+                smack.setUsingSession(sessionID);
+            }
+
+            // 2. Notes Manager
+            PIA.notesPersistenceManager = new NotesPersistenceManager();
+
+            //streamPlayer = new StreamPlayer(url);
+
+
+
+
             SingletonViewManager.getInstance().setScene("PIA", false);
         } catch (NotesCommunicatorException ex) {
             SingletonViewManager.getInstance().showError(ex);
         }
+
     }
 }
