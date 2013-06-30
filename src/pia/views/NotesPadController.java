@@ -32,6 +32,7 @@ public class NotesPadController implements Initializable{
     private NotesPersistenceManager notesPersistenceManager = PIA.notesPersistenceManager;
     public StreamPlayer player;
     Timeline scroller;
+    private Parent noteHint;
 
     @FXML
     private AnchorPane root;
@@ -73,6 +74,35 @@ public class NotesPadController implements Initializable{
     private void adjustNotePositions() {
         for (Parent note : notes)
             note.setLayoutX(note.getLayoutX() - time);
+    }
+
+    /**
+     * Prepare a note that is used when hovering over the notespad.
+     */
+    private void prepareNoteHint() {
+        if (noteHint == null) {
+            noteHint = preCreateNote();
+        }
+        noteHint.setOpacity(0.5);
+        noteHint.lookup("")
+        notesPad.getChildren().add(noteHint);
+        noteHint.setVisible(false);
+    }
+
+    @FXML
+    public void showNoteHint(MouseEvent event) {
+        noteHint.setVisible(true);
+        noteHint.setTranslateX(event.getX());
+    }
+
+    @FXML
+    public void hideNoteHint(MouseEvent event) {
+        noteHint.setVisible(false);
+    }
+
+    @FXML
+    public void moveNoteHint(MouseEvent event) {
+        noteHint.setTranslateX(event.getX());
     }
 
     @FXML
@@ -154,7 +184,6 @@ public class NotesPadController implements Initializable{
     }
 
     private Parent preCreateNote() {
-        //System.out.println("creating new note");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
         try {
             return (Parent) fxmlLoader.load();
@@ -185,6 +214,8 @@ public class NotesPadController implements Initializable{
 
         // Preload a note
         preloadNote();
+        // Prepare a note for creation hint
+        prepareNoteHint();
 
         double frametime = 1.0 / 30;
         scroller = new Timeline(new KeyFrame(Duration.seconds(frametime),
