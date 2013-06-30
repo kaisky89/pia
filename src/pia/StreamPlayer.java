@@ -47,15 +47,15 @@ public class StreamPlayer extends MediaPlayerEventHandler {
         player.pause();
     }
     public void seekRelative(long seconds) {
-        long newTime = player.getTime() + seconds;
-        if (player.getTime()+seconds < 0) {
+        long newTime = player.getTime() + seconds*1000;
+        if (newTime < 0) {
             player.setTime(0);
         } else {
             player.setTime(newTime);
         }
     }
     public void seek(long seconds) {
-        player.setTime(seconds);
+        player.setTime(seconds*1000);
     }
 
     public boolean isPlaying() {
@@ -63,6 +63,13 @@ public class StreamPlayer extends MediaPlayerEventHandler {
     }
     public boolean isPaused() {
         return player.getMediaState().equals(libvlc_state_t.libvlc_Paused);
+    }
+    public void setVolume(int value) {
+        if (value < 0)
+            value = 0;
+        else if (value > 200)
+            value = 200;
+        player.setVolume(value);
     }
 
     /**
@@ -87,4 +94,5 @@ public class StreamPlayer extends MediaPlayerEventHandler {
     MediaPlayer getMediaPlayer() {
         return player;
     }
+
 }

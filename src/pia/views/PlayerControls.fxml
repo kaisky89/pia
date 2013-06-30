@@ -13,7 +13,7 @@
   <children>
     <StackPane id="StackPane" prefHeight="76.0" prefWidth="722.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" StackPane.alignment="CENTER">
+        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
           <StackPane.margin>
             <Insets fx:id="x1" />
           </StackPane.margin>
@@ -77,7 +77,7 @@
             </AnchorPane>
             <AnchorPane id="AnchorPane" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
               <children>
-                <Slider fx:id="volumeControl" majorTickUnit="100.0" max="120.0" maxWidth="150.0" minHeight="20.0" minWidth="40.0" minorTickCount="0" prefHeight="50.0" prefWidth="120.0" rotate="0.0" showTickLabels="false" showTickMarks="false" snapToTicks="false" value="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="26.0" AnchorPane.topAnchor="26.0">
+                <Slider fx:id="volumeSlider" majorTickUnit="100.0" max="120.0" maxWidth="150.0" minHeight="20.0" minWidth="40.0" minorTickCount="0" prefHeight="50.0" prefWidth="120.0" rotate="0.0" showTickLabels="false" showTickMarks="false" snapToTicks="false" value="90.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="26.0" AnchorPane.topAnchor="26.0">
                   <tooltip>
                     <Tooltip text="Volume" />
                   </tooltip>

@@ -20,6 +20,9 @@ public class PIA extends Application {
         // start View Manager
         viewManager = SingletonViewManager.getInstance();
 
+        // start Stream Player
+        streamPlayer = new StreamPlayer(url);
+
         // set the locations of the different views
         viewManager.addViewLocation("PIA Login", "views/Login.fxml");
         viewManager.addViewLocation("PIA", "views/MainWindow.fxml");
