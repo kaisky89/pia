@@ -332,6 +332,7 @@ public class TestNotesManager {
 
     @Test
     public void testOnLock() throws Exception {
+        onLockedIndex = -1;
 
         // Add a note. Get the id
         final int index = notesPersistenceManager.addNote(NoteType.TEXT);
