@@ -124,21 +124,13 @@ public class NotesPadController implements Initializable{
 
 
     public Parent addNewNoteFromOutside(NoteInformation ni, int index) {
-        System.out.println(index + ": " + ((TextNoteInformation) ni).getText());
 
-        System.out.println(2);
         // create a new visibleTextNote
         VisibleTextNote visibleTextNote = createNoteFromOutside(index);
         visibleTextNote.setIndex(index);
 
-        System.out.println(3);
-        // add the visibleTextNote to the List
-        visibleTextNotes.add(visibleTextNote);
-
-        System.out.println(4);
         final Parent noteNode = visibleTextNote.getNoteNode();
 
-        System.out.println(5);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -147,7 +139,6 @@ public class NotesPadController implements Initializable{
         });
 
 
-        System.out.println(6);
         notes.add(visibleTextNote.getNoteNode());
         return visibleTextNote.getNoteNode();
     }
@@ -287,11 +278,8 @@ public class NotesPadController implements Initializable{
             @Override
             public void onAdd(int indexOfAddedNote) {
                 System.out.println("onAdd is Called!!!!!!!!!!!!!!!!!");
-                System.out.println("     size before: " + visibleTextNotes.size());
                 NoteInformation note = PIA.notesPersistenceManager.getAllNotes().get(indexOfAddedNote);
-                System.out.println(1);
                 addNewNoteFromOutside(note, indexOfAddedNote);
-                System.out.println("     size after: " + visibleTextNotes.size());
             }
 
             @Override
