@@ -92,9 +92,11 @@ final public class SingletonViewManager {
             stage = new Stage();
             stage.setTitle(sceneName);
         }
+        stage.hide();
         stage.setScene(scene);
         stage.setMinHeight(scene.getHeight());
         stage.setMinWidth(scene.getWidth());
+        stage.setTitle(sceneName);
         stage.show();
     }
 
