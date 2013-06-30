@@ -9,28 +9,45 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.00007792968245" prefWidth="485.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <SplitPane dividerPositions="0.8426501035196687" focusTraversable="true" prefHeight="254.0" prefWidth="217.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <SplitPane dividerPositions="0.577962577962578" focusTraversable="true" prefHeight="254.0" prefWidth="217.0" style="-fx-border-color:  transparent;&#10;-fx-background-color: transparent;&#10;-fx-background-insets: 0;" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
       <items>
-        <SplitPane dividerPositions="0.9151670951156813" focusTraversable="true" orientation="VERTICAL" prefHeight="391.0" prefWidth="386.0">
+        <SplitPane dividerPositions="0.8597402597402597" focusTraversable="true" orientation="VERTICAL" prefHeight="391.0" prefWidth="386.0" style="-fx-border-color:  transparent;&#10;   -fx-background-color: transparent;&#10;   -fx-background-insets: 0;">
           <items>
-            <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefWidth="523.0" text="Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf.Hier erscheint der Chatverlauf." wrapText="true" />
-            <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefRowCount="1" prefWidth="-1.0" promptText="Zum Chatten hier tippen." text="" wrapText="true" />
+            <TextArea editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefWidth="523.0" style="-fx-border-color:  transparent;&#10;   -fx-background-color: transparent;&#10;   -fx-background-insets: 0;" text="simonwaldherr: oh, quimoniz ist wieder da&#10;simonwaldherr: was meintest du mit Zuckerwatte?&#10;quimoniz: habe Nachricht von luto erhalten, und mir das Pad durchgelesen&#10;Tim: Bumm, Zack, Return!" wrapText="true" />
+            <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="30.0" prefHeight="-1.0" prefRowCount="1" prefWidth="-1.0" promptText="Zum chatten hier tippen." text="" wrapText="true" />
           </items>
         </SplitPane>
-        <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-1.0" pannable="false" prefHeight="-1.0" prefViewportHeight="391.0" prefViewportWidth="85.0" prefWidth="-1.0">
+        <TitledPane animated="false" collapsible="false" maxWidth="200.0" minWidth="100.0" prefHeight="1000.0" prefWidth="100.0" text="Nicks">
           <content>
-            <VBox fillWidth="true" maxHeight="-1.0" maxWidth="-1.0" minWidth="-1.0" prefHeight="389.0" prefWidth="-1.0">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="1000.0" prefWidth="100.0">
               <children>
-                <Label text="Nick1" />
-                <Label text="Nick2" />
-                <Label text="Nick3" />
+                <VBox fillWidth="true" maxHeight="-1.0" maxWidth="-1.0" minWidth="0.0" prefHeight="363.0" prefWidth="150.0" style="-fx-border-color:  transparent;&#10;-fx-background-color: transparent;&#10;-fx-background-insets: 0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <Label prefWidth="-1.0" text="simonwaldherr" />
+                    <Label text="Hugo" />
+                    <Label text="quimoniz" />
+                    <Label text="Tim" />
+                    <Label text="Anne" />
+                    <Label text="FooBar" />
+                    <Label text="Neme13" />
+                    <Label text="HarterMann" />
+                    <Label text="DerKristian" />
+                    <Label text="Timo" />
+                    <Label text="Anon1" />
+                    <Label text="Anon13" />
+                    <Label text="Anon23" />
+                    <Label text="Anon42" />
+                    <Label text="Anon5" />
+                    <Label text="Anon50" />
+                  </children>
+                  <padding>
+                    <Insets left="5.0" right="3.0" />
+                  </padding>
+                </VBox>
               </children>
-              <padding>
-                <Insets bottom="10.0" left="5.0" right="3.0" top="10.0" />
-              </padding>
-            </VBox>
+            </AnchorPane>
           </content>
-        </ScrollPane>
+        </TitledPane>
       </items>
     </SplitPane>
   </children>
