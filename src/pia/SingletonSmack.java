@@ -457,7 +457,7 @@ final public class SingletonSmack implements NotesCommunicator {
 
     private void login() throws XMPPException {
         UserData user = SingletonDataStore.getInstance().getUser();
-        connection.login(user.getUsername(), user.getPassword());
+        connection.login(user.getUsername(), user.getPassword(), SingletonDataStore.getInstance().getResource());
         mgr = new PubSubManager(connection);
     }
 
@@ -677,6 +677,8 @@ final public class SingletonSmack implements NotesCommunicator {
     }
 
     private void subscribe() throws NotesCommunicatorException {
+
+
         try {
             // subscribe to the Node
             SubscribeForm subscribeForm = new SubscribeForm(FormType.submit);
