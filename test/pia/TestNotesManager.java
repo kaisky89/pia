@@ -38,7 +38,6 @@ public class TestNotesManager {
 
     @BeforeClass
     public static void setUpClass() throws NotesCommunicatorException, XMPPException {
-        SingletonDataStore.getInstance().setServerAdress("localhost");
         SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
         communicator = SingletonSmack.getInstance();
         communicator.init();

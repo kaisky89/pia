@@ -682,6 +682,7 @@ final public class SingletonSmack implements NotesCommunicator {
             SubscribeForm subscribeForm = new SubscribeForm(FormType.submit);
             subscribeForm.setDeliverOn(true);
             subscribeForm.setIncludeBody(true);
+            subscribeForm.setDigestOn(true);
             getItemsLeafNode().subscribe(SingletonDataStore.getInstance().getJID(), subscribeForm);
         } catch (XMPPException ex) {
             ex.printStackTrace();
