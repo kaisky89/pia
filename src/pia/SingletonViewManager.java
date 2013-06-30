@@ -134,6 +134,13 @@ final public class SingletonViewManager {
         ex.printStackTrace();
         Dialogs.showErrorDialog(stage, ex.getLocalizedMessage(), "An Error Occured", "Error", ex);
     }
+    /**
+     * Shows an error dialog with the exception message.
+     * @param error Error message.
+     */
+    public void showError(String error) {
+        Dialogs.showErrorDialog(stage, error, "Fehler", "Ohoh!");
+    }
 
     /**
      * Shows a Dialog to ask for a User Input. Input will be returned as a 

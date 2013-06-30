@@ -1,6 +1,5 @@
 package pia.views;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -34,22 +33,22 @@ public class PlayerControlsController {
     @FXML
     private void toggle() {
 
-        if (player.isPlaying()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    player.pause();
-                }
-            });
-
-        } else if (player.isPaused() || player.isStopped()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    player.play();
-                }
-            });
-        }
+        //if (player.isPlaying()) {
+        //    Platform.runLater(new Runnable() {
+        //        @Override
+        //        public void run() {
+        //            player.pause();
+        //        }
+        //    });
+        //
+        //} else if (player.isPaused() || player.isStopped()) {
+        //    Platform.runLater(new Runnable() {
+        //        @Override
+        //        public void run() {
+        //            player.play();
+        //        }
+        //    });
+        //}
     }
 
     @FXML

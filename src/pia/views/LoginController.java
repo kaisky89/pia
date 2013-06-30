@@ -51,13 +51,8 @@ public class LoginController {
         try {
             SingletonSmack.getInstance().init();
 
-
-            // start all managers
-
-            // 1. Notes Communicator
             NotesCommunicator smack = SingletonSmack.getInstance();
 
-            // TODO: get login and session data from login view
             smack.init();
             if (smack.getSessionIds().size() > 0) {
                 Integer sessionID = smack.getSessionIds().get(0);
@@ -68,12 +63,7 @@ public class LoginController {
                 smack.setUsingSession(sessionID);
             }
 
-            // 2. Notes Manager
             PIA.notesPersistenceManager = new NotesPersistenceManager();
-
-            //streamPlayer = new StreamPlayer(url);
-
-
 
 
             SingletonViewManager.getInstance().setScene("PIA", false);
