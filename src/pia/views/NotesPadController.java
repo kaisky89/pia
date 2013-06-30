@@ -84,7 +84,7 @@ public class NotesPadController implements Initializable{
             noteHint = preCreateNote();
         }
         noteHint.setOpacity(0.5);
-        noteHint.lookup("")
+        //noteHint.lookup("")
         notesPad.getChildren().add(noteHint);
         noteHint.setVisible(false);
     }
