@@ -49,7 +49,6 @@ public class PlayerControlsController {
                     player.pause();
                 }
             });
-
         } else if (player.isPaused() || player.isStopped()) {
             Platform.runLater(new Runnable() {
                 @Override
@@ -90,7 +89,7 @@ public class PlayerControlsController {
         });
 
         player = PIA.streamPlayer;
-//
+
         if (player.isPlaying())
             playPauseButtonIcon.setId("pause");
         else
@@ -103,6 +102,12 @@ public class PlayerControlsController {
             }
         });
         player.addPausedListener(new PlayerEventListener() {
+            @Override
+            public void actionPerformed(MediaPlayer player) {
+                playPauseButtonIcon.setId("play");
+            }
+        });
+        player.addFinishedListener(new PlayerEventListener() {
             @Override
             public void actionPerformed(MediaPlayer player) {
                 playPauseButtonIcon.setId("play");

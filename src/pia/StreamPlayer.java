@@ -36,10 +36,9 @@ public class StreamPlayer extends MediaPlayerEventHandler {
 
     public void play() {
         System.out.println("play");
-        libvlc_state_t state = player.getMediaState();
-        if (state.equals(libvlc_state_t.libvlc_Paused))
+        if (isPaused())
             player.play();
-        else if (state.equals(libvlc_state_t.libvlc_Stopped) || state.equals(libvlc_state_t.libvlc_NothingSpecial))
+        else if (isStopped())
             player.playMedia(url);
     }
     public void pause() {
@@ -79,7 +78,8 @@ public class StreamPlayer extends MediaPlayerEventHandler {
     public boolean isStopped() {
         libvlc_state_t state = player.getMediaState();
         return (state.equals(libvlc_state_t.libvlc_Stopped) ||
-                state.equals(libvlc_state_t.libvlc_NothingSpecial));
+                state.equals(libvlc_state_t.libvlc_NothingSpecial) ||
+                state.equals(libvlc_state_t.libvlc_Ended));
     }
     public float getBufferingProgress() {
         return 0;
