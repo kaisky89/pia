@@ -85,7 +85,7 @@ public class NotesPadController implements Initializable{
             noteHint = preCreateNote();
         }
         noteHint.setOpacity(0.5);
-        //noteHint.lookup("")
+        noteHint.lookup("#noteTextArea").setVisible(false);
         notesPad.getChildren().add(noteHint);
         noteHint.setVisible(false);
     }
@@ -93,7 +93,8 @@ public class NotesPadController implements Initializable{
     @FXML
     public void showNoteHint(MouseEvent event) {
         noteHint.setVisible(true);
-        noteHint.setTranslateX(event.getX());
+        if (event != null)
+            noteHint.setLayoutX(event.getX());
     }
 
     @FXML
@@ -103,7 +104,21 @@ public class NotesPadController implements Initializable{
 
     @FXML
     public void moveNoteHint(MouseEvent event) {
-        noteHint.setTranslateX(event.getX());
+        boolean hide = false;
+        for (Parent note: notes) {
+            // hide if cursor is closer than one note length to this note
+            double width = note.getLayoutBounds().getWidth();
+            double mid = note.getLayoutX()+width/2;
+            if (event.getX() < mid+width && event.getX() > mid-width) {// within the range
+                hide = true;
+                hideNoteHint(null);
+                break;
+            }
+        }
+        if (hide == false) {
+            showNoteHint(null);
+        }
+        noteHint.setLayoutX(event.getX() - noteHint.getLayoutBounds().getWidth() / 2);
     }
 
     @FXML

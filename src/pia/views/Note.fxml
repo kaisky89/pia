@@ -10,7 +10,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 
-<AnchorPane fx:id="root" cache="true" cacheHint="SPEED" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="79.1300048828125" prefWidth="120.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NoteController">
+<AnchorPane fx:id="root" cache="true" cacheHint="SPEED" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="120.0" xmlns:fx="http://javafx.com/fxml" fx:controller="pia.views.NoteController">
   <children>
     <VBox padding="$x1" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.13">
       <children>
