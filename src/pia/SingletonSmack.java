@@ -548,7 +548,7 @@ final public class SingletonSmack implements NotesCommunicator {
         // Publish an Item with the specified id
         Item item;
         item = new Item(id);
-        leafnode.send(item);
+        leafnode.publish(item);
     }
 
     private Integer createNoteId(NoteInformation note) throws XMPPException, NotesCommunicatorException {
