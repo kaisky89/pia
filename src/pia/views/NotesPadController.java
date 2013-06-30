@@ -308,11 +308,33 @@ public class NotesPadController implements Initializable{
             @Override
             public void onLocked(int indexOfLockedNote) {
 
+                // get the accordingly note
+                VisibleTextNote note = null;
+                for (VisibleTextNote visibleTextNote : visibleTextNotes) {
+                    if (visibleTextNote.getIndex() == indexOfLockedNote){
+                        note = visibleTextNote;
+                        break;
+                    }
+                }
+
+                // delegate to the note
+                note.gotLocked();
             }
 
             @Override
             public void onUnlocked(int indexOfUnlockedNote) {
 
+                // get the accordingly note
+                VisibleTextNote note = null;
+                for (VisibleTextNote visibleTextNote : visibleTextNotes) {
+                    if (visibleTextNote.getIndex() == indexOfUnlockedNote){
+                        note = visibleTextNote;
+                        break;
+                    }
+                }
+
+                // delegate to the note
+                note.gotUnlocked();
             }
         });
 

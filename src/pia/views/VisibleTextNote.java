@@ -19,15 +19,14 @@ public class VisibleTextNote {
     private TextNoteInformation noteInformation;
     private NoteController noteController;
     private int index;
+    private boolean isLockedByAnother = false;
 
     private VisibleTextNote() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Note.fxml"));
         try {
             noteNode = (Parent) fxmlLoader.load();
             textArea = (TextArea) noteNode.lookup("#noteTextArea");
-            if (textArea == null) {
-                System.out.println("textArea is null!!");
-            }
+
             noteController = fxmlLoader.<NoteController>getController();
         } catch (IOException e) {
             e.printStackTrace();
@@ -35,20 +34,27 @@ public class VisibleTextNote {
         noteController.setNoteControllerListener(new NoteControllerListener() {
             @Override
             public void onEdit() {
-                final String text = textArea.getText();
-                noteInformation.setText(text);
-                notesPersistenceManager.refreshNote(index, noteInformation);
-                noteInformation = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
+                if (!isLockedByAnother) {
+                    final String text = textArea.getText();
+
+                    noteInformation.setText(text);
+                    notesPersistenceManager.refreshNote(index, noteInformation);
+                    noteInformation = (TextNoteInformation) notesPersistenceManager.getAllNotes().get(index);
+                }
             }
 
             @Override
             public void onStartEditing() {
-                lock();
+                if (!isLockedByAnother) {
+                    lock();
+                }
             }
 
             @Override
             public void onEndEditing() {
-                unlock();
+                if (!isLockedByAnother) {
+                    unlock();
+                }
             }
         });
     }
@@ -105,6 +111,8 @@ public class VisibleTextNote {
 
     public void setIndex(int index) {
         this.index = index;
+        isLockedByAnother = notesPersistenceManager.isLockedByAnother(index);
+        refreshLockedView();
     }
 
     public int getIndex() {
@@ -122,6 +130,38 @@ public class VisibleTextNote {
 
         // save the new noteInformation
         this.noteInformation = textNoteInformation;
+    }
+
+
+    // should be called only from notesPersistenceManager
+    public void gotLocked() {
+        isLockedByAnother = true;
+        refreshLockedView();
+    }
+
+    // should be called only from notesPersistenceManager
+    public void gotUnlocked() {
+        isLockedByAnother = false;
+        refreshLockedView();
+    }
+
+    private void refreshLockedView() {
+
+        if (isLockedByAnother) {
+            if (textArea.getText().startsWith("!!!")) {
+                return;
+            } else {
+                textArea.setText("!!!" + textArea.getText());
+                return;
+            }
+        } else {
+            if (textArea.getText().startsWith("!!!")) {
+                textArea.setText(textArea.getText().substring(3));
+                return;
+            } else {
+                return;
+            }
+        }
     }
 
 
