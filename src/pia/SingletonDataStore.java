@@ -14,6 +14,7 @@ final public class SingletonDataStore {
     
     private UserData user;
     private String serverAdress = "liquidbox.de";
+    //private String serverAdress = "localhost";
 
     public String getJID(){
         return user.getUsername() + "@" + getServerAdress();

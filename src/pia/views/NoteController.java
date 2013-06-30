@@ -34,7 +34,7 @@ public class NoteController implements Initializable{
 
     @FXML
     private void handleKeyPressed(KeyEvent event) {
-        if (noteControllerListener != null) {
+        if (noteControllerListener != null && noteTextArea.isEditable()) {
             noteControllerListener.onEdit();
         }
         System.out.println("key"+event.getCharacter());

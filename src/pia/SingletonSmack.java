@@ -52,6 +52,7 @@ final public class SingletonSmack implements NotesCommunicator {
             for (DiscoverItems.Item item
                     : new SmartIterable<DiscoverItems.Item>(discoverNodes.getItems())) {
                 mgr.deleteNode(item.getNode());
+                System.out.println("|");
 
             }
         }
@@ -122,6 +123,7 @@ final public class SingletonSmack implements NotesCommunicator {
             form.setAccessModel(AccessModel.open);
             form.setDeliverPayloads(true);
             form.setPersistentItems(true);
+            form.setItemReply(ItemReply.publisher);
             form.setNotifyRetract(true);
             form.setNotifyConfig(true);
             form.setNotifyDelete(true);
@@ -413,13 +415,12 @@ final public class SingletonSmack implements NotesCommunicator {
         }
 
         // find all subscriptions from the user to this node
-        List<Subscription> subscriptions;
+        List<Subscription> subscriptions = null;
         try {
             subscriptions = getItemsLeafNode().getSubscriptions();
         } catch (XMPPException ex) {
-            throw new NotesCommunicatorException(
-                    "Error while trying to get List of subscriptions of "
-                    + getNotesLeafNodeString(), ex);
+            System.err.println("Error while trying to get List of subscriptions of " + getNotesLeafNodeString());
+            ex.printStackTrace();
         }
         for (Subscription subscription : subscriptions) {
             try {

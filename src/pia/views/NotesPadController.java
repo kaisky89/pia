@@ -2,6 +2,7 @@ package pia.views;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -123,6 +124,7 @@ public class NotesPadController implements Initializable{
 
 
     public Parent addNewNoteFromOutside(NoteInformation ni, int index) {
+        System.out.println(index + ": " + ((TextNoteInformation) ni).getText());
 
         System.out.println(2);
         // create a new visibleTextNote
@@ -135,8 +137,15 @@ public class NotesPadController implements Initializable{
 
         System.out.println(4);
         final Parent noteNode = visibleTextNote.getNoteNode();
+
         System.out.println(5);
-        notesPad.getChildren().add(noteNode);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                notesPad.getChildren().add(noteNode);
+            }
+        });
+
 
         System.out.println(6);
         notes.add(visibleTextNote.getNoteNode());

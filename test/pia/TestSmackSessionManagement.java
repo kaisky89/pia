@@ -4,13 +4,11 @@
  */
 package pia;
 
-import java.util.List;
 import org.jivesoftware.smack.XMPPException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -36,7 +34,6 @@ public class TestSmackSessionManagement {
     
     @BeforeClass
     public static void setUpClass() throws NotesCommunicatorException, XMPPException {
-        SingletonDataStore.getInstance().setServerAdress("localhost");
         SingletonDataStore.getInstance().setUser(new UserData("user1", "123"));
         communicator = SingletonSmack.getInstance();
         communicator.init();
