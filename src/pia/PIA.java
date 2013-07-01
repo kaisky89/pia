@@ -1,5 +1,6 @@
 package pia;
 
+import com.sun.jna.NativeLibrary;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
@@ -21,6 +22,7 @@ public class PIA extends Application {
         viewManager = SingletonViewManager.getInstance();
 
         // start Stream Player
+        NativeLibrary.addSearchPath("vlc", "/Applications/VLC.app/Contents/MacOS/lib");
         streamPlayer = new StreamPlayer(url);
 
         // set the locations of the different views
